@@ -1,8 +1,7 @@
 {
-  "name": "fireclient",
+  "name": "react-fireclient",
   "version": "0.1.0",
   "main": "dist/index.js",
-  "private": true,
   "license": "MIT",
   "files": [
     "dist"
