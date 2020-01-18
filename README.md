@@ -1,4 +1,4 @@
-# ![Fireclient](https://optimind-llc.github.io/fireclient/)
+# [Fireclient](https://optimind-llc.github.io/fireclient/)
 
 ![](https://img.shields.io/npm/v/react-fireclient) ![](https://img.shields.io/npm/l/react-fireclient) ![](https://img.shields.io/badge/-React-555.svg?logo=react&style=flat)
 
