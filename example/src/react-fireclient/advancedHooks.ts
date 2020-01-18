@@ -1,6 +1,6 @@
 import { firestore } from "firebase";
 import "firebase/firestore";
-import { fromJS, Map } from "immutable";
+import { Map, fromJS } from "immutable";
 import * as pathlib from "path";
 import { useEffect, useState } from "react";
 import {
@@ -17,19 +17,19 @@ import {
 } from ".";
 import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "./fetchFunctions";
 import {
-  generateHooksId,
-  initialCollectionData,
   initialDocData,
+  initialCollectionData,
+  generateHooksId,
   useGetCollectionSnapshot,
   useGetDoc,
 } from "./hooks";
 import {
-  assert,
   assertArrayQuerySchema,
   assertPaginateOption,
   assertPath,
   assertQuerySchema,
   assertSubCollectionOption,
+  assert,
 } from "./validation";
 
 function isDoc(path: string): boolean {
@@ -40,13 +40,13 @@ function isDoc(path: string): boolean {
 type ArrayQueryData = (FireclientDoc | FireclientDoc[])[];
 
 export function useArrayQuery(
-  querySchema: ArrayQuerySchema,
+  querySchema: ArrayQuerySchema
 ): [ArrayQueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
   assertArrayQuerySchema(querySchema);
   const { queries, callback, acceptOutdated } = querySchema;
   const connects = querySchema.connects ? querySchema.connects : false;
   const initialQueryData: ArrayQueryData = queries.map(query =>
-    isDoc(query.location) ? initialDocData : initialCollectionData,
+    isDoc(query.location) ? initialDocData : initialCollectionData
   );
 
   // Subscribeする場合があるので、HooksのIdを持っておく
@@ -102,7 +102,7 @@ export function useArrayQuery(
                   { limit, where, order, cursor },
                   onFetchCollection,
                   onError,
-                  acceptOutdated,
+                  acceptOutdated
                 );
               load();
               reloadFns.push(load);
@@ -112,12 +112,12 @@ export function useArrayQuery(
                 location,
                 { limit, where, order, cursor },
                 onFetchCollection,
-                onError,
+                onError
               );
               unsubFns.push(unsub);
             }
-          }),
-      ),
+          })
+      )
     )
       .then(res => {
         setQueryData(res.sort((a, b) => a.key - b.key).map(r => r.data));
@@ -144,14 +144,14 @@ export function useArrayQuery(
 type QueryData = Map<string, FireclientDoc | FireclientDoc[] | {}>;
 
 export function useQuery(
-  querySchema: QuerySchema,
+  querySchema: QuerySchema
 ): [QueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
   assertQuerySchema(querySchema);
   const { queries } = querySchema;
 
   const idxToKey = Object.keys(queries).reduce(
     (acc: any, key, i: number) => acc.set(i, key),
-    Map(),
+    Map()
   );
   const arrayQueries = Object.values(queries);
   const schema = {
@@ -173,7 +173,7 @@ function useGetMinMax(
   option: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption,
+  } & QueryOption
 ): [firestore.DocumentSnapshot | null, firestore.DocumentSnapshot | null, () => void, () => void] {
   const order = option.order as Order;
   const isDesc = order.direction === "desc";
@@ -214,7 +214,7 @@ export function usePaginateCollection(
   option: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption,
+  } & QueryOption
 ) {
   assertPath(path);
   assertPaginateOption(option);
@@ -297,7 +297,7 @@ export function usePaginateCollection(
 
 export function useGetSubCollection(
   path: string,
-  option: { field: string; collectionPath: string; acceptOutdated?: boolean },
+  option: { field: string; collectionPath: string; acceptOutdated?: boolean }
 ) {
   assertPath(path);
   assertSubCollectionOption(option);
@@ -311,7 +311,7 @@ export function useGetSubCollection(
   assert(
     docIds === null || // データ未取得
       (docIds instanceof Array && docIds.every((docId: any) => typeof docId === "string")),
-    `Value of ${field} should be string array.`,
+    `Value of ${field} should be string array.`
   );
   const queries =
     docIds === null

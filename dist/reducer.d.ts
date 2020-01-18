@@ -1,6 +1,6 @@
 import { firestore } from "firebase";
-import { FireclientState, HooksId } from ".";
 import { List } from "immutable";
+import { FireclientState, HooksId } from ".";
 export declare type Actions = {
     type: "setDoc";
     payload: {

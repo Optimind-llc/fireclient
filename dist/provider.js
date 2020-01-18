@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var react_1 = __importDefault(require("react"));
 require("firebase/firestore");
 var immutable_1 = require("immutable");
+var react_1 = __importDefault(require("react"));
 var _1 = require(".");
 var reducer_1 = __importDefault(require("./reducer"));
 var validation_1 = require("./validation");
@@ -14,11 +14,11 @@ exports.Context = react_1.default.createContext(null);
 exports.providerContext = {
     state: null,
     dispatch: null,
-    firestoreDB: null
+    firestoreDB: null,
 };
 var initialState = immutable_1.Map({
     doc: immutable_1.Map(),
-    collection: immutable_1.Map()
+    collection: immutable_1.Map(),
 });
 function unwrapContext(context) {
     var state = context.state, dispatch = context.dispatch, firestoreDB = context.firestoreDB;
@@ -32,7 +32,7 @@ function convertDocSnapshotToData(state) {
     return state.update("doc", function (docStates) {
         return docStates.map(function (docState) { return ({
             data: _1.createDataFromDoc(docState.get("snapshot")),
-            connectedFrom: docState.get("connectedFrom")
+            connectedFrom: docState.get("connectedFrom"),
         }); });
     });
 }
@@ -41,7 +41,7 @@ function convertDocSnapshotToData(state) {
  * @param state {FireclientState} - This can be obtained via `context`.
  * @example
  * import { useContext } from "React";
- * import { contertStateToJson, Context } from "fireclient";
+ * import { contertStateToJson, Context } from "react-fireclient";;
  * function Component() {
  *    const { state } = useContext(Context);
  *    const json = convertStateToJson(state);
@@ -61,7 +61,7 @@ function Provider(_a) {
     exports.providerContext.firestoreDB = firestoreDB;
     return (react_1.default.createElement(exports.Context.Provider, { value: {
             state: state,
-            dispatch: dispatch
+            dispatch: dispatch,
         } }, children));
 }
 exports.default = Provider;

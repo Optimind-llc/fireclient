@@ -7,8 +7,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var immutable_1 = require("immutable");
 var firebase_1 = require("firebase");
+var immutable_1 = require("immutable");
 var pathlib = __importStar(require("path"));
 var provider_1 = require("./provider");
 var validation_1 = require("./validation");
@@ -52,10 +52,6 @@ function getQueryId(path, option) {
     });
 }
 exports.getQueryId = getQueryId;
-// for debug
-function onAccess() {
-    console.log("firestore accessed");
-}
 // Optional型のstate, dispatch, dbをunwrap
 // stateにdocのデータを保存
 function saveDoc(dispatch, docId, doc) {
@@ -210,39 +206,46 @@ function getDoc(path, onGet, onError, acceptOutdated) {
         onGet(cache.get("snapshot"));
         return;
     }
-    var ref = firestoreDB.doc(path);
-    ref
-        .get()
-        .then(function (doc) {
-        onAccess(); // for debug
-        saveDoc(dispatch, docId, doc);
-        onGet(doc);
-    })
-        .catch(function (err) {
-        // throw Error(err); // for debug
+    try {
+        var ref = firestoreDB.doc(path);
+        ref
+            .get()
+            .then(function (doc) {
+            saveDoc(dispatch, docId, doc);
+            onGet(doc);
+        })
+            .catch(function (err) {
+            onError(err);
+        });
+    }
+    catch (err) {
         onError(err);
-    });
+    }
 }
 exports.getDoc = getDoc;
 function subscribeDoc(uuid, path, onChange, onError, onListen) {
     if (onListen === void 0) { onListen = function () { }; }
     var docId = pathlib.resolve(path);
     var _a = provider_1.unwrapContext(provider_1.providerContext), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB;
-    var ref = firestoreDB.doc(path);
-    var unsubscribe = ref.onSnapshot(function (doc) {
-        onAccess(); // for debug
-        onListen();
-        saveDoc(dispatch, docId, doc);
-        connectDocToState(dispatch, docId, uuid);
-        onChange(doc);
-    }, function (err) {
-        // throw err; // for debug
+    try {
+        var ref = firestoreDB.doc(path);
+        var unsubscribe_1 = ref.onSnapshot(function (doc) {
+            onListen();
+            saveDoc(dispatch, docId, doc);
+            connectDocToState(dispatch, docId, uuid);
+            onChange(doc);
+        }, function (err) {
+            onError(err);
+        });
+        return function () {
+            unsubscribe_1();
+            disconnectDocFromState(dispatch, docId, uuid);
+        };
+    }
+    catch (err) {
         onError(err);
-    });
-    return function () {
-        unsubscribe();
-        disconnectDocFromState(dispatch, docId, uuid);
-    };
+        return function () { };
+    }
 }
 exports.subscribeDoc = subscribeDoc;
 function getCollection(path, option, onGet, onError, acceptOutdated) {
@@ -266,18 +269,21 @@ function getCollection(path, option, onGet, onError, acceptOutdated) {
         onGet(collectionSnapshot);
         return;
     }
-    var ref = withOption(firestoreDB.collection(path), option);
-    ref
-        .get()
-        .then(function (collection) {
-        onAccess(); // for debug
-        saveCollection(dispatch, path, option, collection.docs);
-        onGet(collection.docs);
-    })
-        .catch(function (err) {
-        // throw Error(err); // for debug
+    try {
+        var ref = withOption(firestoreDB.collection(path), option);
+        ref
+            .get()
+            .then(function (collection) {
+            saveCollection(dispatch, path, option, collection.docs);
+            onGet(collection.docs);
+        })
+            .catch(function (err) {
+            onError(err);
+        });
+    }
+    catch (err) {
         onError(err);
-    });
+    }
 }
 exports.getCollection = getCollection;
 function subscribeCollection(uuid, path, option, onChange, onError, onListen) {
@@ -285,27 +291,31 @@ function subscribeCollection(uuid, path, option, onChange, onError, onListen) {
     if (onListen === void 0) { onListen = function () { }; }
     var collectionId = getQueryId(path, option);
     var _a = provider_1.unwrapContext(provider_1.providerContext), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB;
-    var ref = withOption(firestoreDB.collection(path), option);
     var docIds = immutable_1.List();
-    var unsubscribe = ref.onSnapshot(function (collection) {
-        onAccess(); // for debug
-        onListen();
-        // docIdsを更新
-        // 対象から外れたdocをunsubscribeする
-        var nextDocIds = immutable_1.List(collection.docs.map(function (doc) { return pathlib.resolve(path, doc.id); }));
-        var decreased = docIds.filter(function (id) { return nextDocIds.indexOf(id) === -1; });
-        decreased.forEach(function (docId) { return disconnectDocFromState(dispatch, docId, uuid); });
-        docIds = nextDocIds;
-        saveCollection(dispatch, path, option, collection.docs);
-        connectCollectionToState(dispatch, collectionId, uuid, docIds);
-        onChange(collection.docs);
-    }, function (err) {
-        // throw err; // for debug
+    try {
+        var ref = withOption(firestoreDB.collection(path), option);
+        var unsubscribe_2 = ref.onSnapshot(function (collection) {
+            onListen();
+            // docIdsを更新
+            // 対象から外れたdocをunsubscribeする
+            var nextDocIds = immutable_1.List(collection.docs.map(function (doc) { return pathlib.resolve(path, doc.id); }));
+            var decreased = docIds.filter(function (id) { return nextDocIds.indexOf(id) === -1; });
+            decreased.forEach(function (docId) { return disconnectDocFromState(dispatch, docId, uuid); });
+            docIds = nextDocIds;
+            saveCollection(dispatch, path, option, collection.docs);
+            connectCollectionToState(dispatch, collectionId, uuid, docIds);
+            onChange(collection.docs);
+        }, function (err) {
+            onError(err);
+        });
+        return function () {
+            unsubscribe_2();
+            disconnectCollectionFromState(dispatch, collectionId, uuid, docIds);
+        };
+    }
+    catch (err) {
         onError(err);
-    });
-    return function () {
-        unsubscribe();
-        disconnectCollectionFromState(dispatch, collectionId, uuid, docIds);
-    };
+        return function () { };
+    }
 }
 exports.subscribeCollection = subscribeCollection;

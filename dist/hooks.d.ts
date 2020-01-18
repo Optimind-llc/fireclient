@@ -1,6 +1,6 @@
-import "firebase/firestore";
 import { firestore } from "firebase";
-import { FireclientDoc, QueryOption, HooksId } from ".";
+import "firebase/firestore";
+import { FireclientDoc, HooksId, QueryOption } from ".";
 export declare function generateHooksId(): HooksId;
 export declare function useLazyGetDocSnapshot(path: string, option?: {
     callback?: (snapshot: firestore.DocumentSnapshot) => void;

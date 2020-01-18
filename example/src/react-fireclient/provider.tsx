@@ -1,8 +1,14 @@
-import { firestore } from "firebase";
-import "firebase/firestore";
-import { Map } from "immutable";
 import React from "react";
-import { createDataFromDoc, FireclientDocState, FireclientState, ProviderContext } from ".";
+import "firebase/firestore";
+import { firestore } from "firebase";
+import { Map } from "immutable";
+
+import {
+  FireclientState,
+  ProviderContext,
+  FireclientDocState,
+  createDataFromDoc
+} from ".";
 import reducer, { Actions } from "./reducer";
 import { assert } from "./validation";
 
@@ -11,15 +17,15 @@ export const Context = React.createContext<any>(null);
 export const providerContext: ProviderContext = {
   state: null,
   dispatch: null,
-  firestoreDB: null,
+  firestoreDB: null
 };
 const initialState: FireclientState = Map({
   doc: Map(),
-  collection: Map(),
+  collection: Map()
 });
 
 export function unwrapContext(
-  context: ProviderContext,
+  context: ProviderContext
 ): {
   state: FireclientState;
   dispatch: React.Dispatch<Actions>;
@@ -37,8 +43,8 @@ function convertDocSnapshotToData(state: FireclientState) {
   return state.update("doc", docStates =>
     docStates.map((docState: FireclientDocState) => ({
       data: createDataFromDoc(docState.get("snapshot")),
-      connectedFrom: docState.get("connectedFrom"),
-    })),
+      connectedFrom: docState.get("connectedFrom")
+    }))
   );
 }
 /**
@@ -58,13 +64,16 @@ export function convertStateToJson(state: FireclientState) {
 function Provider({
   children,
   firestoreDB,
-  onAccess = () => {},
+  onAccess = () => {}
 }: {
   children: any;
   firestoreDB: firestore.Firestore;
   onAccess: () => void;
 }) {
-  assert(firestoreDB !== undefined, "firestoreDB props of Provider is undefined");
+  assert(
+    firestoreDB !== undefined,
+    "firestoreDB props of Provider is undefined"
+  );
   assert(firestoreDB !== null, "firestoreDB props of Provider is null");
   const [state, dispatch] = React.useReducer(reducer, initialState);
   // Provider呼び出し時にライブラリ共有 Contextをセットする
@@ -76,7 +85,7 @@ function Provider({
     <Context.Provider
       value={{
         state,
-        dispatch,
+        dispatch
       }}
     >
       {children}

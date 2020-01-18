@@ -1,13 +1,4 @@
-const firestoreWhereFilterOp = [
-  "<",
-  "<=",
-  "==",
-  ">=",
-  ">",
-  "array-contains",
-  "in",
-  "array-contains-any",
-];
+const firestoreWhereFilterOp = ["<", "<=", "==", ">=", ">", "array-contains", "in", "array-contains-any"];
 
 const isAnyOf = (targets: any[]) => (obj: any) => targets.indexOf(obj) >= 0;
 const isString = (obj: any) => typeof obj === "string";
@@ -35,13 +26,10 @@ export const assert = (isValid: boolean, errorMessage: string) => {
  * };
  */
 const assertWhere = (obj: any) => {
-  assert(
-    requiredProperty("field", isString)(obj),
-    'Where should contain "field" property with string value.',
-  );
+  assert(requiredProperty("field", isString)(obj), 'Where should contain "field" property with string value.');
   assert(
     requiredProperty("operator", isAnyOf(firestoreWhereFilterOp))(obj),
-    'Where should contain "operator" property with Firestore where filter operation.',
+    'Where should contain "operator" property with Firestore where filter operation.'
   );
   assert(requiredProperty("value")(obj), 'Where should contain "value" property.');
 };
@@ -62,13 +50,10 @@ const assertLimit = (obj: any) => {
  * };
  */
 const assertOrder = (obj: any) => {
-  assert(
-    requiredProperty("by", isString)(obj),
-    'Order should contain "by" property with string value.',
-  );
+  assert(requiredProperty("by", isString)(obj), 'Order should contain "by" property with string value.');
   assert(
     optionalProperty("direction", isAnyOf(["asc", "desc"]))(obj),
-    'Order should contain "direction" property with any of "asc" or "desc".',
+    'Order should contain "direction" property with any of "asc" or "desc".'
   );
 };
 /**
@@ -84,12 +69,9 @@ const assertCursor = (obj: any) => {
   assert(requiredProperty("origin")(obj), 'Cursor should contain "origin" property.');
   assert(
     requiredProperty("direction", isAnyOf(["startAt", "startAfter", "endAt", "endBefore"]))(obj),
-    'Cursor should contain "direction" property with value any of "startAt", "startAfter", "endAt", "endBefore".',
+    'Cursor should contain "direction" property with value any of "startAt", "startAfter", "endAt", "endBefore".'
   );
-  assert(
-    optionalProperty("multipleFields", isBoolean)(obj),
-    'Value of "multipleFields" property should be boolean.',
-  );
+  assert(optionalProperty("multipleFields", isBoolean)(obj), 'Value of "multipleFields" property should be boolean.');
 };
 /**
  * Check if `obj` satisfies `QueryOption` type.
@@ -137,14 +119,8 @@ export const assertQueryOption = (obj: any) => {
  * } & Option;
  */
 const assertQuery = (obj: any) => {
-  assert(
-    requiredProperty("location", isString)(obj),
-    'Query should contain "location" property with string value.',
-  );
-  assert(
-    optionalProperty("connects", isBoolean)(obj),
-    'Value of "connects" property should be boolean.',
-  );
+  assert(requiredProperty("location", isString)(obj), 'Query should contain "location" property with string value.');
+  assert(optionalProperty("connects", isBoolean)(obj), 'Value of "connects" property should be boolean.');
   assertQueryOption(obj);
 };
 export const assertAcceptOutdatedOption = (obj: any) => {
@@ -152,10 +128,7 @@ export const assertAcceptOutdatedOption = (obj: any) => {
     return;
   }
   assert(typeof obj === "object", "Option should be object.");
-  assert(
-    optionalProperty("acceptOutdated", isBoolean)(obj),
-    '"acceptOutdated" property should be boolean.',
-  );
+  assert(optionalProperty("acceptOutdated", isBoolean)(obj), '"acceptOutdated" property should be boolean.');
 };
 export const assertCallbackOption = (obj: any) => {
   if (obj === undefined) {
@@ -176,10 +149,7 @@ export const assertArrayQuerySchema = (obj: any) => {
   assert(obj !== undefined, "Query schema is undefined.");
   assert(obj !== null, "Query schema is null.");
   assert(typeof obj === "object", "Option should be object.");
-  assert(
-    optionalProperty("connects", isBoolean)(obj),
-    'Value of "connects" property should be boolean.',
-  );
+  assert(optionalProperty("connects", isBoolean)(obj), 'Value of "connects" property should be boolean.');
   assert(requiredProperty("queries")(obj), 'Schema should contain "queries" property.');
   assert(isArray(obj.queries), 'Schema should contain "queries" with Array');
   obj.queries.forEach((query: any) => assertQuery(query));
@@ -200,10 +170,7 @@ export const assertQuerySchema = (obj: any) => {
   assert(obj !== undefined, "Query schema is undefined.");
   assert(obj !== null, "Query schema is null.");
   assert(typeof obj === "object", "Option should be object.");
-  assert(
-    optionalProperty("connects", isBoolean)(obj),
-    'Value of "connects" property should be boolean.',
-  );
+  assert(optionalProperty("connects", isBoolean)(obj), 'Value of "connects" property should be boolean.');
   assert(requiredProperty("queries")(obj), 'Schema should contain "queries" property.');
   assert(obj.queries instanceof Object, 'Schema should contain "queries" with Object');
   Object.values(obj.queries).forEach((query: any) => assertQuery(query));
@@ -230,15 +197,9 @@ export const assertPaginateOption = (obj: any) => {
     }
   }
   // only in paginate
-  assert(
-    containKey("limit")(obj),
-    'Option in usePaginateCollection should contain "limit" property.',
-  );
+  assert(containKey("limit")(obj), 'Option in usePaginateCollection should contain "limit" property.');
   assertLimit(obj.limit);
-  assert(
-    containKey("order")(obj),
-    'Option in usePaginateCollection should contain "order" property.',
-  );
+  assert(containKey("order")(obj), 'Option in usePaginateCollection should contain "order" property.');
   assert(!isArray(obj.order), '"order" property in usePaginateCollection should not be array.');
   assertOrder(obj.order);
 };
@@ -250,12 +211,6 @@ export const assertSubCollectionOption = (obj: any) => {
   assert(typeof obj === "object", "Option should be object.");
   assert(obj !== null, "Option is null.");
 
-  assert(
-    containKey("field")(obj),
-    'Option in useGetSubCollection should contain "field" property.',
-  );
-  assert(
-    containKey("collectionPath")(obj),
-    'Option in useGetSubCollection should contain "collectionPath" property.',
-  );
+  assert(containKey("field")(obj), 'Option in useGetSubCollection should contain "field" property.');
+  assert(containKey("collectionPath")(obj), 'Option in useGetSubCollection should contain "collectionPath" property.');
 };

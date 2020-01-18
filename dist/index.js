@@ -7,10 +7,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var provider = __importStar(require("./provider"));
-var hooks = __importStar(require("./hooks"));
 var advancedHooks = __importStar(require("./advancedHooks"));
 var fetchFunctions = __importStar(require("./fetchFunctions"));
+var hooks = __importStar(require("./hooks"));
+var provider = __importStar(require("./provider"));
 /**
  * Converts Firestore document snapshot into `FireclientDoc`.
  * @param {firestore.DocumentData} doc
@@ -19,9 +19,11 @@ var fetchFunctions = __importStar(require("./fetchFunctions"));
  * const docData = createDataFromDoc(snapshot);
  */
 function createDataFromDoc(doc) {
+    var id = doc.id;
+    var data = doc.data();
     return {
-        data: doc.data(),
-        id: doc.id
+        data: data !== undefined ? data : null,
+        id: id,
     };
 }
 exports.createDataFromDoc = createDataFromDoc;
