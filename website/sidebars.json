@@ -1,0 +1,30 @@
+{
+  "docs": {
+    "クイックスタート": [
+      "quick-start"
+    ],
+    "イントロダクション": [
+      "overview",
+      "concept",
+      "quick-start",
+      "tutorial"
+    ],
+    "基本的なHooks": [
+      "hooks-useGetDoc",
+      "hooks-useGetCollection",
+      "hooks-useSubscribeDoc",
+      "hooks-useSubscribeCollection",
+      "hooks-useQuery"
+    ],
+    "高度なHooks": [
+      "hooks-useLazyGetDoc",
+      "hooks-useLazyGetCollection",
+      "hooks-usePaginateCollection"
+    ],
+    "クエリオプション": [
+      "option-overview",
+      "option-useGetCollection",
+      "option-useQuery"
+    ]
+  }
+}
