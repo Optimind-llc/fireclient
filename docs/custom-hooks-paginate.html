@@ -51,7 +51,8 @@
 <p>そして、データを取得したら last の内容を更新します。</p>
 <pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> option = { <span class="hljs-attr">limit</span>: <span class="hljs-number">3</span> };
 <span class="hljs-keyword">const</span> [collection, loading, error] = useGetCollectionSnapshot(path, option);
-<span class="hljs-keyword">const</span> nextLast = collection !== <span class="hljs-literal">null</span> &amp;&amp; collection.length &gt; <span class="hljs-number">0</span> ? collection[collection.length - <span class="hljs-number">1</span>] : <span class="hljs-literal">null</span>;
+<span class="hljs-keyword">const</span> nextLast =
+  collection !== <span class="hljs-literal">null</span> &amp;&amp; collection.length &gt; <span class="hljs-number">0</span> ? collection[collection.length - <span class="hljs-number">1</span>] : <span class="hljs-literal">null</span>;
 useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
   setLast(nextLast);
 }, [nextLast]);
@@ -59,14 +60,15 @@ useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;<
 <p>ここで、<code>last</code>は<code>cursor.origin</code>に適応するのでスナップショットになっている必要があり、Collection の取得には<code>useGetCollection</code>ではなく、<code>useGetCollectionSnapshot</code>を用います。</p>
 <p>代わりに Hooks の返り値には<code>createDataFromCollection</code>を適応したものを入れます。これにより、<code>useGetCollection</code>で取得したものと同じになります。</p>
 <p>この時点での全体のコードは次のようになります。</p>
-<pre><code class="hljs css language-js"><span class="hljs-keyword">import</span> { createDataFromCollection } <span class="hljs-keyword">from</span> <span class="hljs-string">"fireclient"</span>;
+<pre><code class="hljs css language-js"><span class="hljs-keyword">import</span> { createDataFromCollection } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-fireclient"</span>;
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">usePaginate</span>(<span class="hljs-params">path, option</span>) </span>{
   <span class="hljs-keyword">const</span> [last, setLast] = useState(<span class="hljs-literal">null</span>);
   <span class="hljs-keyword">const</span> option = { <span class="hljs-attr">limit</span>: <span class="hljs-number">3</span> };
 
   <span class="hljs-keyword">const</span> [collection, loading, error] = useGetCollectionSnapshot(path, option);
-  <span class="hljs-keyword">const</span> nextLast = collection !== <span class="hljs-literal">null</span> &amp;&amp; collection.length &gt; <span class="hljs-number">0</span> ? collection[collection.length - <span class="hljs-number">1</span>] : <span class="hljs-literal">null</span>;
+  <span class="hljs-keyword">const</span> nextLast =
+    collection !== <span class="hljs-literal">null</span> &amp;&amp; collection.length &gt; <span class="hljs-number">0</span> ? collection[collection.length - <span class="hljs-number">1</span>] : <span class="hljs-literal">null</span>;
   useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
     setLast(nextLast);
   }, [nextLast]);
@@ -139,7 +141,7 @@ useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;<
 </span></code></pre>
 <p>また、今回作った Hooks を拡張したものがライブラリに組み込まれているので、
 次のようにしてページ切り替えの Hooks を試すことができます。</p>
-<pre><code class="hljs css language-js"><span class="hljs-keyword">import</span> { usePaginateCollection } <span class="hljs-keyword">from</span> <span class="hljs-string">"fireclient"</span>;
+<pre><code class="hljs css language-js"><span class="hljs-keyword">import</span> { usePaginateCollection } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-fireclient"</span>;
 </code></pre>
 <pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> [cities, loading, error, prevHandler, prevHandler] = usePaginateCollection(<span class="hljs-string">"/cities"</span>, {
   <span class="hljs-attr">order</span>: {
