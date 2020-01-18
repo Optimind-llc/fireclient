@@ -1,0 +1,89 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>概要 · Fireclient</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="`useGetCollection` や `useQuery` などで Collection を取得する際に、フィルタリングやソートなどを行うことができます。"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="概要 · Fireclient"/><meta property="og:type" content="website"/><meta property="og:url" content="https://Optimind-llc.github.io/fireclient/"/><meta property="og:description" content="`useGetCollection` や `useQuery` などで Collection を取得する際に、フィルタリングやソートなどを行うことができます。"/><meta property="og:image" content="https://Optimind-llc.github.io/fireclient/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://Optimind-llc.github.io/fireclient/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/fireclient/img/favicon.ico"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/fireclient/js/scrollSpy.js"></script><link rel="stylesheet" href="/fireclient/css/main.css"/><script src="/fireclient/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/fireclient/"><h2 class="headerTitle">Fireclient</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/fireclient/docs/overview" target="_self">Docs</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>クエリオプション</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">イントロダクション</h3><ul class=""><li class="navListItem"><a class="navItem" href="/fireclient/docs/overview">概要</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/concept">3原則</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/quick-start">始め方</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/tutorial">チュートリアル</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">基本的なHooks</h3><ul class=""><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useGetDoc">useGetDoc（ドキュメントの取得）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useGetCollection">useGetCollection（コレクションの取得）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useSubscribeDoc">useSubscribeDoc（ドキュメントの監視）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useSubscribeCollection">useSubscribeCollection（コレクションの監視）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useQuery">useQuery（クエリオプションを用いたドキュメント・コレクションの取得・監視）</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">高度なHooks</h3><ul class=""><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useLazyGetDoc">useLazyGetDoc（ドキュメントの遅延取得）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useLazyGetCollection">useLazyGetCollection（コレクションの遅延取得）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-usePaginateCollection">usePaginateCollection（ページネーションを用いたコレクション取得）</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">クエリオプション</h3><ul class=""><li class="navListItem navListItemActive"><a class="navItem" href="/fireclient/docs/option-overview">概要</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/option-useGetCollection">コレクションの取得での使用</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/option-useQuery">useQueryでの使用</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">概要</h1></header><article><div><span><p><code>useGetCollection</code> や <code>useQuery</code> などで Collection を取得する際に、フィルタリングやソートなどを行うことができます。</p>
+<h1><a class="anchor" aria-hidden="true" id="where"></a><a href="#where" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Where</h1>
+<p>Doc のフィールドの内容から Collection をフィルタリングします。
+次の例では <code>population</code> が <code>15000000</code> よりも大きい Doc のみを取得します。</p>
+<pre><code class="hljs css language-js">where: {
+    <span class="hljs-attr">field</span>: <span class="hljs-string">"population"</span>,
+    <span class="hljs-attr">operator</span>: <span class="hljs-string">"&gt;"</span>,
+    <span class="hljs-attr">value</span>: <span class="hljs-number">15000000</span>
+}
+</code></pre>
+<h1><a class="anchor" aria-hidden="true" id="limit"></a><a href="#limit" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Limit</h1>
+<p>取得する Doc の数を指定します。
+次の例では Doc を 100 個取得します。</p>
+<pre><code class="hljs css language-js">limit: <span class="hljs-number">100</span>;
+</code></pre>
+<h1><a class="anchor" aria-hidden="true" id="order"></a><a href="#order" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Order</h1>
+<p>クエリする際の Doc の並び順を指定します。
+次の例では、<code>population</code> で降順にソートしています。
+また、<code>limit</code> と組み合わせることで上位 n 個のような取得をすることも可能です。</p>
+<pre><code class="hljs css language-js">order: {
+    <span class="hljs-attr">by</span>: <span class="hljs-string">"population"</span>,
+    <span class="hljs-attr">direction</span>: <span class="hljs-string">"desc"</span>
+}
+</code></pre>
+<h1><a class="anchor" aria-hidden="true" id="cursor"></a><a href="#cursor" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Cursor</h1>
+<p>クエリの開始ポイントや終了ポイントを指定します。
+次の例では<code>order</code> と組み合わせて使用することで、<code>population</code> が <code>15000000</code> 以上である Doc を取得します。</p>
+<pre><code class="hljs css language-js">cursor: {
+    <span class="hljs-attr">origin</span>: <span class="hljs-number">15000000</span>,
+    <span class="hljs-attr">direction</span>: <span class="hljs-string">"startAt"</span>
+}
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/fireclient/docs/hooks-usePaginateCollection"><span class="arrow-prev">← </span><span class="function-name-prevnext">usePaginateCollection（ページネーションを用いたコレクション取得）</span></a><a class="docs-next button" href="/fireclient/docs/option-useGetCollection"><span>コレクションの取得での使用</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/fireclient/docs/en/overview.html">Introduction</a><a href="/fireclient/docs/en/hooks-useGetDoc.html">API Reference</a></div><div><h5>More</h5><a href="https://github.com/optimind-llc/fire-client">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2020 Optimind</section></footer></div></body></html>

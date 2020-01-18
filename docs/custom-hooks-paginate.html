@@ -1,0 +1,163 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>作成例：ページ切り替え · Fireclient</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="この例では、簡易的なページ切り替えを行うための Hooks を作成します。"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="作成例：ページ切り替え · Fireclient"/><meta property="og:type" content="website"/><meta property="og:url" content="https://Optimind-llc.github.io/fireclient/"/><meta property="og:description" content="この例では、簡易的なページ切り替えを行うための Hooks を作成します。"/><meta property="og:image" content="https://Optimind-llc.github.io/fireclient/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://Optimind-llc.github.io/fireclient/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/fireclient/img/favicon.ico"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/fireclient/js/scrollSpy.js"></script><link rel="stylesheet" href="/fireclient/css/main.css"/><script src="/fireclient/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/fireclient/"><h2 class="headerTitle">Fireclient</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/fireclient/docs/overview" target="_self">Docs</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">作成例：ページ切り替え</h1></header><article><div><span><p>この例では、簡易的なページ切り替えを行うための Hooks を作成します。
+作成する Hooks は次の機能を持ちます。</p>
+<ul>
+<li>特定のページに含まれるデータの取得</li>
+<li>ページ移動のハンドリング</li>
+</ul>
+<h1><a class="anchor" aria-hidden="true" id="cursor-を使用した-collection-の取得"></a><a href="#cursor-を使用した-collection-の取得" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Cursor を使用した Collection の取得</h1>
+<p>まず、Collection の取得の際に Doc の範囲指定をすることを考えて見ましょう。</p>
+<p>カーソルを使ってクエリを行うために、Option には</p>
+<ul>
+<li>limit</li>
+<li>order</li>
+<li>cursor</li>
+</ul>
+<p>の 3 つの要素が含まれている必要があります。</p>
+<p>実際に Cursor を用いて Collection を取得してみましょう。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> [originSnapshot] = useGetDocSnapshot(<span class="hljs-string">"/cities/city9"</span>);
+<span class="hljs-keyword">const</span> option = {
+  <span class="hljs-attr">limit</span>: <span class="hljs-number">3</span>,
+  <span class="hljs-attr">order</span>: {
+    <span class="hljs-attr">by</span>: <span class="hljs-string">"population"</span>,
+  },
+  <span class="hljs-attr">cursor</span>: {
+    <span class="hljs-attr">origin</span>: originDocSnapshot,
+    <span class="hljs-attr">direction</span>: <span class="hljs-string">"startAfter"</span>,
+  },
+};
+<span class="hljs-keyword">const</span> [collectionData] = useGetCollection(<span class="hljs-string">"/cities"</span>, option);
+</code></pre>
+<p>これにより、例えば<code>&quot;/cities&quot;</code>に含まれる Doc を<code>population</code>でソートして</p>
+<pre><code class="hljs css language-text">- city5 : { population : 17000000 }
+- city8 : { population : 18000000 }
+- city9 : { population : 19000000 }
+- city4 : { population : 20000000 }
+- city1 : { population : 21000000 }
+- city2 : { population : 22000000 }
+- city6 : { population : 23000000 }
+</code></pre>
+<p>のようになっていた場合、<code>city4</code>, <code>city1</code>, <code>city2</code>を取得します。
+<code>city9</code>よりも<code>population</code>が大きい 3 つの Doc を取得していることが分かります。</p>
+<pre><code class="hljs css language-text">- city4 : { population : 20000000 }
+- city1 : { population : 21000000 }
+- city2 : { population : 22000000 }
+</code></pre>
+<p>注意：<code>startAfter</code> の場合 origin の値は含まれません。含めるには <code>startAt</code> を使用します。</p>
+<h1><a class="anchor" aria-hidden="true" id="origin-を変化させる"></a><a href="#origin-を変化させる" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Origin を変化させる</h1>
+<p>ページを前方向にすすめてみましょう。</p>
+<p>まず、現在表示している Doc の範囲を保持しておく必要があります。初期値には<code>null</code>をセットしておきます。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> [last, setLast] = useState(<span class="hljs-literal">null</span>);
+</code></pre>
+<p>そして、データを取得したら last の内容を更新します。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> option = { <span class="hljs-attr">limit</span>: <span class="hljs-number">3</span> };
+<span class="hljs-keyword">const</span> [collection, loading, error] = useGetCollectionSnapshot(path, option);
+<span class="hljs-keyword">const</span> nextLast = collection !== <span class="hljs-literal">null</span> &amp;&amp; collection.length &gt; <span class="hljs-number">0</span> ? collection[collection.length - <span class="hljs-number">1</span>] : <span class="hljs-literal">null</span>;
+useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  setLast(nextLast);
+}, [nextLast]);
+</code></pre>
+<p>ここで、<code>last</code>は<code>cursor.origin</code>に適応するのでスナップショットになっている必要があり、Collection の取得には<code>useGetCollection</code>ではなく、<code>useGetCollectionSnapshot</code>を用います。</p>
+<p>代わりに Hooks の返り値には<code>createDataFromCollection</code>を適応したものを入れます。これにより、<code>useGetCollection</code>で取得したものと同じになります。</p>
+<p>この時点での全体のコードは次のようになります。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">import</span> { createDataFromCollection } <span class="hljs-keyword">from</span> <span class="hljs-string">"fireclient"</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">usePaginate</span>(<span class="hljs-params">path, option</span>) </span>{
+  <span class="hljs-keyword">const</span> [last, setLast] = useState(<span class="hljs-literal">null</span>);
+  <span class="hljs-keyword">const</span> option = { <span class="hljs-attr">limit</span>: <span class="hljs-number">3</span> };
+
+  <span class="hljs-keyword">const</span> [collection, loading, error] = useGetCollectionSnapshot(path, option);
+  <span class="hljs-keyword">const</span> nextLast = collection !== <span class="hljs-literal">null</span> &amp;&amp; collection.length &gt; <span class="hljs-number">0</span> ? collection[collection.length - <span class="hljs-number">1</span>] : <span class="hljs-literal">null</span>;
+  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    setLast(nextLast);
+  }, [nextLast]);
+
+  <span class="hljs-keyword">return</span> [createDataFromCollection(collection), loading, error];
+}
+</code></pre>
+<p>また、cursor の origin にあたる部分も保持しておく必要があります。
+これは<code>useGetCollection</code>に渡され、どの範囲で Doc を参照するべきなのかを管理します。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> [origin, setOrigin] = useState(<span class="hljs-literal">null</span>);
+</code></pre>
+<p>すると<code>useGetCollection</code>の部分は次のように書き換えられます。</p>
+<p>注意：初回のデータ取得では <code>option</code> は <code>null</code> になっており、1, 2, ..., <code>option.limit</code> 番目の Doc が取得されます。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> option = {
+    last === <span class="hljs-literal">null</span>
+    ? option
+    : {
+      ...option
+      <span class="hljs-attr">cursor</span>: {
+        origin,
+        <span class="hljs-attr">direction</span>: <span class="hljs-string">"startAfter"</span>
+      }
+    }
+  }
+</code></pre>
+<p>「ページを切り替える」とは origin を変化させることを指します。
+そのため、ボタンなどのアクションに応じて<code>origin</code>の内容を更新します。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> handleNext = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> setOrigin(last);
+</code></pre>
+<p>この時点での全体のコードは次のようになります。</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">usePaginate</span>(<span class="hljs-params">path, option</span>) </span>{
+  <span class="hljs-keyword">const</span> { order } = option;
+  <span class="hljs-keyword">const</span> criterion = order.by;
+  <span class="hljs-keyword">const</span> [last, setLast] = useState(<span class="hljs-literal">null</span>);
+  <span class="hljs-keyword">const</span> [origin, setOrigin] = useState(<span class="hljs-literal">null</span>);
+  <span class="hljs-keyword">const</span> option = {
+    last === <span class="hljs-literal">null</span>
+    ? option
+    : {
+      ...option
+      <span class="hljs-attr">cursor</span>: {
+        origin,
+        <span class="hljs-attr">direction</span>: <span class="hljs-string">"startAfter"</span>
+      }
+    }
+  }
+  <span class="hljs-keyword">const</span> [collectionData] = useGetCollection(path, option);
+  <span class="hljs-keyword">const</span> nextLast = collectionData.length &gt; <span class="hljs-number">0</span> ? collectionData[collectionData.length - <span class="hljs-number">1</span>][criterion] : <span class="hljs-literal">null</span>;
+  <span class="hljs-keyword">const</span> handleNext = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> setOrigin(last);
+  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    setLast(nextLast);
+  }, [nextLast]);
+  <span class="hljs-keyword">return</span> [collectionData, handleNext];
+}
+</code></pre>
+<p>また、コンポーネント側からは次のように使うことができます。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> [cities, handleNext] = usePaginate(<span class="hljs-string">"/cities"</span>, {
+  <span class="hljs-attr">order</span>: {
+    <span class="hljs-attr">by</span>: <span class="hljs-string">"population"</span>,
+    <span class="hljs-attr">direction</span>: <span class="hljs-string">"asc"</span>,
+  },
+  <span class="hljs-attr">limit</span>: <span class="hljs-number">2</span>,
+});
+<span class="hljs-keyword">return</span> (
+  <span class="xml"><span class="hljs-tag">&lt;&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{handleNext}</span>&gt;</span>next<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">pre</span>&gt;</span>{JSON.stringify(cities, null, 4)}<span class="hljs-tag">&lt;/<span class="hljs-name">pre</span>&gt;</span>
+  <span class="hljs-tag">&lt;/&gt;</span>
+);
+</span></code></pre>
+<p>また、今回作った Hooks を拡張したものがライブラリに組み込まれているので、
+次のようにしてページ切り替えの Hooks を試すことができます。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">import</span> { usePaginateCollection } <span class="hljs-keyword">from</span> <span class="hljs-string">"fireclient"</span>;
+</code></pre>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> [cities, loading, error, prevHandler, prevHandler] = usePaginateCollection(<span class="hljs-string">"/cities"</span>, {
+  <span class="hljs-attr">order</span>: {
+    <span class="hljs-attr">by</span>: <span class="hljs-string">"population"</span>,
+    <span class="hljs-attr">direction</span>: <span class="hljs-string">"asc"</span>,
+  },
+  <span class="hljs-attr">limit</span>: <span class="hljs-number">2</span>,
+});
+<span class="hljs-keyword">return</span> (
+  <span class="xml"><span class="hljs-tag">&lt;&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">disabled</span>=<span class="hljs-string">{!prevHandler.enabled}</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{prevHandler.fn}</span>&gt;</span>
+      prev
+    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">disabled</span>=<span class="hljs-string">{!prevHandler.enabled}</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{prevHandler.fn}</span>&gt;</span>
+      next
+    <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">pre</span>&gt;</span>{JSON.stringify(cities, null, 4)}<span class="hljs-tag">&lt;/<span class="hljs-name">pre</span>&gt;</span>
+  <span class="hljs-tag">&lt;/&gt;</span>
+);
+</span></code></pre>
+</span></div></article></div><div class="docs-prevnext"></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/fireclient/docs/en/overview.html">Introduction</a><a href="/fireclient/docs/en/hooks-useGetDoc.html">API Reference</a></div><div><h5>More</h5><a href="https://github.com/optimind-llc/fire-client">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2020 Optimind</section></footer></div></body></html>
