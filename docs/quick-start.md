@@ -90,7 +90,7 @@ import ReactDOM from "react-dom";
 import App from "./App";
 
 import firebase from "firebase";
-import { Provider } from "fireclient";
+import { Provider } from "react-fireclient";
 
 const firebaseConfig = {
   apiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
@@ -123,7 +123,7 @@ Collection のデータを取得したい場合、代わりに`useGetCollection`
 ```js
 // src/App.js
 import React from "react";
-import { useGetDoc } from "fireclient";
+import { useGetDoc } from "react-fireclient";
 
 function App() {
   const path = "/cities/Tokyo";

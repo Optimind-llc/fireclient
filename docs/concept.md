@@ -47,7 +47,7 @@ Fireclient を用いた場合
 
 ```js
 import React from "react";
-import { useQuery } from "fireclient";
+import { useQuery } from "react-fireclient";
 
 const query = {
   queries: {

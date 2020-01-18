@@ -76,7 +76,8 @@ const [last, setLast] = useState(null);
 ```js
 const option = { limit: 3 };
 const [collection, loading, error] = useGetCollectionSnapshot(path, option);
-const nextLast = collection !== null && collection.length > 0 ? collection[collection.length - 1] : null;
+const nextLast =
+  collection !== null && collection.length > 0 ? collection[collection.length - 1] : null;
 useEffect(() => {
   setLast(nextLast);
 }, [nextLast]);
@@ -89,14 +90,15 @@ useEffect(() => {
 この時点での全体のコードは次のようになります。
 
 ```js
-import { createDataFromCollection } from "fireclient";
+import { createDataFromCollection } from "react-fireclient";
 
 function usePaginate(path, option) {
   const [last, setLast] = useState(null);
   const option = { limit: 3 };
 
   const [collection, loading, error] = useGetCollectionSnapshot(path, option);
-  const nextLast = collection !== null && collection.length > 0 ? collection[collection.length - 1] : null;
+  const nextLast =
+    collection !== null && collection.length > 0 ? collection[collection.length - 1] : null;
   useEffect(() => {
     setLast(nextLast);
   }, [nextLast]);
@@ -188,7 +190,7 @@ return (
 次のようにしてページ切り替えの Hooks を試すことができます。
 
 ```js
-import { usePaginateCollection } from "fireclient";
+import { usePaginateCollection } from "react-fireclient";
 ```
 
 ```js
