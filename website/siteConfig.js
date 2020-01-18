@@ -16,29 +16,29 @@ const users = [
     // if it is not '/', like: '/test-site/img/image.jpg'.
     image: "/img/undraw_open_source.svg",
     infoLink: "https://www.facebook.com",
-    pinned: true
-  }
+    pinned: true,
+  },
 ];
 
 const siteConfig = {
   title: "Fireclient", // Title for your website.
   tagline: "Data management layer for Cloud Firestore & React",
-  url: "https://your-docusaurus-test-site.com", // Your website URL
-  baseUrl: "/", // Base URL for your project */
+  url: "https://Optimind-llc.github.io", // Your website URL
+  baseUrl: "/fireclient/", // Base URL for your project */
   // For github.io type URLs, you would set the url and baseUrl like:
   //   url: 'https://facebook.github.io',
   //   baseUrl: '/test-site/',
 
   // Used for publishing and more
-  projectName: "fire-client",
-  organizationName: "Optimind",
+  projectName: "fireclient",
+  organizationName: "Optimind-llc",
   // For top-level user or org sites, the organization is still the same.
   // e.g., for the https://JoelMarcey.github.io site, it would be set like...
   //   organizationName: 'JoelMarcey'
 
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
-    { doc: "overview", label: "Docs" }
+    { doc: "overview", label: "Docs" },
     // { page: "help", label: "Help" },
     // { blog: true, label: "Blog" },
   ],
@@ -54,7 +54,7 @@ const siteConfig = {
   /* Colors for website */
   colors: {
     primaryColor: "#F79E02",
-    secondaryColor: "#2922A4"
+    secondaryColor: "#2922A4",
   },
 
   /* Custom fonts for website */
@@ -76,7 +76,7 @@ const siteConfig = {
 
   highlight: {
     // Highlight.js theme to use for syntax highlighting in code blocks.
-    theme: "default"
+    theme: "default",
   },
 
   // Add custom scripts here that would be placed in <script> tags.
@@ -89,7 +89,7 @@ const siteConfig = {
 
   // Open Graph and Twitter card images.
   ogImage: "img/undraw_online.svg",
-  twitterImage: "img/undraw_tweetstorm.svg"
+  twitterImage: "img/undraw_tweetstorm.svg",
 
   // For sites with a sizable amount of content, set collapsible to true.
   // Expand/collapse the links and subcategories under categories.
