@@ -42,10 +42,10 @@ function useArrayQuery(querySchema) {
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialQueryData), queryData = _b[0], setQueryData = _b[1];
     var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
-    var _d = react_1.useState({ unsubscribeFn: function () { }, reloadFn: function () { } }), unsubscribe = _d[0], setUnsubscribe = _d[1];
+    var _d = react_1.useState({ unsubscribe: function () { }, reload: function () { } }), unsubscribe = _d[0], setUnsubscribe = _d[1];
     var loadQuery = function () {
         setLoading(true);
-        var reloadFns = [];
+        var reloads = [];
         var unsubFns = [];
         // React HooksはCallback内で呼び出せないので、
         // fetchFunctionsの関数を直接呼び出す
@@ -68,7 +68,7 @@ function useArrayQuery(querySchema) {
                 if (isDocQuery && !queryConnects) {
                     var load = function () { return fetchFunctions_1.getDoc(location, onFetchDoc, onError, acceptOutdated); };
                     load();
-                    reloadFns.push(load);
+                    reloads.push(load);
                 }
                 else if (isDocQuery && queryConnects) {
                     var unsub = fetchFunctions_1.subscribeDoc(hooksId, location, onFetchDoc, onError);
@@ -79,7 +79,7 @@ function useArrayQuery(querySchema) {
                         return fetchFunctions_1.getCollection(location, { limit: limit, where: where, order: order, cursor: cursor }, onFetchCollection, onError, acceptOutdated);
                     };
                     load();
-                    reloadFns.push(load);
+                    reloads.push(load);
                 }
                 else if (!isDocQuery && queryConnects) {
                     var unsub = fetchFunctions_1.subscribeCollection(hooksId, location, { limit: limit, where: where, order: order, cursor: cursor }, onFetchCollection, onError);
@@ -90,8 +90,8 @@ function useArrayQuery(querySchema) {
             .then(function (res) {
             setQueryData(res.sort(function (a, b) { return a.key - b.key; }).map(function (r) { return r.data; }));
             setUnsubscribe({
-                unsubscribeFn: function () { return unsubFns.forEach(function (fn) { return fn(); }); },
-                reloadFn: function () { return reloadFns.forEach(function (fn) { return fn(); }); },
+                unsubscribe: function () { return unsubFns.forEach(function (fn) { return fn(); }); },
+                reload: function () { return reloads.forEach(function (fn) { return fn(); }); },
             });
             setLoading(false);
         })
