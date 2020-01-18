@@ -41,7 +41,7 @@ type ArrayQueryData = (FireclientDoc | FireclientDoc[])[];
 
 export function useArrayQuery(
   querySchema: ArrayQuerySchema,
-): [ArrayQueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
+): [ArrayQueryData, boolean, any, { unsubscribe: () => void; reload: () => void }] {
   assertArrayQuerySchema(querySchema);
   const { queries, callback, acceptOutdated } = querySchema;
   const connects = querySchema.connects ? querySchema.connects : false;
@@ -56,13 +56,13 @@ export function useArrayQuery(
   const [queryData, setQueryData] = useState<ArrayQueryData>(initialQueryData);
   const [loading, setLoading] = useState(false);
   const [unsubscribe, setUnsubscribe] = useState<{
-    unsubscribeFn: () => void;
-    reloadFn: () => void;
-  }>({ unsubscribeFn: () => {}, reloadFn: () => {} });
+    unsubscribe: () => void;
+    reload: () => void;
+  }>({ unsubscribe: () => {}, reload: () => {} });
 
   const loadQuery = () => {
     setLoading(true);
-    let reloadFns: (() => void)[] = [];
+    let reloads: (() => void)[] = [];
     let unsubFns: (() => void)[] = [];
 
     // React HooksはCallback内で呼び出せないので、
@@ -91,7 +91,7 @@ export function useArrayQuery(
             if (isDocQuery && !queryConnects) {
               const load = () => getDoc(location, onFetchDoc, onError, acceptOutdated);
               load();
-              reloadFns.push(load);
+              reloads.push(load);
             } else if (isDocQuery && queryConnects) {
               const unsub = subscribeDoc(hooksId, location, onFetchDoc, onError);
               unsubFns.push(unsub);
@@ -105,7 +105,7 @@ export function useArrayQuery(
                   acceptOutdated,
                 );
               load();
-              reloadFns.push(load);
+              reloads.push(load);
             } else if (!isDocQuery && queryConnects) {
               const unsub = subscribeCollection(
                 hooksId,
@@ -122,8 +122,8 @@ export function useArrayQuery(
       .then(res => {
         setQueryData(res.sort((a, b) => a.key - b.key).map(r => r.data));
         setUnsubscribe({
-          unsubscribeFn: () => unsubFns.forEach(fn => fn()),
-          reloadFn: () => reloadFns.forEach(fn => fn()),
+          unsubscribe: () => unsubFns.forEach(fn => fn()),
+          reload: () => reloads.forEach(fn => fn()),
         });
         setLoading(false);
       })
@@ -145,7 +145,7 @@ type QueryData = Map<string, FireclientDoc | FireclientDoc[] | {}>;
 
 export function useQuery(
   querySchema: QuerySchema,
-): [QueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
+): [QueryData, boolean, any, { unsubscribe: () => void; reload: () => void }] {
   assertQuerySchema(querySchema);
   const { queries } = querySchema;
 
