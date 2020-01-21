@@ -214,6 +214,6 @@ exports.assertSubCollectionOption = function (obj) {
     exports.assert(obj !== undefined, "Option is undefined.");
     exports.assert(typeof obj === "object", "Option should be object.");
     exports.assert(obj !== null, "Option is null.");
-    exports.assert(containKey("field")(obj), 'Option in useGetSubCollection should contain "field" property.');
-    exports.assert(containKey("collectionPath")(obj), 'Option in useGetSubCollection should contain "collectionPath" property.');
+    exports.assert(containKey("subCollectionName")(obj), 'Option in useGetSubCollection should contain "subCollectionName" property.');
+    exports.assertAcceptOutdatedOption(obj);
 };

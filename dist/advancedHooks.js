@@ -213,26 +213,24 @@ function usePaginateCollection(path, option) {
 }
 exports.usePaginateCollection = usePaginateCollection;
 function useGetSubCollection(path, option) {
-    validation_1.assertPath(path);
-    validation_1.assertSubCollectionOption(option);
-    var field = option.field, collectionPath = option.collectionPath, acceptOutdated = option.acceptOutdated;
-    var _a = hooks_1.useGetDoc(path), docData = _a[0], docLoading = _a[1], docError = _a[2], reloadDoc = _a[3];
-    // null -> データ取得前, undfeined -> fieldが存在しない（エラー）
-    var docIds = docData.data !== null ? docData.data[field] : null;
-    // 取得したDocが field プロパティを持つこと
-    validation_1.assert(docIds !== undefined, path + " does not contain field \"" + field + "\"");
-    // 取得したデータが string[] であること
-    validation_1.assert(docIds === null || // データ未取得
-        (docIds instanceof Array && docIds.every(function (docId) { return typeof docId === "string"; })), "Value of " + field + " should be string array.");
-    var queries = docIds === null
-        ? []
-        : docIds.map(function (docId) { return ({
-            location: pathlib.resolve(collectionPath, docId),
-        }); });
-    var _b = useArrayQuery({
-        acceptOutdated: acceptOutdated,
-        queries: queries,
-    }), docDataArray = _b[0], loading = _b[1], error = _b[2];
-    return [docDataArray, docLoading || loading, error, reloadDoc];
+    // assertPath(path);
+    // assertSubCollectionOption(option);
+    var subCollectionName = option.subCollectionName, acceptOutdated = option.acceptOutdated;
+    var _a = hooks_1.useGetCollection(path), collection = _a[0], collLoading = _a[1], collError = _a[2], collReloadFn = _a[3];
+    var docIds = collection.filter(function (doc) { return doc.id !== null; }).map(function (doc) { return doc.id; });
+    var schema = {
+        queries: docIds.map(function (docId) { return ({ location: pathlib.resolve(path, docId, subCollectionName) }); }),
+    };
+    var _b = useArrayQuery(schema), subCollection = _b[0], subCollLoading = _b[1], subCollError = _b[2], subCollReloadFn = _b[3];
+    var flatten = Array.prototype.concat.apply([], subCollection);
+    return [
+        flatten,
+        collLoading || subCollLoading,
+        [collError, subCollError],
+        function () {
+            collReloadFn();
+            subCollReloadFn.reload();
+        },
+    ];
 }
 exports.useGetSubCollection = useGetSubCollection;

@@ -21,7 +21,7 @@ import {
   initialCollectionData,
   initialDocData,
   useGetCollectionSnapshot,
-  useGetDoc,
+  useGetCollection,
 } from "./hooks";
 import {
   assert,
@@ -297,31 +297,25 @@ export function usePaginateCollection(
 
 export function useGetSubCollection(
   path: string,
-  option: { field: string; collectionPath: string; acceptOutdated?: boolean },
+  option: { subCollectionName: string; acceptOutdated?: boolean },
 ) {
-  assertPath(path);
-  assertSubCollectionOption(option);
-  const { field, collectionPath, acceptOutdated } = option;
-  const [docData, docLoading, docError, reloadDoc] = useGetDoc(path);
-  // null -> データ取得前, undfeined -> fieldが存在しない（エラー）
-  const docIds = docData.data !== null ? docData.data[field] : null;
-  // 取得したDocが field プロパティを持つこと
-  assert(docIds !== undefined, `${path} does not contain field "${field}"`);
-  // 取得したデータが string[] であること
-  assert(
-    docIds === null || // データ未取得
-      (docIds instanceof Array && docIds.every((docId: any) => typeof docId === "string")),
-    `Value of ${field} should be string array.`,
-  );
-  const queries =
-    docIds === null
-      ? []
-      : docIds.map((docId: string) => ({
-          location: pathlib.resolve(collectionPath, docId),
-        }));
-  const [docDataArray, loading, error] = useArrayQuery({
-    acceptOutdated,
-    queries,
-  });
-  return [docDataArray, docLoading || loading, error, reloadDoc];
+  // assertPath(path);
+  // assertSubCollectionOption(option);
+  const { subCollectionName, acceptOutdated } = option;
+  const [collection, collLoading, collError, collReloadFn] = useGetCollection(path);
+  const docIds = collection.filter(doc => doc.id !== null).map(doc => doc.id) as string[];
+  const schema = {
+    queries: docIds.map(docId => ({ location: pathlib.resolve(path, docId, subCollectionName) })),
+  };
+  const [subCollection, subCollLoading, subCollError, subCollReloadFn] = useArrayQuery(schema);
+  const flatten = Array.prototype.concat.apply([], subCollection);
+  return [
+    flatten,
+    collLoading || subCollLoading,
+    [collError, subCollError],
+    () => {
+      collReloadFn();
+      subCollReloadFn.reload();
+    },
+  ];
 }

@@ -16,8 +16,7 @@ export declare function usePaginateCollection(path: string, option: {
     acceptOutdated?: boolean;
 } & QueryOption): any[];
 export declare function useGetSubCollection(path: string, option: {
-    field: string;
-    collectionPath: string;
+    subCollectionName: string;
     acceptOutdated?: boolean;
-}): any[];
+}): (boolean | any[] | (() => void))[];
 export {};

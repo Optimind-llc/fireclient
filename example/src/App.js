@@ -6,6 +6,7 @@ import GetDoc from "./container/GetDoc";
 import GetCollection from "./container/GetCollection";
 import SubscribeDoc from "./container/SubscribeDoc";
 import LazyGetDoc from "./container/LazyGetDoc";
+import GetSubCollection from "./container/GetSubCollection";
 
 const PageContainer = styled.div`
   padding: 20px;
@@ -59,6 +60,10 @@ const App = () => {
       title: "useLazyGetDoc",
       component: (docPath, collectionPath) =>
         docPath.length > 0 ? <LazyGetDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
+    },
+    {
+      title: "useGetSubCollection",
+      component: () => <GetSubCollection />,
     },
   ];
   return (

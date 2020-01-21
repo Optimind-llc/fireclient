@@ -1,10 +1,10 @@
-import { Map, List, Set, fromJS } from "immutable";
 import { firestore } from "firebase";
-import * as reducer from "./reducer";
-import * as provider from "./provider";
-import * as hooks from "./hooks";
+import { List, Map, Set } from "immutable";
 import * as advancedHooks from "./advancedHooks";
 import * as fetchFunctions from "./fetchFunctions";
+import * as hooks from "./hooks";
+import * as provider from "./provider";
+import * as reducer from "./reducer";
 
 export type HooksId = string;
 export type DocId = string;
@@ -234,7 +234,7 @@ export function createDataFromDoc(doc: firestore.DocumentData): FireclientDoc {
  * const collectionData = createDataFromCollection(snapshot);
  */
 export function createDataFromCollection(
-  collection: firestore.DocumentSnapshot[]
+  collection: firestore.DocumentSnapshot[],
 ): FireclientDoc[] {
   return collection.map(coll => createDataFromDoc(coll));
 }

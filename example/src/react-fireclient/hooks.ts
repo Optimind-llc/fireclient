@@ -1,26 +1,25 @@
-import { useState, useEffect } from "react";
-import "firebase/firestore";
 import { firestore } from "firebase";
-
+import "firebase/firestore";
+import { useEffect, useState } from "react";
 import {
-  FireclientDoc,
-  QueryOption,
-  HooksId,
-  createDataFromDoc,
   createDataFromCollection,
+  createDataFromDoc,
+  FireclientDoc,
+  HooksId,
+  QueryOption,
 } from ".";
 import {
-  getHashCode,
-  getDoc,
   getCollection,
-  subscribeDoc,
+  getDoc,
+  getHashCode,
   subscribeCollection,
+  subscribeDoc,
 } from "./fetchFunctions";
 import {
-  assertQueryOption,
-  assertPath,
-  assertCallbackOption,
   assertAcceptOutdatedOption,
+  assertCallbackOption,
+  assertPath,
+  assertQueryOption,
 } from "./validation";
 
 export function generateHooksId(): HooksId {
@@ -38,7 +37,7 @@ export function useLazyGetDocSnapshot(
   option?: {
     callback?: (snapshot: firestore.DocumentSnapshot) => void;
     acceptOutdated?: boolean;
-  }
+  },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
   assertPath(path);
   assertCallbackOption(option);
@@ -61,7 +60,7 @@ export function useLazyGetDocSnapshot(
         setError(err);
         setLoading(false);
       },
-      option?.acceptOutdated
+      option?.acceptOutdated,
     );
   };
   return [doc, loading, error, loadDoc];
@@ -72,7 +71,7 @@ export function useGetDocSnapshot(
   option?: {
     callback?: (snapshot: firestore.DocumentSnapshot) => void;
     acceptOutdated?: boolean;
-  }
+  },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
   const [doc, loading, error, reloadDoc] = useLazyGetDocSnapshot(path, option);
   useEffect(() => {
@@ -85,7 +84,7 @@ export function useSubscribeDocSnapshot(
   path: string,
   option?: {
     callback?: (snapshot: firestore.DocumentSnapshot) => void;
-  }
+  },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
   assertPath(path);
   assertCallbackOption(option);
@@ -111,7 +110,7 @@ export function useSubscribeDocSnapshot(
         setError(err);
         setLoading(false);
       },
-      () => setLoading(true)
+      () => setLoading(true),
     );
     setUnsubscribe({ fn: unsub });
   }, [path]);
@@ -123,7 +122,7 @@ export function useLazyGetCollectionSnapshot(
   option?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
     acceptOutdated?: boolean;
-  } & QueryOption
+  } & QueryOption,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
   assertPath(path);
   assertQueryOption(option);
@@ -148,7 +147,7 @@ export function useLazyGetCollectionSnapshot(
         setError(err);
         setLoading(false);
       },
-      option?.acceptOutdated
+      option?.acceptOutdated,
     );
   };
   return [collection, loading, error, loadCollection];
@@ -159,7 +158,7 @@ export function useGetCollectionSnapshot(
   option?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
     acceptOutdated?: boolean;
-  } & QueryOption
+  } & QueryOption,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
   const [collection, loading, error, reloadCollection] = useLazyGetCollectionSnapshot(path, option);
   useEffect(() => {
@@ -172,7 +171,7 @@ export function useSubscribeCollectionSnapshot(
   path: string,
   option?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
-  } & QueryOption
+  } & QueryOption,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
   assertPath(path);
   assertQueryOption(option);
@@ -200,7 +199,7 @@ export function useSubscribeCollectionSnapshot(
         setError(err);
         setLoading(false);
       },
-      () => setLoading(true)
+      () => setLoading(true),
     );
     setUnsubscribe({ fn: unsub });
   }, [path, getHashCode(option)]);
@@ -246,7 +245,7 @@ export function useLazyGetDoc(
   option?: {
     callback?: (data: FireclientDoc) => void;
     acceptOutdated?: boolean;
-  }
+  },
 ): [FireclientDoc, boolean, any, () => void] {
   const [doc, loading, error, loadDoc] = useLazyGetDocSnapshot(path, convertDocCallback(option));
   return [doc !== null ? createDataFromDoc(doc) : initialDocData, loading, error, loadDoc];
@@ -257,7 +256,7 @@ export function useGetDoc(
   option?: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  }
+  },
 ): [FireclientDoc, boolean, any, () => void] {
   const [doc, loading, error, reloadDoc] = useGetDocSnapshot(path, convertDocCallback(option));
   return [doc !== null ? createDataFromDoc(doc) : initialDocData, loading, error, reloadDoc];
@@ -268,11 +267,11 @@ export function useSubscribeDoc(
   option?: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  }
+  },
 ): [FireclientDoc, boolean, any, () => void] {
   const [doc, loading, error, unsubscribe] = useSubscribeDocSnapshot(
     path,
-    convertDocCallback(option)
+    convertDocCallback(option),
   );
   return [doc !== null ? createDataFromDoc(doc) : initialDocData, loading, error, unsubscribe];
 }
@@ -282,11 +281,11 @@ export function useLazyGetCollection(
   option?: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption
+  } & QueryOption,
 ): [FireclientDoc[], boolean, any, () => void] {
   const [collection, loading, error, loadCollection] = useLazyGetCollectionSnapshot(
     path,
-    convertCollectionCallback(option)
+    convertCollectionCallback(option),
   );
   return [
     collection !== null ? createDataFromCollection(collection) : initialCollectionData,
@@ -301,11 +300,11 @@ export function useGetCollection(
   option?: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption
+  } & QueryOption,
 ): [FireclientDoc[], boolean, any, () => void] {
   const [collection, loading, error, reloadCollection] = useGetCollectionSnapshot(
     path,
-    convertCollectionCallback(option)
+    convertCollectionCallback(option),
   );
   return [
     collection !== null ? createDataFromCollection(collection) : initialCollectionData,
@@ -320,11 +319,11 @@ export function useSubscribeCollection(
   option?: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption
+  } & QueryOption,
 ): [FireclientDoc[], boolean, any, () => void] {
   const [collection, loading, error, unsubscribe] = useSubscribeCollectionSnapshot(
     path,
-    convertCollectionCallback(option)
+    convertCollectionCallback(option),
   );
   return [
     collection !== null ? createDataFromCollection(collection) : initialCollectionData,

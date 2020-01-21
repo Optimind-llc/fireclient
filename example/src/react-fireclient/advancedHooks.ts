@@ -1,6 +1,6 @@
 import { firestore } from "firebase";
 import "firebase/firestore";
-import { Map, fromJS } from "immutable";
+import { fromJS, Map } from "immutable";
 import * as pathlib from "path";
 import { useEffect, useState } from "react";
 import {
@@ -17,19 +17,19 @@ import {
 } from ".";
 import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "./fetchFunctions";
 import {
-  initialDocData,
-  initialCollectionData,
   generateHooksId,
+  initialCollectionData,
+  initialDocData,
   useGetCollectionSnapshot,
-  useGetDoc,
+  useGetCollection,
 } from "./hooks";
 import {
+  assert,
   assertArrayQuerySchema,
   assertPaginateOption,
   assertPath,
   assertQuerySchema,
   assertSubCollectionOption,
-  assert,
 } from "./validation";
 
 function isDoc(path: string): boolean {
@@ -40,13 +40,13 @@ function isDoc(path: string): boolean {
 type ArrayQueryData = (FireclientDoc | FireclientDoc[])[];
 
 export function useArrayQuery(
-  querySchema: ArrayQuerySchema
-): [ArrayQueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
+  querySchema: ArrayQuerySchema,
+): [ArrayQueryData, boolean, any, { unsubscribe: () => void; reload: () => void }] {
   assertArrayQuerySchema(querySchema);
   const { queries, callback, acceptOutdated } = querySchema;
   const connects = querySchema.connects ? querySchema.connects : false;
   const initialQueryData: ArrayQueryData = queries.map(query =>
-    isDoc(query.location) ? initialDocData : initialCollectionData
+    isDoc(query.location) ? initialDocData : initialCollectionData,
   );
 
   // Subscribeする場合があるので、HooksのIdを持っておく
@@ -56,13 +56,13 @@ export function useArrayQuery(
   const [queryData, setQueryData] = useState<ArrayQueryData>(initialQueryData);
   const [loading, setLoading] = useState(false);
   const [unsubscribe, setUnsubscribe] = useState<{
-    unsubscribeFn: () => void;
-    reloadFn: () => void;
-  }>({ unsubscribeFn: () => {}, reloadFn: () => {} });
+    unsubscribe: () => void;
+    reload: () => void;
+  }>({ unsubscribe: () => {}, reload: () => {} });
 
   const loadQuery = () => {
     setLoading(true);
-    let reloadFns: (() => void)[] = [];
+    let reloads: (() => void)[] = [];
     let unsubFns: (() => void)[] = [];
 
     // React HooksはCallback内で呼び出せないので、
@@ -91,7 +91,7 @@ export function useArrayQuery(
             if (isDocQuery && !queryConnects) {
               const load = () => getDoc(location, onFetchDoc, onError, acceptOutdated);
               load();
-              reloadFns.push(load);
+              reloads.push(load);
             } else if (isDocQuery && queryConnects) {
               const unsub = subscribeDoc(hooksId, location, onFetchDoc, onError);
               unsubFns.push(unsub);
@@ -102,28 +102,28 @@ export function useArrayQuery(
                   { limit, where, order, cursor },
                   onFetchCollection,
                   onError,
-                  acceptOutdated
+                  acceptOutdated,
                 );
               load();
-              reloadFns.push(load);
+              reloads.push(load);
             } else if (!isDocQuery && queryConnects) {
               const unsub = subscribeCollection(
                 hooksId,
                 location,
                 { limit, where, order, cursor },
                 onFetchCollection,
-                onError
+                onError,
               );
               unsubFns.push(unsub);
             }
-          })
-      )
+          }),
+      ),
     )
       .then(res => {
         setQueryData(res.sort((a, b) => a.key - b.key).map(r => r.data));
         setUnsubscribe({
-          unsubscribeFn: () => unsubFns.forEach(fn => fn()),
-          reloadFn: () => reloadFns.forEach(fn => fn()),
+          unsubscribe: () => unsubFns.forEach(fn => fn()),
+          reload: () => reloads.forEach(fn => fn()),
         });
         setLoading(false);
       })
@@ -144,14 +144,14 @@ export function useArrayQuery(
 type QueryData = Map<string, FireclientDoc | FireclientDoc[] | {}>;
 
 export function useQuery(
-  querySchema: QuerySchema
-): [QueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
+  querySchema: QuerySchema,
+): [QueryData, boolean, any, { unsubscribe: () => void; reload: () => void }] {
   assertQuerySchema(querySchema);
   const { queries } = querySchema;
 
   const idxToKey = Object.keys(queries).reduce(
     (acc: any, key, i: number) => acc.set(i, key),
-    Map()
+    Map(),
   );
   const arrayQueries = Object.values(queries);
   const schema = {
@@ -173,7 +173,7 @@ function useGetMinMax(
   option: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption
+  } & QueryOption,
 ): [firestore.DocumentSnapshot | null, firestore.DocumentSnapshot | null, () => void, () => void] {
   const order = option.order as Order;
   const isDesc = order.direction === "desc";
@@ -214,7 +214,7 @@ export function usePaginateCollection(
   option: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption
+  } & QueryOption,
 ) {
   assertPath(path);
   assertPaginateOption(option);
@@ -297,31 +297,25 @@ export function usePaginateCollection(
 
 export function useGetSubCollection(
   path: string,
-  option: { field: string; collectionPath: string; acceptOutdated?: boolean }
+  option: { subCollectionName: string; acceptOutdated?: boolean },
 ) {
-  assertPath(path);
-  assertSubCollectionOption(option);
-  const { field, collectionPath, acceptOutdated } = option;
-  const [docData, docLoading, docError, reloadDoc] = useGetDoc(path);
-  // null -> データ取得前, undfeined -> fieldが存在しない（エラー）
-  const docIds = docData.data !== null ? docData.data[field] : null;
-  // 取得したDocが field プロパティを持つこと
-  assert(docIds !== undefined, `${path} does not contain field "${field}"`);
-  // 取得したデータが string[] であること
-  assert(
-    docIds === null || // データ未取得
-      (docIds instanceof Array && docIds.every((docId: any) => typeof docId === "string")),
-    `Value of ${field} should be string array.`
-  );
-  const queries =
-    docIds === null
-      ? []
-      : docIds.map((docId: string) => ({
-          location: pathlib.resolve(collectionPath, docId),
-        }));
-  const [docDataArray, loading, error] = useArrayQuery({
-    acceptOutdated,
-    queries,
-  });
-  return [docDataArray, docLoading || loading, error, reloadDoc];
+  // assertPath(path);
+  // assertSubCollectionOption(option);
+  const { subCollectionName, acceptOutdated } = option;
+  const [collection, collLoading, collError, collReloadFn] = useGetCollection(path);
+  const docIds = collection.filter(doc => doc.id !== null).map(doc => doc.id) as string[];
+  const schema = {
+    queries: docIds.map(docId => ({ location: pathlib.resolve(path, docId, subCollectionName) })),
+  };
+  const [subCollection, subCollLoading, subCollError, subCollReloadFn] = useArrayQuery(schema);
+  const flatten = Array.prototype.concat.apply([], subCollection);
+  return [
+    flatten,
+    collLoading || subCollLoading,
+    [collError, subCollError],
+    () => {
+      collReloadFn();
+      subCollReloadFn.reload();
+    },
+  ];
 }

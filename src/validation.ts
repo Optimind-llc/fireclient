@@ -251,11 +251,8 @@ export const assertSubCollectionOption = (obj: any) => {
   assert(obj !== null, "Option is null.");
 
   assert(
-    containKey("field")(obj),
-    'Option in useGetSubCollection should contain "field" property.',
+    containKey("subCollectionName")(obj),
+    'Option in useGetSubCollection should contain "subCollectionName" property.',
   );
-  assert(
-    containKey("collectionPath")(obj),
-    'Option in useGetSubCollection should contain "collectionPath" property.',
-  );
+  assertAcceptOutdatedOption(obj);
 };
