@@ -6,13 +6,13 @@ import "./index.css";
 import App from "./App";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyANecO3eqcFD5m9MpJn8hEoqIEffQ014s8",
-  authDomain: "fireclient-private-test.firebaseapp.com",
-  databaseURL: "https://fireclient-private-test.firebaseio.com",
-  projectId: "fireclient-private-test",
-  storageBucket: "fireclient-private-test.appspot.com",
-  messagingSenderId: "153859418242",
-  appId: "1:153859418242:web:8d7ec4942f81cd7ee72c9b",
+  apiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  authDomain: "xxxxxxxxxxxxxxxxxxxxxxx.firebaseapp.com",
+  databaseURL: "https://xxxxxxxxxxxxxxxxxxxxxxx.firebaseio.com",
+  projectId: "xxxxxxxxxxxxxxxxxxxxxxx",
+  storageBucket: "xxxxxxxxxxxxxxxxxxxxxxx.appspot.com",
+  messagingSenderId: "xxxxxxxxxxxx",
+  appId: "x:xxxxxxxxxxxx:web:xxxxxxxxxxxxxxxxxxxxxx",
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
