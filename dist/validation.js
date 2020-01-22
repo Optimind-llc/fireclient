@@ -16,12 +16,12 @@ var isNumber = function (obj) { return typeof obj === "number"; };
 var isBoolean = function (obj) { return typeof obj === "boolean"; };
 exports.isArray = function (obj) { return obj instanceof Array; };
 var isFunction = function (obj) { return obj instanceof Function; };
-var containKey = function (key) { return function (obj) { return key in obj; }; };
+var containsKey = function (key) { return function (obj) { return obj[key] !== undefined; }; };
 var requiredProperty = function (key, valueassert) { return function (obj) {
-    return valueassert ? containKey(key)(obj) && valueassert(obj[key]) : containKey(key)(obj);
+    return containsKey(key)(obj) && (valueassert ? valueassert(obj[key]) : true);
 }; };
 var optionalProperty = function (key, valueassert) { return function (obj) {
-    return valueassert ? !(key in obj) || valueassert(obj[key]) : !(key in obj);
+    return !containsKey(key)(obj) || (valueassert ? valueassert(obj[key]) : true);
 }; };
 exports.assert = function (isValid, errorMessage) {
     if (!isValid)
@@ -91,7 +91,7 @@ exports.assertQueryOption = function (obj) {
         return;
     }
     exports.assert(obj !== null, "Option is null.");
-    if (containKey("where")(obj)) {
+    if (containsKey("where")(obj)) {
         if (exports.isArray(obj.where)) {
             obj.where.forEach(function (ele) { return assertWhere(ele); });
         }
@@ -99,10 +99,10 @@ exports.assertQueryOption = function (obj) {
             assertWhere(obj.where);
         }
     }
-    if (containKey("limit")(obj)) {
+    if (containsKey("limit")(obj)) {
         assertLimit(obj.limit);
     }
-    if (containKey("order")(obj)) {
+    if (containsKey("order")(obj)) {
         if (exports.isArray(obj.order)) {
             obj.order.forEach(function (ele) { return assertOrder(ele); });
         }
@@ -110,7 +110,7 @@ exports.assertQueryOption = function (obj) {
             assertOrder(obj.order);
         }
     }
-    if (containKey("cursor")(obj)) {
+    if (containsKey("cursor")(obj)) {
         assertCursor(obj.cursor);
     }
 };
@@ -192,7 +192,7 @@ exports.assertPaginateOption = function (obj) {
     exports.assert(obj !== undefined, "Option is undefined.");
     exports.assert(typeof obj === "object", "Option should be object.");
     exports.assert(obj !== null, "Option is null.");
-    if (containKey("where")(obj)) {
+    if (containsKey("where")(obj)) {
         if (exports.isArray(obj.where)) {
             obj.where.forEach(function (ele) { return assertWhere(ele); });
         }
@@ -201,9 +201,9 @@ exports.assertPaginateOption = function (obj) {
         }
     }
     // only in paginate
-    exports.assert(containKey("limit")(obj), 'Option in usePaginateCollection should contain "limit" property.');
+    exports.assert(containsKey("limit")(obj), 'Option in usePaginateCollection should contain "limit" property.');
     assertLimit(obj.limit);
-    exports.assert(containKey("order")(obj), 'Option in usePaginateCollection should contain "order" property.');
+    exports.assert(containsKey("order")(obj), 'Option in usePaginateCollection should contain "order" property.');
     exports.assert(!exports.isArray(obj.order), '"order" property in usePaginateCollection should not be array.');
     assertOrder(obj.order);
 };
@@ -214,6 +214,6 @@ exports.assertSubCollectionOption = function (obj) {
     exports.assert(obj !== undefined, "Option is undefined.");
     exports.assert(typeof obj === "object", "Option should be object.");
     exports.assert(obj !== null, "Option is null.");
-    exports.assert(containKey("field")(obj), 'Option in useGetSubCollection should contain "field" property.');
-    exports.assert(containKey("collectionPath")(obj), 'Option in useGetSubCollection should contain "collectionPath" property.');
+    exports.assert(containsKey("field")(obj), 'Option in useGetSubCollection should contain "field" property.');
+    exports.assert(containsKey("collectionPath")(obj), 'Option in useGetSubCollection should contain "collectionPath" property.');
 };

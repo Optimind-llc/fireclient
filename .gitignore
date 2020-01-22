@@ -103,3 +103,10 @@ typings/
 
 # TernJS port file
 .tern-port
+
+# test
+src/test/firestore/firebaseConfig.json
+src/test/serviceAccountKey.json
+
+# example
+example/src/firebaseConfig.json
