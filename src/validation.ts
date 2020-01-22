@@ -16,11 +16,12 @@ const isBoolean = (obj: any) => typeof obj === "boolean";
 export const isArray = (obj: any) => obj instanceof Array;
 const isFunction = (obj: any) => obj instanceof Function;
 
-const containKey = (key: string) => (obj: any) => key in obj;
+const containsKey = (key: string) => (obj: any) => obj[key] !== undefined;
 const requiredProperty = (key: string, valueassert?: (value: any) => boolean) => (obj: any) =>
-  valueassert ? containKey(key)(obj) && valueassert(obj[key]) : containKey(key)(obj);
-const optionalProperty = (key: string, valueassert?: (value: any) => boolean) => (obj: any) =>
-  valueassert ? !(key in obj) || valueassert(obj[key]) : !(key in obj);
+  containsKey(key)(obj) && (valueassert ? valueassert(obj[key]) : true);
+const optionalProperty = (key: string, valueassert?: (value: any) => boolean) => (obj: any) => {
+  return !containsKey(key)(obj) || (valueassert ? valueassert(obj[key]) : true);
+};
 
 export const assert = (isValid: boolean, errorMessage: string) => {
   if (!isValid) throw Error(errorMessage);
@@ -107,24 +108,24 @@ export const assertQueryOption = (obj: any) => {
     return;
   }
   assert(obj !== null, "Option is null.");
-  if (containKey("where")(obj)) {
+  if (containsKey("where")(obj)) {
     if (isArray(obj.where)) {
       obj.where.forEach((ele: any) => assertWhere(ele));
     } else {
       assertWhere(obj.where);
     }
   }
-  if (containKey("limit")(obj)) {
+  if (containsKey("limit")(obj)) {
     assertLimit(obj.limit);
   }
-  if (containKey("order")(obj)) {
+  if (containsKey("order")(obj)) {
     if (isArray(obj.order)) {
       obj.order.forEach((ele: any) => assertOrder(ele));
     } else {
       assertOrder(obj.order);
     }
   }
-  if (containKey("cursor")(obj)) {
+  if (containsKey("cursor")(obj)) {
     assertCursor(obj.cursor);
   }
 };
@@ -222,7 +223,7 @@ export const assertPaginateOption = (obj: any) => {
   assert(typeof obj === "object", "Option should be object.");
   assert(obj !== null, "Option is null.");
 
-  if (containKey("where")(obj)) {
+  if (containsKey("where")(obj)) {
     if (isArray(obj.where)) {
       obj.where.forEach((ele: any) => assertWhere(ele));
     } else {
@@ -231,12 +232,12 @@ export const assertPaginateOption = (obj: any) => {
   }
   // only in paginate
   assert(
-    containKey("limit")(obj),
+    containsKey("limit")(obj),
     'Option in usePaginateCollection should contain "limit" property.',
   );
   assertLimit(obj.limit);
   assert(
-    containKey("order")(obj),
+    containsKey("order")(obj),
     'Option in usePaginateCollection should contain "order" property.',
   );
   assert(!isArray(obj.order), '"order" property in usePaginateCollection should not be array.');
@@ -251,11 +252,11 @@ export const assertSubCollectionOption = (obj: any) => {
   assert(obj !== null, "Option is null.");
 
   assert(
-    containKey("field")(obj),
+    containsKey("field")(obj),
     'Option in useGetSubCollection should contain "field" property.',
   );
   assert(
-    containKey("collectionPath")(obj),
+    containsKey("collectionPath")(obj),
     'Option in useGetSubCollection should contain "collectionPath" property.',
   );
 };

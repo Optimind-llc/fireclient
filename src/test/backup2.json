@@ -1,0 +1,10 @@
+{
+  "test": {
+    "geopoint": {
+      "location": {
+        "_latitude": 49.290683,
+        "_longitude": -123.133956
+      }
+    }
+  }
+}
