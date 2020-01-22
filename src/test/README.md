@@ -29,9 +29,10 @@ node importFirestoreBackup.js
 CollectionID : cities
 
 1 - population / Acending
+
 2 - foo / Ascending
 
-1. Run test by executing below.
+5. Run test by executing below.
 
 ```
 yarn test
