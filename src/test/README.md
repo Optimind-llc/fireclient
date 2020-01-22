@@ -1,4 +1,4 @@
-# Prepare firestore
+# Fireclient test
 
 To test our library, you have to import our Firestore backup.
 
