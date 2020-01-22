@@ -1,6 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var firestoreWhereFilterOp = ["<", "<=", "==", ">=", ">", "array-contains", "in", "array-contains-any"];
+var firestoreWhereFilterOp = [
+    "<",
+    "<=",
+    "==",
+    ">=",
+    ">",
+    "array-contains",
+    "in",
+    "array-contains-any",
+];
 var isAnyOf = function (targets) { return function (obj) { return targets.indexOf(obj) >= 0; }; };
 var isString = function (obj) { return typeof obj === "string"; };
 var isNumber = function (obj) { return typeof obj === "number"; };
@@ -205,6 +214,6 @@ exports.assertSubCollectionOption = function (obj) {
     exports.assert(obj !== undefined, "Option is undefined.");
     exports.assert(typeof obj === "object", "Option should be object.");
     exports.assert(obj !== null, "Option is null.");
-    exports.assert(containKey("field")(obj), 'Option in useGetSubCollection should contain "field" property.');
-    exports.assert(containKey("collectionPath")(obj), 'Option in useGetSubCollection should contain "collectionPath" property.');
+    exports.assert(containKey("subCollectionName")(obj), 'Option in useGetSubCollection should contain "subCollectionName" property.');
+    exports.assertAcceptOutdatedOption(obj);
 };

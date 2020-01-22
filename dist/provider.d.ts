@@ -1,6 +1,6 @@
-import React from "react";
-import "firebase/firestore";
 import { firestore } from "firebase";
+import "firebase/firestore";
+import React from "react";
 import { FireclientState, ProviderContext } from ".";
 import { Actions } from "./reducer";
 export declare const Context: React.Context<any>;
@@ -15,13 +15,13 @@ export declare function unwrapContext(context: ProviderContext): {
  * @param state {FireclientState} - This can be obtained via `context`.
  * @example
  * import { useContext } from "React";
- * import { contertStateToJson, Context } from "fireclient";
+ * import { contertStateToJson, Context } from "react-fireclient";;
  * function Component() {
  *    const { state } = useContext(Context);
  *    const json = convertStateToJson(state);
  */
 export declare function convertStateToJson(state: FireclientState): string;
-declare function Provider({ children, firestoreDB, onAccess }: {
+declare function Provider({ children, firestoreDB, onAccess, }: {
     children: any;
     firestoreDB: firestore.Firestore;
     onAccess: () => void;

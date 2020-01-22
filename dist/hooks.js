@@ -11,8 +11,8 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var react_1 = require("react");
 require("firebase/firestore");
+var react_1 = require("react");
 var _1 = require(".");
 var fetchFunctions_1 = require("./fetchFunctions");
 var validation_1 = require("./validation");
@@ -38,6 +38,7 @@ function useLazyGetDocSnapshot(path, option) {
         fetchFunctions_1.getDoc(path, function (snapshot) {
             var _a;
             setDoc(snapshot);
+            setError(null);
             setLoading(false);
             if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
                 option.callback(snapshot);
@@ -69,6 +70,7 @@ function useSubscribeDocSnapshot(path, option) {
         var unsub = fetchFunctions_1.subscribeDoc(hooksId, path, function (snapshot) {
             var _a;
             setDoc(snapshot);
+            setError(null);
             setLoading(false);
             if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
                 option.callback(snapshot);
@@ -95,6 +97,7 @@ function useLazyGetCollectionSnapshot(path, option) {
         fetchFunctions_1.getCollection(path, option, function (snapshot) {
             var _a;
             setCollection(snapshot);
+            setError(null);
             setLoading(false);
             if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
                 option.callback(snapshot);
@@ -128,6 +131,7 @@ function useSubscribeCollectionSnapshot(path, option) {
         var unsub = fetchFunctions_1.subscribeCollection(hooksId, path, option, function (snapshot) {
             var _a;
             setCollection(snapshot);
+            setError(null);
             setLoading(false);
             if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
                 option.callback(snapshot);
@@ -145,7 +149,7 @@ exports.useSubscribeCollectionSnapshot = useSubscribeCollectionSnapshot;
 // ----------
 exports.initialDocData = {
     data: null,
-    id: null
+    id: null,
 };
 exports.initialCollectionData = [];
 function convertDocCallback(option) {
@@ -164,67 +168,46 @@ function convertCollectionCallback(option) {
 }
 function useLazyGetDoc(path, option) {
     var _a = useLazyGetDocSnapshot(path, convertDocCallback(option)), doc = _a[0], loading = _a[1], error = _a[2], loadDoc = _a[3];
-    return [
-        doc !== null ? _1.createDataFromDoc(doc) : exports.initialDocData,
-        loading,
-        error,
-        loadDoc
-    ];
+    return [doc !== null ? _1.createDataFromDoc(doc) : exports.initialDocData, loading, error, loadDoc];
 }
 exports.useLazyGetDoc = useLazyGetDoc;
 function useGetDoc(path, option) {
     var _a = useGetDocSnapshot(path, convertDocCallback(option)), doc = _a[0], loading = _a[1], error = _a[2], reloadDoc = _a[3];
-    return [
-        doc !== null ? _1.createDataFromDoc(doc) : exports.initialDocData,
-        loading,
-        error,
-        reloadDoc
-    ];
+    return [doc !== null ? _1.createDataFromDoc(doc) : exports.initialDocData, loading, error, reloadDoc];
 }
 exports.useGetDoc = useGetDoc;
 function useSubscribeDoc(path, option) {
     var _a = useSubscribeDocSnapshot(path, convertDocCallback(option)), doc = _a[0], loading = _a[1], error = _a[2], unsubscribe = _a[3];
-    return [
-        doc !== null ? _1.createDataFromDoc(doc) : exports.initialDocData,
-        loading,
-        error,
-        unsubscribe
-    ];
+    return [doc !== null ? _1.createDataFromDoc(doc) : exports.initialDocData, loading, error, unsubscribe];
 }
 exports.useSubscribeDoc = useSubscribeDoc;
 function useLazyGetCollection(path, option) {
     var _a = useLazyGetCollectionSnapshot(path, convertCollectionCallback(option)), collection = _a[0], loading = _a[1], error = _a[2], loadCollection = _a[3];
     return [
-        collection !== null
-            ? _1.createDataFromCollection(collection)
-            : exports.initialCollectionData,
+        collection !== null ? _1.createDataFromCollection(collection) : exports.initialCollectionData,
         loading,
         error,
-        loadCollection
+        loadCollection,
     ];
 }
 exports.useLazyGetCollection = useLazyGetCollection;
 function useGetCollection(path, option) {
     var _a = useGetCollectionSnapshot(path, convertCollectionCallback(option)), collection = _a[0], loading = _a[1], error = _a[2], reloadCollection = _a[3];
     return [
-        collection !== null
-            ? _1.createDataFromCollection(collection)
-            : exports.initialCollectionData,
+        collection !== null ? _1.createDataFromCollection(collection) : exports.initialCollectionData,
         loading,
         error,
-        reloadCollection
+        reloadCollection,
     ];
 }
 exports.useGetCollection = useGetCollection;
 function useSubscribeCollection(path, option) {
     var _a = useSubscribeCollectionSnapshot(path, convertCollectionCallback(option)), collection = _a[0], loading = _a[1], error = _a[2], unsubscribe = _a[3];
     return [
-        collection !== null
-            ? _1.createDataFromCollection(collection)
-            : exports.initialCollectionData,
+        collection !== null ? _1.createDataFromCollection(collection) : exports.initialCollectionData,
         loading,
         error,
-        unsubscribe
+        unsubscribe,
     ];
 }
 exports.useSubscribeCollection = useSubscribeCollection;
