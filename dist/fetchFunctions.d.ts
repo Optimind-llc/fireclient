@@ -1,5 +1,6 @@
 import { firestore } from "firebase";
-import { CollectionId, HooksId, QueryOption } from ".";
+import { HooksId, CollectionId } from ".";
+import { QueryOption } from ".";
 export declare function getHashCode(obj: any): number;
 export declare function getQueryId(path: string, option: QueryOption): CollectionId;
 export declare function getDoc(path: string, onGet: (doc: firestore.DocumentSnapshot) => void, onError: (err: any) => void, acceptOutdated?: boolean): void;

@@ -24,7 +24,14 @@ yarn install
 node importFirestoreBackup.js
 ```
 
-4. Run test by executing below.
+4. Define composite indexes in Firestore
+
+CollectionID : cities
+
+1 - population / Acending
+2 - foo / Ascending
+
+1. Run test by executing below.
 
 ```
 yarn test

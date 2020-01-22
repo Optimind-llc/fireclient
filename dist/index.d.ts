@@ -226,6 +226,7 @@ export declare const convertStateToJson: typeof provider.convertStateToJson;
 export declare const Provider: typeof provider.default;
 export declare const Context: import("react").Context<any>;
 export declare const getQueryId: typeof fetchFunctions.getQueryId;
+export declare const getHashCode: typeof fetchFunctions.getHashCode;
 export declare const useLazyGetDocSnapshot: typeof hooks.useLazyGetDocSnapshot;
 export declare const useGetDocSnapshot: typeof hooks.useGetDocSnapshot;
 export declare const useSubscribeDocSnapshot: typeof hooks.useSubscribeDocSnapshot;

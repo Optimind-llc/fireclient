@@ -1,13 +1,15 @@
-import { firestore } from "firebase";
-import { List, Seq } from "immutable";
-import * as pathlib from "path";
 import React from "react";
-import { CollectionId, Cursor, DocId, HooksId, Limit, Order, QueryOption, Where } from ".";
-import { providerContext, unwrapContext } from "./provider";
-import { Actions } from "./reducer";
-import { assert, isArray } from "./validation";
+import { Seq, List, OrderedMap } from "immutable";
+import { firestore } from "firebase";
+import * as pathlib from "path";
 
-function orderedFromJS(object: any): any {
+import { HooksId, DocId, CollectionId } from ".";
+import { Where, Limit, Order, Cursor, QueryOption } from ".";
+import { providerContext, unwrapContext } from "./provider";
+import { assert, isArray } from "./validation";
+import { Actions } from "./reducer";
+
+function sortedFromJS(object: any): any {
   // CursorでOriginにSnapshotを指定することがある
   if (object instanceof firestore.DocumentSnapshot) {
     return object.ref.path;
@@ -21,21 +23,22 @@ function orderedFromJS(object: any): any {
   } else {
     return isArray(object)
       ? Seq(object)
-          .map(orderedFromJS)
+          .map(sortedFromJS)
           .filter((v: any) => v !== undefined)
           .toList()
       : Seq(object)
-          .map(orderedFromJS)
+          .map(sortedFromJS)
           .filter((v: any) => v !== undefined)
-          .toOrderedMap();
+          .toOrderedMap()
+          .sortBy((v: any, k: any) => k);
   }
 }
 
 export function getHashCode(obj: any): number {
   if (obj === undefined) {
-    return orderedFromJS({}).hashCode();
+    return sortedFromJS({}).hashCode();
   } else {
-    return orderedFromJS(obj).hashCode();
+    return sortedFromJS(obj).hashCode();
   }
 }
 

@@ -2,28 +2,40 @@
   "cities": {
     "MexicoCity": {
       "population": 19028000,
+      "area": 1485,
+      "foo": 2,
       "name": "Mexico City",
       "country": "Mexico"
     },
     "Mumbai": {
       "name": "Mumbai",
       "country": "India",
-      "population": 18978000
+      "foo": 1,
+      "area": 603
     },
     "NewYork": {
       "population": 19354922,
       "name": "New York",
       "country": "United States",
-      "users": ["Baker", "Davis"]
+      "foo": 1,
+      "area": 783,
+      "users": [
+        "Baker",
+        "Davis"
+      ]
     },
     "SaoPaulo": {
       "population": 18845000,
+      "foo": 2,
+      "area": 1521,
       "name": "São Paulo",
       "country": "Brazil"
     },
     "Tokyo": {
       "name": "Tokyo",
       "country": "Japan",
+      "foo": 2,
+      "area": 622,
       "population": 35676000
     }
   },
@@ -46,7 +58,9 @@
           "key4": "value4"
         },
         "key1": "value1",
-        "key5": ["array-value1"],
+        "key5": [
+          "array-value1"
+        ],
         "key2": "value2"
       }
     },
