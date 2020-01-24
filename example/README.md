@@ -19,9 +19,9 @@ yarn start
 
 There are two ways.
 
-## create `.env`
+## Create `.env`
 
-By the default, `src/firebaseConfig.js` loads `.env` in `example/.env` properties.
+By default, `src/firebaseConfig.js` loads `example/.env` properties.
 
 ```
 REACT_APP_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -36,7 +36,7 @@ REACT_APP_MEASUREMENT_ID=xxxxxxxxxxx
 
 ## Modify `src/firebaseConfig.js`
 
-Change config in `src/firebaseConfig.js` directly.
+Modify config in `src/firebaseConfig.js` directly.
 
 ```js
 const config = {
