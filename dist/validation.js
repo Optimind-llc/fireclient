@@ -1,27 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var firestoreWhereFilterOp = [
-    "<",
-    "<=",
-    "==",
-    ">=",
-    ">",
-    "array-contains",
-    "in",
-    "array-contains-any",
-];
+var firestoreWhereFilterOp = ["<", "<=", "==", ">=", ">", "array-contains", "in", "array-contains-any"];
 var isAnyOf = function (targets) { return function (obj) { return targets.indexOf(obj) >= 0; }; };
 var isString = function (obj) { return typeof obj === "string"; };
 var isNumber = function (obj) { return typeof obj === "number"; };
 var isBoolean = function (obj) { return typeof obj === "boolean"; };
 exports.isArray = function (obj) { return obj instanceof Array; };
 var isFunction = function (obj) { return obj instanceof Function; };
-var containsKey = function (key) { return function (obj) { return obj[key] !== undefined; }; };
+var containKey = function (key) { return function (obj) { return key in obj; }; };
 var requiredProperty = function (key, valueassert) { return function (obj) {
-    return containsKey(key)(obj) && (valueassert ? valueassert(obj[key]) : true);
+    return valueassert ? containKey(key)(obj) && valueassert(obj[key]) : containKey(key)(obj);
 }; };
 var optionalProperty = function (key, valueassert) { return function (obj) {
-    return !containsKey(key)(obj) || (valueassert ? valueassert(obj[key]) : true);
+    return valueassert ? !(key in obj) || valueassert(obj[key]) : !(key in obj);
 }; };
 exports.assert = function (isValid, errorMessage) {
     if (!isValid)
@@ -91,7 +82,7 @@ exports.assertQueryOption = function (obj) {
         return;
     }
     exports.assert(obj !== null, "Option is null.");
-    if (containsKey("where")(obj)) {
+    if (containKey("where")(obj)) {
         if (exports.isArray(obj.where)) {
             obj.where.forEach(function (ele) { return assertWhere(ele); });
         }
@@ -99,10 +90,10 @@ exports.assertQueryOption = function (obj) {
             assertWhere(obj.where);
         }
     }
-    if (containsKey("limit")(obj)) {
+    if (containKey("limit")(obj)) {
         assertLimit(obj.limit);
     }
-    if (containsKey("order")(obj)) {
+    if (containKey("order")(obj)) {
         if (exports.isArray(obj.order)) {
             obj.order.forEach(function (ele) { return assertOrder(ele); });
         }
@@ -110,7 +101,7 @@ exports.assertQueryOption = function (obj) {
             assertOrder(obj.order);
         }
     }
-    if (containsKey("cursor")(obj)) {
+    if (containKey("cursor")(obj)) {
         assertCursor(obj.cursor);
     }
 };
@@ -192,7 +183,7 @@ exports.assertPaginateOption = function (obj) {
     exports.assert(obj !== undefined, "Option is undefined.");
     exports.assert(typeof obj === "object", "Option should be object.");
     exports.assert(obj !== null, "Option is null.");
-    if (containsKey("where")(obj)) {
+    if (containKey("where")(obj)) {
         if (exports.isArray(obj.where)) {
             obj.where.forEach(function (ele) { return assertWhere(ele); });
         }
@@ -201,9 +192,9 @@ exports.assertPaginateOption = function (obj) {
         }
     }
     // only in paginate
-    exports.assert(containsKey("limit")(obj), 'Option in usePaginateCollection should contain "limit" property.');
+    exports.assert(containKey("limit")(obj), 'Option in usePaginateCollection should contain "limit" property.');
     assertLimit(obj.limit);
-    exports.assert(containsKey("order")(obj), 'Option in usePaginateCollection should contain "order" property.');
+    exports.assert(containKey("order")(obj), 'Option in usePaginateCollection should contain "order" property.');
     exports.assert(!exports.isArray(obj.order), '"order" property in usePaginateCollection should not be array.');
     assertOrder(obj.order);
 };
@@ -214,6 +205,6 @@ exports.assertSubCollectionOption = function (obj) {
     exports.assert(obj !== undefined, "Option is undefined.");
     exports.assert(typeof obj === "object", "Option should be object.");
     exports.assert(obj !== null, "Option is null.");
-    exports.assert(containsKey("field")(obj), 'Option in useGetSubCollection should contain "field" property.');
-    exports.assert(containsKey("collectionPath")(obj), 'Option in useGetSubCollection should contain "collectionPath" property.');
+    exports.assert(containKey("field")(obj), 'Option in useGetSubCollection should contain "field" property.');
+    exports.assert(containKey("collectionPath")(obj), 'Option in useGetSubCollection should contain "collectionPath" property.');
 };

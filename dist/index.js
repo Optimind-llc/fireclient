@@ -7,41 +7,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var firebase_1 = require("firebase");
 var advancedHooks = __importStar(require("./advancedHooks"));
-var fetchFunctions = __importStar(require("./fetchFunctions"));
 var hooks = __importStar(require("./hooks"));
 var provider = __importStar(require("./provider"));
-/**
- * Converts Firestore document snapshot into `FireclientDoc`.
- * @param {firestore.DocumentData} doc
- * @example
- * const [snapshot] = useGetDocSnapshot("/path/to/doc");
- * const docData = createDataFromDoc(snapshot);
- */
-function createDataFromDoc(doc) {
-    var id = doc.id;
-    var data = doc.data();
-    return {
-        data: data !== undefined ? data : null,
-        id: id,
-    };
-}
-exports.createDataFromDoc = createDataFromDoc;
-/**
- * Converts Firestore collection snapshot into `FireclientDoc[]`.
- * @param {firestore.DocumentData} doc
- * @example
- * const [snapshot] = useGetCollectionSnapshot("/path/to/collection");
- * const collectionData = createDataFromCollection(snapshot);
- */
-function createDataFromCollection(collection) {
-    return collection.map(function (coll) { return createDataFromDoc(coll); });
-}
-exports.createDataFromCollection = createDataFromCollection;
+var utils = __importStar(require("./utils"));
+exports.deleteField = firebase_1.firestore.FieldValue.delete();
 exports.convertStateToJson = provider.convertStateToJson;
 exports.Provider = provider.default;
 exports.Context = provider.Context;
-exports.getQueryId = fetchFunctions.getQueryId;
+exports.getHashCode = utils.getHashCode;
+exports.createDataFromDoc = utils.createDataFromDoc;
+exports.createDataFromCollection = utils.createDataFromCollection;
+exports.getQueryId = utils.getQueryId;
 exports.useLazyGetDocSnapshot = hooks.useLazyGetDocSnapshot;
 exports.useGetDocSnapshot = hooks.useGetDocSnapshot;
 exports.useSubscribeDocSnapshot = hooks.useSubscribeDocSnapshot;
@@ -58,3 +36,6 @@ exports.useArrayQuery = advancedHooks.useArrayQuery;
 exports.useQuery = advancedHooks.useQuery;
 exports.usePaginateCollection = advancedHooks.usePaginateCollection;
 exports.useGetSubCollection = advancedHooks.useGetSubCollection;
+exports.useSetDoc = hooks.useSetDoc;
+exports.useAddDoc = hooks.useAddDoc;
+exports.useUpdateDoc = hooks.useUpdateDoc;

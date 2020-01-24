@@ -2,24 +2,25 @@
 import { firestore } from "firebase";
 import { List, Map, Set } from "immutable";
 import * as advancedHooks from "./advancedHooks";
-import * as fetchFunctions from "./fetchFunctions";
 import * as hooks from "./hooks";
 import * as provider from "./provider";
 import * as reducer from "./reducer";
+import * as utils from "./utils";
 export declare type HooksId = string;
 export declare type DocId = string;
 export declare type CollectionId = number;
-export declare type FireclientDoc = {
+export declare type DocData = {
     data: {
         [field: string]: any;
     } | null;
     id: string | null;
 };
+export declare type CollectionData = DocData[];
 interface ImmutableMap<T> extends Map<string, any> {
     get<K extends keyof T>(name: K): T[K];
 }
-export declare type FireclientDocState = ImmutableMap<{
-    snapshot: firestore.DocumentSnapshot;
+export declare type DocDataState = ImmutableMap<{
+    data: DocData;
     connectedFrom: Set<HooksId>;
 }>;
 export declare type FireclientCollectionState = ImmutableMap<{
@@ -28,7 +29,7 @@ export declare type FireclientCollectionState = ImmutableMap<{
 }>;
 export declare type FireclientState = ImmutableMap<{
     doc: ImmutableMap<{
-        [docId: string]: FireclientDocState;
+        [docId: string]: DocDataState;
     }>;
     collection: ImmutableMap<{
         [collectionId: string]: FireclientCollectionState;
@@ -201,31 +202,30 @@ export declare type ArrayQuerySchema = {
     acceptOutdated?: boolean;
     callback?: () => void;
 };
+export declare type SetDocQueryObject = {
+    id?: string;
+    fields: {
+        [field: string]: any;
+    };
+    subCollection: {
+        [name: string]: SetDocQueryObject;
+    };
+};
+export declare type SetDocQueryGenerator = (...args: any) => SetDocQueryObject;
+export declare type SetDocQuery = SetDocQueryObject | SetDocQueryGenerator;
 export declare type ProviderContext = {
     state: FireclientState | null;
     dispatch: React.Dispatch<reducer.Actions> | null;
     firestoreDB: firestore.Firestore | null;
 };
-/**
- * Converts Firestore document snapshot into `FireclientDoc`.
- * @param {firestore.DocumentData} doc
- * @example
- * const [snapshot] = useGetDocSnapshot("/path/to/doc");
- * const docData = createDataFromDoc(snapshot);
- */
-export declare function createDataFromDoc(doc: firestore.DocumentData): FireclientDoc;
-/**
- * Converts Firestore collection snapshot into `FireclientDoc[]`.
- * @param {firestore.DocumentData} doc
- * @example
- * const [snapshot] = useGetCollectionSnapshot("/path/to/collection");
- * const collectionData = createDataFromCollection(snapshot);
- */
-export declare function createDataFromCollection(collection: firestore.DocumentSnapshot[]): FireclientDoc[];
+export declare const deleteField: firestore.FieldValue;
 export declare const convertStateToJson: typeof provider.convertStateToJson;
 export declare const Provider: typeof provider.default;
 export declare const Context: import("react").Context<any>;
-export declare const getQueryId: typeof fetchFunctions.getQueryId;
+export declare const getHashCode: typeof utils.getHashCode;
+export declare const createDataFromDoc: typeof utils.createDataFromDoc;
+export declare const createDataFromCollection: typeof utils.createDataFromCollection;
+export declare const getQueryId: typeof utils.getQueryId;
 export declare const useLazyGetDocSnapshot: typeof hooks.useLazyGetDocSnapshot;
 export declare const useGetDocSnapshot: typeof hooks.useGetDocSnapshot;
 export declare const useSubscribeDocSnapshot: typeof hooks.useSubscribeDocSnapshot;
@@ -242,4 +242,7 @@ export declare const useArrayQuery: typeof advancedHooks.useArrayQuery;
 export declare const useQuery: typeof advancedHooks.useQuery;
 export declare const usePaginateCollection: typeof advancedHooks.usePaginateCollection;
 export declare const useGetSubCollection: typeof advancedHooks.useGetSubCollection;
+export declare const useSetDoc: typeof hooks.useSetDoc;
+export declare const useAddDoc: typeof hooks.useAddDoc;
+export declare const useUpdateDoc: typeof hooks.useUpdateDoc;
 export {};

@@ -1,15 +1,15 @@
 import "firebase/firestore";
 import { Map } from "immutable";
-import { ArrayQuerySchema, FireclientDoc, QueryOption, QuerySchema } from ".";
-declare type ArrayQueryData = (FireclientDoc | FireclientDoc[])[];
+import { ArrayQuerySchema, CollectionData, DocData, QueryOption, QuerySchema } from ".";
+declare type ArrayQueryData = (DocData | CollectionData)[];
 export declare function useArrayQuery(querySchema: ArrayQuerySchema): [ArrayQueryData, boolean, any, {
-    unsubscribe: () => void;
-    reload: () => void;
+    unsubscribeFn: () => void;
+    reloadFn: () => void;
 }];
-declare type QueryData = Map<string, FireclientDoc | FireclientDoc[] | {}>;
+declare type QueryData = Map<string, DocData | CollectionData | {}>;
 export declare function useQuery(querySchema: QuerySchema): [QueryData, boolean, any, {
-    unsubscribe: () => void;
-    reload: () => void;
+    unsubscribeFn: () => void;
+    reloadFn: () => void;
 }];
 export declare function usePaginateCollection(path: string, option: {
     callback?: () => void;

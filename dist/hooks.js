@@ -1,20 +1,10 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 require("firebase/firestore");
 var react_1 = require("react");
-var _1 = require(".");
-var fetchFunctions_1 = require("./fetchFunctions");
+var getFunctions_1 = require("./getFunctions");
+var setFunctions_1 = require("./setFunctions");
+var utils_1 = require("./utils");
 var validation_1 = require("./validation");
 function generateHooksId() {
     return Math.random()
@@ -23,57 +13,47 @@ function generateHooksId() {
 }
 exports.generateHooksId = generateHooksId;
 // ----------
-//  Snapshot
+//  Get Base
 // ----------
-function useLazyGetDocSnapshot(path, option) {
+function useLazyGetDocBase(path, initialValue, getFunction, option) {
     validation_1.assertPath(path);
     validation_1.assertCallbackOption(option);
     validation_1.assertAcceptOutdatedOption(option);
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
-    var _b = react_1.useState(null), doc = _b[0], setDoc = _b[1];
+    var _b = react_1.useState(initialValue), doc = _b[0], setDoc = _b[1];
     var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
     var loadDoc = function () {
-        var _a;
         setLoading(true);
-        fetchFunctions_1.getDoc(path, function (snapshot) {
+        getFunction(path, function (data) {
             var _a;
-            setDoc(snapshot);
+            setDoc(data);
             setError(null);
             setLoading(false);
             if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
-                option.callback(snapshot);
+                option.callback(data);
         }, function (err) {
             setError(err);
             setLoading(false);
-        }, (_a = option) === null || _a === void 0 ? void 0 : _a.acceptOutdated);
+        });
     };
     return [doc, loading, error, loadDoc];
 }
-exports.useLazyGetDocSnapshot = useLazyGetDocSnapshot;
-function useGetDocSnapshot(path, option) {
-    var _a = useLazyGetDocSnapshot(path, option), doc = _a[0], loading = _a[1], error = _a[2], reloadDoc = _a[3];
-    react_1.useEffect(function () {
-        reloadDoc();
-    }, [path]);
-    return [doc, loading, error, reloadDoc];
-}
-exports.useGetDocSnapshot = useGetDocSnapshot;
-function useSubscribeDocSnapshot(path, option) {
+function useSubscribeDocBase(path, initialValue, subscribeFunction, option) {
     validation_1.assertPath(path);
     validation_1.assertCallbackOption(option);
     var hooksId = react_1.useState(generateHooksId())[0];
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
-    var _b = react_1.useState(null), doc = _b[0], setDoc = _b[1];
+    var _b = react_1.useState(initialValue), doc = _b[0], setDoc = _b[1];
     var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
     var _d = react_1.useState({ fn: function () { } }), unsubscribe = _d[0], setUnsubscribe = _d[1];
     react_1.useEffect(function () {
-        var unsub = fetchFunctions_1.subscribeDoc(hooksId, path, function (snapshot) {
+        var unsub = subscribeFunction(hooksId, path, function (data) {
             var _a;
-            setDoc(snapshot);
+            setDoc(data);
             setError(null);
             setLoading(false);
             if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
-                option.callback(snapshot);
+                option.callback(data);
         }, function (err) {
             setError(err);
             setLoading(false);
@@ -82,19 +62,44 @@ function useSubscribeDocSnapshot(path, option) {
     }, [path]);
     return [doc, loading, error, unsubscribe.fn];
 }
-exports.useSubscribeDocSnapshot = useSubscribeDocSnapshot;
-function useLazyGetCollectionSnapshot(path, option) {
+exports.useSubscribeDocBase = useSubscribeDocBase;
+function useLazyGetCollectionBase(path, initialValue, getFunction, option) {
     validation_1.assertPath(path);
     validation_1.assertQueryOption(option);
     validation_1.assertCallbackOption(option);
     validation_1.assertAcceptOutdatedOption(option);
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
-    var _b = react_1.useState(null), collection = _b[0], setCollection = _b[1];
+    var _b = react_1.useState(initialValue), collection = _b[0], setCollection = _b[1];
     var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
     var loadCollection = function () {
         var _a;
         setLoading(true);
-        fetchFunctions_1.getCollection(path, option, function (snapshot) {
+        getFunction(path, function (data) {
+            var _a;
+            setCollection(data);
+            setError(null);
+            setLoading(false);
+            if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
+                option.callback(data);
+        }, function (err) {
+            setError(err);
+            setLoading(false);
+        }, option, (_a = option) === null || _a === void 0 ? void 0 : _a.acceptOutdated);
+    };
+    return [collection, loading, error, loadCollection];
+}
+exports.useLazyGetCollectionBase = useLazyGetCollectionBase;
+function useSubscribeCollectionBase(path, initialValue, subscribeFunction, option) {
+    validation_1.assertPath(path);
+    validation_1.assertQueryOption(option);
+    validation_1.assertCallbackOption(option);
+    var hooksId = react_1.useState(generateHooksId())[0];
+    var _a = react_1.useState(null), error = _a[0], setError = _a[1];
+    var _b = react_1.useState(initialValue), collection = _b[0], setCollection = _b[1];
+    var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
+    var _d = react_1.useState({ fn: function () { } }), unsubscribe = _d[0], setUnsubscribe = _d[1];
+    react_1.useEffect(function () {
+        var unsub = subscribeFunction(hooksId, path, function (snapshot) {
             var _a;
             setCollection(snapshot);
             setError(null);
@@ -104,110 +109,113 @@ function useLazyGetCollectionSnapshot(path, option) {
         }, function (err) {
             setError(err);
             setLoading(false);
-        }, (_a = option) === null || _a === void 0 ? void 0 : _a.acceptOutdated);
-    };
-    return [collection, loading, error, loadCollection];
+        }, function () { return setLoading(true); }, option);
+        setUnsubscribe({ fn: unsub });
+    }, [path, utils_1.getHashCode(option)]);
+    return [collection, loading, error, unsubscribe.fn];
+}
+exports.useSubscribeCollectionBase = useSubscribeCollectionBase;
+// ----------
+//  Get Snapshot
+// ----------
+function useLazyGetDocSnapshot(path, option) {
+    return useLazyGetDocBase(path, null, getFunctions_1.getDocSnapshot, option);
+}
+exports.useLazyGetDocSnapshot = useLazyGetDocSnapshot;
+function useGetDocSnapshot(path, option) {
+    var _a = useLazyGetDocSnapshot(path, option), doc = _a[0], loading = _a[1], error = _a[2], reloadDoc = _a[3];
+    react_1.useEffect(function () { return reloadDoc(); }, [path, utils_1.getHashCode(option)]);
+    return [doc, loading, error, reloadDoc];
+}
+exports.useGetDocSnapshot = useGetDocSnapshot;
+function useSubscribeDocSnapshot(path, option) {
+    return useSubscribeDocBase(path, null, getFunctions_1.subscribeDocSnapshot, option);
+}
+exports.useSubscribeDocSnapshot = useSubscribeDocSnapshot;
+function useLazyGetCollectionSnapshot(path, option) {
+    return useLazyGetCollectionBase(path, null, getFunctions_1.getCollectionSnapshot, option);
 }
 exports.useLazyGetCollectionSnapshot = useLazyGetCollectionSnapshot;
 function useGetCollectionSnapshot(path, option) {
     var _a = useLazyGetCollectionSnapshot(path, option), collection = _a[0], loading = _a[1], error = _a[2], reloadCollection = _a[3];
-    react_1.useEffect(function () {
-        reloadCollection();
-    }, [path, fetchFunctions_1.getHashCode(option)]);
+    react_1.useEffect(function () { return reloadCollection(); }, [path, utils_1.getHashCode(option)]);
     return [collection, loading, error, reloadCollection];
 }
 exports.useGetCollectionSnapshot = useGetCollectionSnapshot;
 function useSubscribeCollectionSnapshot(path, option) {
-    validation_1.assertPath(path);
-    validation_1.assertQueryOption(option);
-    validation_1.assertCallbackOption(option);
-    validation_1.assertAcceptOutdatedOption(option);
-    var hooksId = react_1.useState(generateHooksId())[0];
-    var _a = react_1.useState(null), error = _a[0], setError = _a[1];
-    var _b = react_1.useState([]), collection = _b[0], setCollection = _b[1];
-    var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
-    var _d = react_1.useState({ fn: function () { } }), unsubscribe = _d[0], setUnsubscribe = _d[1];
-    react_1.useEffect(function () {
-        var unsub = fetchFunctions_1.subscribeCollection(hooksId, path, option, function (snapshot) {
-            var _a;
-            setCollection(snapshot);
-            setError(null);
-            setLoading(false);
-            if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
-                option.callback(snapshot);
-        }, function (err) {
-            setError(err);
-            setLoading(false);
-        }, function () { return setLoading(true); });
-        setUnsubscribe({ fn: unsub });
-    }, [path, fetchFunctions_1.getHashCode(option)]);
-    return [collection, loading, error, unsubscribe.fn];
+    return useSubscribeCollectionBase(path, [], getFunctions_1.subscribeCollectionSnapshot, option);
 }
 exports.useSubscribeCollectionSnapshot = useSubscribeCollectionSnapshot;
 // ----------
-//  Data
+//  Get Data
 // ----------
 exports.initialDocData = {
     data: null,
     id: null,
 };
 exports.initialCollectionData = [];
-function convertDocCallback(option) {
-    var _a;
-    return ((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined
-        ? __assign(__assign({}, option), { callback: function (snapshot) {
-                return option.callback(_1.createDataFromDoc(snapshot));
-            } }) : option;
-}
-function convertCollectionCallback(option) {
-    var _a;
-    return ((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined
-        ? __assign(__assign({}, option), { callback: function (snapshot) {
-                return option.callback(_1.createDataFromCollection(snapshot));
-            } }) : option;
-}
 function useLazyGetDoc(path, option) {
-    var _a = useLazyGetDocSnapshot(path, convertDocCallback(option)), doc = _a[0], loading = _a[1], error = _a[2], loadDoc = _a[3];
-    return [doc !== null ? _1.createDataFromDoc(doc) : exports.initialDocData, loading, error, loadDoc];
+    return useLazyGetDocBase(path, exports.initialDocData, getFunctions_1.getDoc, option);
 }
 exports.useLazyGetDoc = useLazyGetDoc;
 function useGetDoc(path, option) {
-    var _a = useGetDocSnapshot(path, convertDocCallback(option)), doc = _a[0], loading = _a[1], error = _a[2], reloadDoc = _a[3];
-    return [doc !== null ? _1.createDataFromDoc(doc) : exports.initialDocData, loading, error, reloadDoc];
+    var _a = useLazyGetDoc(path, option), doc = _a[0], loading = _a[1], error = _a[2], reloadDoc = _a[3];
+    react_1.useEffect(function () { return reloadDoc(); }, [path, utils_1.getHashCode(option)]);
+    return [doc, loading, error, reloadDoc];
 }
 exports.useGetDoc = useGetDoc;
 function useSubscribeDoc(path, option) {
-    var _a = useSubscribeDocSnapshot(path, convertDocCallback(option)), doc = _a[0], loading = _a[1], error = _a[2], unsubscribe = _a[3];
-    return [doc !== null ? _1.createDataFromDoc(doc) : exports.initialDocData, loading, error, unsubscribe];
+    return useSubscribeDocBase(path, exports.initialDocData, getFunctions_1.subscribeDoc, option);
 }
 exports.useSubscribeDoc = useSubscribeDoc;
 function useLazyGetCollection(path, option) {
-    var _a = useLazyGetCollectionSnapshot(path, convertCollectionCallback(option)), collection = _a[0], loading = _a[1], error = _a[2], loadCollection = _a[3];
-    return [
-        collection !== null ? _1.createDataFromCollection(collection) : exports.initialCollectionData,
-        loading,
-        error,
-        loadCollection,
-    ];
+    return useLazyGetCollectionBase(path, exports.initialCollectionData, getFunctions_1.getCollection, option);
 }
 exports.useLazyGetCollection = useLazyGetCollection;
 function useGetCollection(path, option) {
-    var _a = useGetCollectionSnapshot(path, convertCollectionCallback(option)), collection = _a[0], loading = _a[1], error = _a[2], reloadCollection = _a[3];
-    return [
-        collection !== null ? _1.createDataFromCollection(collection) : exports.initialCollectionData,
-        loading,
-        error,
-        reloadCollection,
-    ];
+    var _a = useLazyGetCollection(path, option), collection = _a[0], loading = _a[1], error = _a[2], reloadCollection = _a[3];
+    react_1.useEffect(function () { return reloadCollection(); }, [path, utils_1.getHashCode(option)]);
+    return [collection, loading, error, reloadCollection];
 }
 exports.useGetCollection = useGetCollection;
 function useSubscribeCollection(path, option) {
-    var _a = useSubscribeCollectionSnapshot(path, convertCollectionCallback(option)), collection = _a[0], loading = _a[1], error = _a[2], unsubscribe = _a[3];
-    return [
-        collection !== null ? _1.createDataFromCollection(collection) : exports.initialCollectionData,
-        loading,
-        error,
-        unsubscribe,
-    ];
+    return useSubscribeCollectionBase(path, exports.initialCollectionData, getFunctions_1.subscribeCollection, option);
 }
 exports.useSubscribeCollection = useSubscribeCollection;
+// ----------
+//  Set Data
+// ----------
+function useWriteDoc(path, query, writeFunction, option) {
+    var _a = react_1.useState(false), writing = _a[0], setWriting = _a[1];
+    var _b = react_1.useState(false), called = _b[0], setCalled = _b[1];
+    var _c = react_1.useState(null), error = _c[0], setError = _c[1];
+    var queryGenerator = query instanceof Function ? query : function () { return query; };
+    var writeFn = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        setWriting(true);
+        setCalled(true);
+        writeFunction(path, queryGenerator.apply(void 0, args), function () {
+            setError(null);
+            setWriting(false);
+        }, function (err) {
+            setError(err);
+            setWriting(false);
+        });
+    };
+    return [writeFn, writing, called, error];
+}
+function useSetDoc(path, query, option) {
+    return useWriteDoc(path, query, setFunctions_1.setDoc, option);
+}
+exports.useSetDoc = useSetDoc;
+function useAddDoc(path, query, option) {
+    return useWriteDoc(path, query, setFunctions_1.addDoc, option);
+}
+exports.useAddDoc = useAddDoc;
+function useUpdateDoc(path, query, option) {
+    return useWriteDoc(path, query, setFunctions_1.updateDoc, option);
+}
+exports.useUpdateDoc = useUpdateDoc;

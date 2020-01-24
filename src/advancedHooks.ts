@@ -5,17 +5,17 @@ import * as pathlib from "path";
 import { useEffect, useState } from "react";
 import {
   ArrayQuerySchema,
+  CollectionData,
   createDataFromCollection,
-  createDataFromDoc,
   CursorDirection,
-  FireclientDoc,
+  DocData,
   Order,
   OrderDirection,
   Query,
   QueryOption,
   QuerySchema,
 } from ".";
-import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "./fetchFunctions";
+import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "./getFunctions";
 import {
   generateHooksId,
   initialCollectionData,
@@ -23,6 +23,7 @@ import {
   useGetCollectionSnapshot,
   useGetDoc,
 } from "./hooks";
+import { isDocPath } from "./utils";
 import {
   assert,
   assertArrayQuerySchema,
@@ -32,21 +33,19 @@ import {
   assertSubCollectionOption,
 } from "./validation";
 
-function isDoc(path: string): boolean {
-  const p = pathlib.resolve(path);
-  return p.split("/").length % 2 === 1;
-}
+type ArrayQueryData = (DocData | CollectionData)[];
 
-type ArrayQueryData = (FireclientDoc | FireclientDoc[])[];
-
+// TODO:
+// https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
+// トランザクションを使用する
 export function useArrayQuery(
   querySchema: ArrayQuerySchema,
-): [ArrayQueryData, boolean, any, { unsubscribe: () => void; reload: () => void }] {
+): [ArrayQueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
   assertArrayQuerySchema(querySchema);
   const { queries, callback, acceptOutdated } = querySchema;
   const connects = querySchema.connects ? querySchema.connects : false;
   const initialQueryData: ArrayQueryData = queries.map(query =>
-    isDoc(query.location) ? initialDocData : initialCollectionData,
+    isDocPath(query.location) ? initialDocData : initialCollectionData,
   );
 
   // Subscribeする場合があるので、HooksのIdを持っておく
@@ -56,64 +55,60 @@ export function useArrayQuery(
   const [queryData, setQueryData] = useState<ArrayQueryData>(initialQueryData);
   const [loading, setLoading] = useState(false);
   const [unsubscribe, setUnsubscribe] = useState<{
-    unsubscribe: () => void;
-    reload: () => void;
-  }>({ unsubscribe: () => {}, reload: () => {} });
+    unsubscribeFn: () => void;
+    reloadFn: () => void;
+  }>({ unsubscribeFn: () => {}, reloadFn: () => {} });
 
   const loadQuery = () => {
     setLoading(true);
-    let reloads: (() => void)[] = [];
+    let reloadFns: (() => void)[] = [];
     let unsubFns: (() => void)[] = [];
 
     // React HooksはCallback内で呼び出せないので、
     // fetchFunctionsの関数を直接呼び出す
-    Promise.all<{ data: FireclientDoc | FireclientDoc[]; key: number }>(
+    Promise.all<{ data: DocData | CollectionData; key: number }>(
       queries.map(
         (query: Query, i: number) =>
           new Promise<{
-            data: FireclientDoc | FireclientDoc[];
+            data: DocData | CollectionData;
             key: number;
           }>((resolve, reject) => {
             const { location, limit, where, order, cursor } = query;
             const queryConnects = query.connects === undefined ? connects : query.connects;
-            const isDocQuery = isDoc(location);
+            const isDocQuery = isDocPath(location);
 
-            const onFetchDoc = (doc: firestore.DocumentSnapshot) => {
-              resolve({ data: createDataFromDoc(doc), key: i });
-              if (callback !== undefined) callback();
-            };
-            const onFetchCollection = (collection: firestore.DocumentSnapshot[]) => {
-              resolve({ data: createDataFromCollection(collection), key: i });
+            const onChange = (data: DocData | CollectionData) => {
+              resolve({ data: data, key: i });
               if (callback !== undefined) callback();
             };
             const onError = reject;
+            const onListen = () => {};
 
             if (isDocQuery && !queryConnects) {
-              const load = () => getDoc(location, onFetchDoc, onError, acceptOutdated);
+              const load = () => getDoc(location, onChange, onError, acceptOutdated);
               load();
-              reloads.push(load);
+              reloadFns.push(load);
             } else if (isDocQuery && queryConnects) {
-              const unsub = subscribeDoc(hooksId, location, onFetchDoc, onError);
+              const unsub = subscribeDoc(hooksId, location, onChange, onError, onListen);
               unsubFns.push(unsub);
             } else if (!isDocQuery && !queryConnects) {
               const load = () =>
                 getCollection(
                   location,
-                  { limit, where, order, cursor },
-                  onFetchCollection,
+                  onChange,
                   onError,
+                  { limit, where, order, cursor },
                   acceptOutdated,
                 );
               load();
-              reloads.push(load);
+              reloadFns.push(load);
             } else if (!isDocQuery && queryConnects) {
-              const unsub = subscribeCollection(
-                hooksId,
-                location,
-                { limit, where, order, cursor },
-                onFetchCollection,
-                onError,
-              );
+              const unsub = subscribeCollection(hooksId, location, onChange, onError, onListen, {
+                limit,
+                where,
+                order,
+                cursor,
+              });
               unsubFns.push(unsub);
             }
           }),
@@ -122,8 +117,8 @@ export function useArrayQuery(
       .then(res => {
         setQueryData(res.sort((a, b) => a.key - b.key).map(r => r.data));
         setUnsubscribe({
-          unsubscribe: () => unsubFns.forEach(fn => fn()),
-          reload: () => reloads.forEach(fn => fn()),
+          unsubscribeFn: () => unsubFns.forEach(fn => fn()),
+          reloadFn: () => reloadFns.forEach(fn => fn()),
         });
         setLoading(false);
       })
@@ -141,11 +136,11 @@ export function useArrayQuery(
   return [queryData, loading, error, unsubscribe];
 }
 
-type QueryData = Map<string, FireclientDoc | FireclientDoc[] | {}>;
+type QueryData = Map<string, DocData | CollectionData | {}>;
 
 export function useQuery(
   querySchema: QuerySchema,
-): [QueryData, boolean, any, { unsubscribe: () => void; reload: () => void }] {
+): [QueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
   assertQuerySchema(querySchema);
   const { queries } = querySchema;
 

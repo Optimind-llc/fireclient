@@ -1,9 +1,10 @@
 {
-  "apiKey": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-  "authDomain": "xxxxxxxxxxxxxxxxxxxxxxx.firebaseapp.com",
-  "databaseURL": "https://xxxxxxxxxxxxxxxxxxxxxxx.firebaseio.com",
-  "projectId": "xxxxxxxxxxxxxxxxxxxxxxx",
-  "storageBucket": "xxxxxxxxxxxxxxxxxxxxxxx.appspot.com",
-  "messagingSenderId": "xxxxxxxxxxxx",
-  "appId": "x:xxxxxxxxxxxx:web:xxxxxxxxxxxxxxxxxxxxxx"
+  "apiKey": "AIzaSyAPvSRqHB7zh66hfegcbVhqYTY6Flp85yg",
+  "authDomain": "fireclient-develop.firebaseapp.com",
+  "databaseURL": "https://fireclient-develop.firebaseio.com",
+  "projectId": "fireclient-develop",
+  "storageBucket": "fireclient-develop.appspot.com",
+  "messagingSenderId": "477168489658",
+  "appId": "1:477168489658:web:e11a2fd7053518dc209e83",
+  "measurementId": "G-P5TBSX99DF"
 }

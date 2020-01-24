@@ -23,29 +23,29 @@ var immutable_1 = require("immutable");
 var pathlib = __importStar(require("path"));
 var react_1 = require("react");
 var _1 = require(".");
-var fetchFunctions_1 = require("./fetchFunctions");
+var getFunctions_1 = require("./getFunctions");
 var hooks_1 = require("./hooks");
+var utils_1 = require("./utils");
 var validation_1 = require("./validation");
-function isDoc(path) {
-    var p = pathlib.resolve(path);
-    return p.split("/").length % 2 === 1;
-}
+// TODO:
+// https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
+// トランザクションを使用する
 function useArrayQuery(querySchema) {
     validation_1.assertArrayQuerySchema(querySchema);
     var queries = querySchema.queries, callback = querySchema.callback, acceptOutdated = querySchema.acceptOutdated;
     var connects = querySchema.connects ? querySchema.connects : false;
     var initialQueryData = queries.map(function (query) {
-        return isDoc(query.location) ? hooks_1.initialDocData : hooks_1.initialCollectionData;
+        return utils_1.isDocPath(query.location) ? hooks_1.initialDocData : hooks_1.initialCollectionData;
     });
     // Subscribeする場合があるので、HooksのIdを持っておく
     var hooksId = react_1.useState(hooks_1.generateHooksId())[0];
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialQueryData), queryData = _b[0], setQueryData = _b[1];
     var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
-    var _d = react_1.useState({ unsubscribe: function () { }, reload: function () { } }), unsubscribe = _d[0], setUnsubscribe = _d[1];
+    var _d = react_1.useState({ unsubscribeFn: function () { }, reloadFn: function () { } }), unsubscribe = _d[0], setUnsubscribe = _d[1];
     var loadQuery = function () {
         setLoading(true);
-        var reloads = [];
+        var reloadFns = [];
         var unsubFns = [];
         // React HooksはCallback内で呼び出せないので、
         // fetchFunctionsの関数を直接呼び出す
@@ -53,36 +53,37 @@ function useArrayQuery(querySchema) {
             return new Promise(function (resolve, reject) {
                 var location = query.location, limit = query.limit, where = query.where, order = query.order, cursor = query.cursor;
                 var queryConnects = query.connects === undefined ? connects : query.connects;
-                var isDocQuery = isDoc(location);
-                var onFetchDoc = function (doc) {
-                    resolve({ data: _1.createDataFromDoc(doc), key: i });
-                    if (callback !== undefined)
-                        callback();
-                };
-                var onFetchCollection = function (collection) {
-                    resolve({ data: _1.createDataFromCollection(collection), key: i });
+                var isDocQuery = utils_1.isDocPath(location);
+                var onChange = function (data) {
+                    resolve({ data: data, key: i });
                     if (callback !== undefined)
                         callback();
                 };
                 var onError = reject;
+                var onListen = function () { };
                 if (isDocQuery && !queryConnects) {
-                    var load = function () { return fetchFunctions_1.getDoc(location, onFetchDoc, onError, acceptOutdated); };
+                    var load = function () { return getFunctions_1.getDoc(location, onChange, onError, acceptOutdated); };
                     load();
-                    reloads.push(load);
+                    reloadFns.push(load);
                 }
                 else if (isDocQuery && queryConnects) {
-                    var unsub = fetchFunctions_1.subscribeDoc(hooksId, location, onFetchDoc, onError);
+                    var unsub = getFunctions_1.subscribeDoc(hooksId, location, onChange, onError, onListen);
                     unsubFns.push(unsub);
                 }
                 else if (!isDocQuery && !queryConnects) {
                     var load = function () {
-                        return fetchFunctions_1.getCollection(location, { limit: limit, where: where, order: order, cursor: cursor }, onFetchCollection, onError, acceptOutdated);
+                        return getFunctions_1.getCollection(location, onChange, onError, { limit: limit, where: where, order: order, cursor: cursor }, acceptOutdated);
                     };
                     load();
-                    reloads.push(load);
+                    reloadFns.push(load);
                 }
                 else if (!isDocQuery && queryConnects) {
-                    var unsub = fetchFunctions_1.subscribeCollection(hooksId, location, { limit: limit, where: where, order: order, cursor: cursor }, onFetchCollection, onError);
+                    var unsub = getFunctions_1.subscribeCollection(hooksId, location, onChange, onError, onListen, {
+                        limit: limit,
+                        where: where,
+                        order: order,
+                        cursor: cursor,
+                    });
                     unsubFns.push(unsub);
                 }
             });
@@ -90,8 +91,8 @@ function useArrayQuery(querySchema) {
             .then(function (res) {
             setQueryData(res.sort(function (a, b) { return a.key - b.key; }).map(function (r) { return r.data; }));
             setUnsubscribe({
-                unsubscribe: function () { return unsubFns.forEach(function (fn) { return fn(); }); },
-                reload: function () { return reloads.forEach(function (fn) { return fn(); }); },
+                unsubscribeFn: function () { return unsubFns.forEach(function (fn) { return fn(); }); },
+                reloadFn: function () { return reloadFns.forEach(function (fn) { return fn(); }); },
             });
             setLoading(false);
         })

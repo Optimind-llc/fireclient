@@ -1,27 +1,28 @@
 import { firestore } from "firebase";
 import { List, Map, Set } from "immutable";
 import * as advancedHooks from "./advancedHooks";
-import * as fetchFunctions from "./fetchFunctions";
 import * as hooks from "./hooks";
 import * as provider from "./provider";
 import * as reducer from "./reducer";
+import * as utils from "./utils";
 
 export type HooksId = string;
 export type DocId = string;
 export type CollectionId = number;
-export type FireclientDoc = {
+export type DocData = {
   data: {
     [field: string]: any;
   } | null;
   id: string | null;
 };
+export type CollectionData = DocData[];
 
 interface ImmutableMap<T> extends Map<string, any> {
   get<K extends keyof T>(name: K): T[K];
 }
 
-export type FireclientDocState = ImmutableMap<{
-  snapshot: firestore.DocumentSnapshot;
+export type DocDataState = ImmutableMap<{
+  data: DocData;
   connectedFrom: Set<HooksId>;
 }>;
 
@@ -32,7 +33,7 @@ export type FireclientCollectionState = ImmutableMap<{
 
 export type FireclientState = ImmutableMap<{
   doc: ImmutableMap<{
-    [docId: string]: FireclientDocState;
+    [docId: string]: DocDataState;
   }>;
   collection: ImmutableMap<{
     [collectionId: string]: FireclientCollectionState;
@@ -206,44 +207,35 @@ export type ArrayQuerySchema = {
   callback?: () => void;
 };
 
+export type SetDocQueryObject = {
+  id?: string;
+  fields: {
+    [field: string]: any;
+  };
+  subCollection: {
+    [name: string]: SetDocQueryObject;
+  };
+};
+export type SetDocQueryGenerator = (...args: any) => SetDocQueryObject;
+export type SetDocQuery = SetDocQueryObject | SetDocQueryGenerator;
+
 export type ProviderContext = {
   state: FireclientState | null;
   dispatch: React.Dispatch<reducer.Actions> | null;
   firestoreDB: firestore.Firestore | null;
 };
-/**
- * Converts Firestore document snapshot into `FireclientDoc`.
- * @param {firestore.DocumentData} doc
- * @example
- * const [snapshot] = useGetDocSnapshot("/path/to/doc");
- * const docData = createDataFromDoc(snapshot);
- */
-export function createDataFromDoc(doc: firestore.DocumentData): FireclientDoc {
-  const { id } = doc;
-  const data = doc.data();
-  return {
-    data: data !== undefined ? data : null,
-    id,
-  };
-}
-/**
- * Converts Firestore collection snapshot into `FireclientDoc[]`.
- * @param {firestore.DocumentData} doc
- * @example
- * const [snapshot] = useGetCollectionSnapshot("/path/to/collection");
- * const collectionData = createDataFromCollection(snapshot);
- */
-export function createDataFromCollection(
-  collection: firestore.DocumentSnapshot[],
-): FireclientDoc[] {
-  return collection.map(coll => createDataFromDoc(coll));
-}
+
+export const deleteField = firestore.FieldValue.delete();
 
 export const convertStateToJson = provider.convertStateToJson;
 export const Provider = provider.default;
 export const Context = provider.Context;
 
-export const getQueryId = fetchFunctions.getQueryId;
+export const getHashCode = utils.getHashCode;
+export const createDataFromDoc = utils.createDataFromDoc;
+export const createDataFromCollection = utils.createDataFromCollection;
+
+export const getQueryId = utils.getQueryId;
 
 export const useLazyGetDocSnapshot = hooks.useLazyGetDocSnapshot;
 export const useGetDocSnapshot = hooks.useGetDocSnapshot;
@@ -265,3 +257,7 @@ export const useArrayQuery = advancedHooks.useArrayQuery;
 export const useQuery = advancedHooks.useQuery;
 export const usePaginateCollection = advancedHooks.usePaginateCollection;
 export const useGetSubCollection = advancedHooks.useGetSubCollection;
+
+export const useSetDoc = hooks.useSetDoc;
+export const useAddDoc = hooks.useAddDoc;
+export const useUpdateDoc = hooks.useUpdateDoc;

@@ -2,7 +2,7 @@ import { firestore } from "firebase";
 import "firebase/firestore";
 import { Map } from "immutable";
 import React from "react";
-import { createDataFromDoc, FireclientDocState, FireclientState, ProviderContext } from ".";
+import { FireclientState, ProviderContext } from ".";
 import reducer, { Actions } from "./reducer";
 import { assert } from "./validation";
 
@@ -18,28 +18,17 @@ const initialState: FireclientState = Map({
   collection: Map(),
 });
 
-export function unwrapContext(
-  context: ProviderContext,
-): {
+export function getContext(): {
   state: FireclientState;
   dispatch: React.Dispatch<Actions>;
   firestoreDB: firestore.Firestore;
 } {
-  const { state, dispatch, firestoreDB } = context;
+  const { state, dispatch, firestoreDB } = providerContext;
   if (state === null || dispatch === null || firestoreDB === null) {
     throw Error(`state, dispatch, db is null.
     You should use <Provider> in parent component.`);
   }
   return { state, dispatch, firestoreDB };
-}
-
-function convertDocSnapshotToData(state: FireclientState) {
-  return state.update("doc", docStates =>
-    docStates.map((docState: FireclientDocState) => ({
-      data: createDataFromDoc(docState.get("snapshot")),
-      connectedFrom: docState.get("connectedFrom"),
-    })),
-  );
 }
 /**
  *
@@ -52,7 +41,7 @@ function convertDocSnapshotToData(state: FireclientState) {
  *    const json = convertStateToJson(state);
  */
 export function convertStateToJson(state: FireclientState) {
-  return JSON.stringify(convertDocSnapshotToData(state), null, 4);
+  return JSON.stringify(state, null, 4);
 }
 
 function Provider({

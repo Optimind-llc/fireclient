@@ -1,52 +1,51 @@
 import { firestore } from "firebase";
 import "firebase/firestore";
-import { Map, fromJS } from "immutable";
+import { fromJS, Map } from "immutable";
 import * as pathlib from "path";
 import { useEffect, useState } from "react";
 import {
   ArrayQuerySchema,
+  CollectionData,
   createDataFromCollection,
-  createDataFromDoc,
   CursorDirection,
-  FireclientDoc,
+  DocData,
   Order,
   OrderDirection,
   Query,
   QueryOption,
   QuerySchema,
 } from ".";
-import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "./fetchFunctions";
+import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "./getFunctions";
 import {
-  initialDocData,
-  initialCollectionData,
   generateHooksId,
+  initialCollectionData,
+  initialDocData,
   useGetCollectionSnapshot,
   useGetDoc,
 } from "./hooks";
+import { isDocPath } from "./utils";
 import {
+  assert,
   assertArrayQuerySchema,
   assertPaginateOption,
   assertPath,
   assertQuerySchema,
   assertSubCollectionOption,
-  assert,
 } from "./validation";
 
-function isDoc(path: string): boolean {
-  const p = pathlib.resolve(path);
-  return p.split("/").length % 2 === 1;
-}
+type ArrayQueryData = (DocData | CollectionData)[];
 
-type ArrayQueryData = (FireclientDoc | FireclientDoc[])[];
-
+// TODO:
+// https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
+// トランザクションを使用する
 export function useArrayQuery(
-  querySchema: ArrayQuerySchema
+  querySchema: ArrayQuerySchema,
 ): [ArrayQueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
   assertArrayQuerySchema(querySchema);
   const { queries, callback, acceptOutdated } = querySchema;
   const connects = querySchema.connects ? querySchema.connects : false;
   const initialQueryData: ArrayQueryData = queries.map(query =>
-    isDoc(query.location) ? initialDocData : initialCollectionData
+    isDocPath(query.location) ? initialDocData : initialCollectionData,
   );
 
   // Subscribeする場合があるので、HooksのIdを持っておく
@@ -67,57 +66,53 @@ export function useArrayQuery(
 
     // React HooksはCallback内で呼び出せないので、
     // fetchFunctionsの関数を直接呼び出す
-    Promise.all<{ data: FireclientDoc | FireclientDoc[]; key: number }>(
+    Promise.all<{ data: DocData | CollectionData; key: number }>(
       queries.map(
         (query: Query, i: number) =>
           new Promise<{
-            data: FireclientDoc | FireclientDoc[];
+            data: DocData | CollectionData;
             key: number;
           }>((resolve, reject) => {
             const { location, limit, where, order, cursor } = query;
             const queryConnects = query.connects === undefined ? connects : query.connects;
-            const isDocQuery = isDoc(location);
+            const isDocQuery = isDocPath(location);
 
-            const onFetchDoc = (doc: firestore.DocumentSnapshot) => {
-              resolve({ data: createDataFromDoc(doc), key: i });
-              if (callback !== undefined) callback();
-            };
-            const onFetchCollection = (collection: firestore.DocumentSnapshot[]) => {
-              resolve({ data: createDataFromCollection(collection), key: i });
+            const onChange = (data: DocData | CollectionData) => {
+              resolve({ data: data, key: i });
               if (callback !== undefined) callback();
             };
             const onError = reject;
+            const onListen = () => {};
 
             if (isDocQuery && !queryConnects) {
-              const load = () => getDoc(location, onFetchDoc, onError, acceptOutdated);
+              const load = () => getDoc(location, onChange, onError, acceptOutdated);
               load();
               reloadFns.push(load);
             } else if (isDocQuery && queryConnects) {
-              const unsub = subscribeDoc(hooksId, location, onFetchDoc, onError);
+              const unsub = subscribeDoc(hooksId, location, onChange, onError, onListen);
               unsubFns.push(unsub);
             } else if (!isDocQuery && !queryConnects) {
               const load = () =>
                 getCollection(
                   location,
-                  { limit, where, order, cursor },
-                  onFetchCollection,
+                  onChange,
                   onError,
-                  acceptOutdated
+                  { limit, where, order, cursor },
+                  acceptOutdated,
                 );
               load();
               reloadFns.push(load);
             } else if (!isDocQuery && queryConnects) {
-              const unsub = subscribeCollection(
-                hooksId,
-                location,
-                { limit, where, order, cursor },
-                onFetchCollection,
-                onError
-              );
+              const unsub = subscribeCollection(hooksId, location, onChange, onError, onListen, {
+                limit,
+                where,
+                order,
+                cursor,
+              });
               unsubFns.push(unsub);
             }
-          })
-      )
+          }),
+      ),
     )
       .then(res => {
         setQueryData(res.sort((a, b) => a.key - b.key).map(r => r.data));
@@ -141,17 +136,17 @@ export function useArrayQuery(
   return [queryData, loading, error, unsubscribe];
 }
 
-type QueryData = Map<string, FireclientDoc | FireclientDoc[] | {}>;
+type QueryData = Map<string, DocData | CollectionData | {}>;
 
 export function useQuery(
-  querySchema: QuerySchema
+  querySchema: QuerySchema,
 ): [QueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
   assertQuerySchema(querySchema);
   const { queries } = querySchema;
 
   const idxToKey = Object.keys(queries).reduce(
     (acc: any, key, i: number) => acc.set(i, key),
-    Map()
+    Map(),
   );
   const arrayQueries = Object.values(queries);
   const schema = {
@@ -173,7 +168,7 @@ function useGetMinMax(
   option: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption
+  } & QueryOption,
 ): [firestore.DocumentSnapshot | null, firestore.DocumentSnapshot | null, () => void, () => void] {
   const order = option.order as Order;
   const isDesc = order.direction === "desc";
@@ -214,7 +209,7 @@ export function usePaginateCollection(
   option: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption
+  } & QueryOption,
 ) {
   assertPath(path);
   assertPaginateOption(option);
@@ -297,7 +292,7 @@ export function usePaginateCollection(
 
 export function useGetSubCollection(
   path: string,
-  option: { field: string; collectionPath: string; acceptOutdated?: boolean }
+  option: { field: string; collectionPath: string; acceptOutdated?: boolean },
 ) {
   assertPath(path);
   assertSubCollectionOption(option);
@@ -311,7 +306,7 @@ export function useGetSubCollection(
   assert(
     docIds === null || // データ未取得
       (docIds instanceof Array && docIds.every((docId: any) => typeof docId === "string")),
-    `Value of ${field} should be string array.`
+    `Value of ${field} should be string array.`,
   );
   const queries =
     docIds === null
