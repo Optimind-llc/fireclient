@@ -4,7 +4,7 @@ import pathlib from "path";
 import { CollectionId, Cursor, DocId, HooksId, Limit, Order, QueryOption, Where } from ".";
 import { CollectionData, DocData } from "./";
 import { Actions } from "./reducer";
-import { assert, isArray } from "./validation";
+import { assert } from "./validation";
 
 function orderedFromJS(object: any): any {
   // CursorでOriginにSnapshotを指定することがある
@@ -49,7 +49,12 @@ export function isDocPath(path: string): boolean {
   const p = pathlib.resolve(path);
   return p.split("/").length % 2 === 1;
 }
-
+export function createData(id: string, fields: { [fields: string]: any }): DocData {
+  return {
+    data: fields,
+    id,
+  };
+}
 /**
  * Converts Firestore document snapshot into `DocData`.
  * @param {firestore.DocumentData} doc
@@ -60,10 +65,7 @@ export function isDocPath(path: string): boolean {
 export function createDataFromDoc(doc: firestore.DocumentData): DocData {
   const { id } = doc;
   const data = doc.data();
-  return {
-    data: data !== undefined ? data : null,
-    id,
-  };
+  return createData(id, data !== undefined ? data : null);
 }
 /**
  * Converts Firestore collection snapshot into `CollectionData`.
@@ -172,7 +174,7 @@ export function disconnectCollectionFromState(
 }
 
 function withWhere(ref: firestore.Query, where: Where | [Where]): firestore.Query {
-  if (isArray(where)) {
+  if (Array.isArray(where)) {
     return (where as [Where]).reduce((acc, cond) => withWhere(acc, cond), ref);
   }
 
@@ -190,7 +192,7 @@ function withLimit(ref: firestore.Query, limit: Limit): firestore.Query {
 }
 
 function withOrder(ref: firestore.Query, order: Order | [Order]): firestore.Query {
-  if (isArray(order)) {
+  if (Array.isArray(order)) {
     return (order as [Order]).reduce((acc, ord) => {
       return withOrder(acc, ord);
     }, ref);
@@ -256,7 +258,7 @@ export function withOption(
 ): firestore.Query {
   const optionFn: {
     fn: (ref: firestore.Query, option: any) => firestore.Query;
-    param: Where | [Where] | Limit | Order | [Order] | Cursor | undefined;
+    param: Where | Where[] | Limit | Order | Order[] | Cursor | undefined;
   }[] = [
     { fn: withWhere, param: where },
     { fn: withOrder, param: order },

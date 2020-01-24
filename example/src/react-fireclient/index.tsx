@@ -105,7 +105,7 @@ export type QueryOption = {
    *    value: 15000000
    * }
    */
-  where?: Where | [Where];
+  where?: Where | Where[];
   /**
    * @example
    * limit: 150
@@ -118,7 +118,7 @@ export type QueryOption = {
    *    direction: "desc" // optional
    * }
    */
-  order?: Order | [Order];
+  order?: Order | Order[];
   /**
    * @example
    * cursor: {
@@ -212,12 +212,16 @@ export type SetDocQueryObject = {
   fields: {
     [field: string]: any;
   };
-  subCollection: {
-    [name: string]: SetDocQueryObject;
+  subCollection?: {
+    [name: string]: SetCollectionQueryObject;
   };
 };
 export type SetDocQueryGenerator = (...args: any) => SetDocQueryObject;
 export type SetDocQuery = SetDocQueryObject | SetDocQueryGenerator;
+
+export type SetCollectionQueryObject = SetDocQueryObject[];
+export type SetCollectionQueryGenerator = (...args: any) => SetCollectionQueryObject;
+export type SetCollectionQuery = SetCollectionQueryObject | SetCollectionQueryGenerator;
 
 export type ProviderContext = {
   state: FireclientState | null;
@@ -261,3 +265,4 @@ export const useGetSubCollection = advancedHooks.useGetSubCollection;
 export const useSetDoc = hooks.useSetDoc;
 export const useAddDoc = hooks.useAddDoc;
 export const useUpdateDoc = hooks.useUpdateDoc;
+export const useSetCollection = hooks.useSetCollection;

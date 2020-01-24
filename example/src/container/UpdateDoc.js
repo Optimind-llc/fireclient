@@ -8,7 +8,7 @@ function View(props) {
   });
   const code = `
   const [setFn, writing, called, error] = useUpdateDoc(docPath, {
-    fields: ${JSON.stringify(query)},
+    fields: ${JSON.stringify(query, null, 4)},
   });
   `;
   return (

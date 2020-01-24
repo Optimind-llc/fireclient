@@ -204,6 +204,12 @@ function reverseDirection(reverse: boolean, direction: OrderDirection = "asc"): 
   }
 }
 
+function reverseOrder(reverse: boolean, order: Order | Order[]): Order | Order[] {
+  return Array.isArray(order)
+    ? order.map(o => ({ ...o, direction: reverseDirection(reverse, o.direction) }))
+    : { ...order, direction: reverseDirection(reverse, order.direction) };
+}
+
 export function usePaginateCollection(
   path: string,
   option: {
@@ -230,10 +236,7 @@ export function usePaginateCollection(
       : {
           ...option,
           // reversedを反映
-          order: {
-            ...order,
-            direction: reverseDirection(queryReversed, order.direction),
-          },
+          order: reverseOrder(queryReversed, order),
           // originを反映
           cursor: {
             origin,

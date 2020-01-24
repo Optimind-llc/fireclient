@@ -9,6 +9,8 @@ import LazyGetDoc from "./container/LazyGetDoc";
 import SetDoc from "./container/SetDoc";
 import AddDoc from "./container/AddDoc";
 import UpdateDoc from "./container/UpdateDoc";
+import SetCollection from "./container/SetCollection";
+import AddDocWithSubCollection from "./container/AddDocWithSubCollection";
 
 const PageContainer = styled.div`
   padding: 20px;
@@ -38,6 +40,78 @@ const firebaseConfig = {
 };
 `;
 
+const pagesTemplate = (docPath, collectionPath, query) => [
+  {
+    title: "useGetDoc",
+    path: "/",
+    component: docPath.length > 0 ? <GetDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
+  },
+  {
+    title: "useGetCollection",
+    component:
+      collectionPath.length > 0 ? (
+        <GetCollection collectionPath={collectionPath} />
+      ) : (
+        <h2>Collection path is required.</h2>
+      ),
+  },
+  {
+    title: "useSubscribeDoc",
+    component:
+      docPath.length > 0 ? <SubscribeDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
+  },
+  {
+    title: "useLazyGetDoc",
+    component:
+      docPath.length > 0 ? <LazyGetDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
+  },
+  {
+    title: "useSetDoc",
+    component:
+      docPath.length > 0 && query !== null ? (
+        <SetDoc docPath={docPath} query={query} />
+      ) : (
+        <h2>Doc path and query is required.</h2>
+      ),
+  },
+  {
+    title: "useAddDoc",
+    component:
+      collectionPath.length > 0 && query !== null ? (
+        <AddDoc collectionPath={collectionPath} query={query} />
+      ) : (
+        <h2>Collection path and query is required.</h2>
+      ),
+  },
+  {
+    title: "useUpdateDoc",
+    component:
+      docPath.length > 0 && query !== null ? (
+        <UpdateDoc docPath={docPath} query={query} />
+      ) : (
+        <h2>Doc path and query is required.</h2>
+      ),
+  },
+  {
+    title: "setCollection",
+    component:
+      collectionPath.length > 0 ? (
+        <SetCollection collectionPath={collectionPath} />
+      ) : (
+        <h2>Collection path is required.</h2>
+      ),
+  },
+  {
+    title: "addDocWithSubCollection",
+    component:
+      collectionPath.length > 0 ? (
+        <AddDocWithSubCollection collectionPath={collectionPath} />
+      ) : (
+        <h2>Collection path is required.</h2>
+      ),
+  },
+];
+
 const App = () => {
   const [docPathCache, setDocPathCache] = useState("");
   const [collectionPathCache, setCollectionPathCache] = useState("");
@@ -56,60 +130,9 @@ const App = () => {
     bar: "Fireclient"
   }
   `;
-  const pages = [
-    {
-      title: "useGetDoc",
-      path: "/",
-      component: (docPath, collectionPath) =>
-        docPath.length > 0 ? <GetDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
-    },
-    {
-      title: "useGetCollection",
-      component: (docPath, collectionPath) =>
-        collectionPath.length > 0 ? (
-          <GetCollection collectionPath={collectionPath} />
-        ) : (
-          <h2>Collection path is required.</h2>
-        ),
-    },
-    {
-      title: "useSubscribeDoc",
-      component: (docPath, collectionPath) =>
-        docPath.length > 0 ? <SubscribeDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
-    },
-    {
-      title: "useLazyGetDoc",
-      component: (docPath, collectionPath) =>
-        docPath.length > 0 ? <LazyGetDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
-    },
-    {
-      title: "useSetDoc",
-      component: (docPath, collectionPath) =>
-        docPath.length > 0 && query !== null ? (
-          <SetDoc docPath={docPath} query={query} />
-        ) : (
-          <h2>Doc path and query is required.</h2>
-        ),
-    },
-    {
-      title: "useAddDoc",
-      component: (docPath, collectionPath) =>
-        collectionPath.length > 0 && query !== null ? (
-          <AddDoc collectionPath={collectionPath} query={query} />
-        ) : (
-          <h2>Collection path and query is required.</h2>
-        ),
-    },
-    {
-      title: "useUpdateDoc",
-      component: (docPath, collectionPath) =>
-        docPath.length > 0 && query !== null ? (
-          <UpdateDoc docPath={docPath} query={query} />
-        ) : (
-          <h2>Doc path and query is required.</h2>
-        ),
-    },
-  ];
+
+  const pages = pagesTemplate(docPath, collectionPath, query);
+
   return (
     <>
       <BrowserRouter>
@@ -171,11 +194,7 @@ const App = () => {
 
         <PageContainer>
           {pages.map(page => (
-            <Route
-              exact
-              path={`/${page.title}`}
-              render={() => page.component(docPath, collectionPath, query)}
-            />
+            <Route exact path={`/${page.title}`} render={() => page.component} />
           ))}
         </PageContainer>
       </BrowserRouter>

@@ -1,7 +1,16 @@
 import { firestore } from "firebase";
 import "firebase/firestore";
 import { useEffect, useState } from "react";
-import { CollectionData, DocData, HooksId, QueryOption, SetDocQuery, SetDocQueryObject } from ".";
+import {
+  CollectionData,
+  DocData,
+  HooksId,
+  QueryOption,
+  SetCollectionQuery,
+  SetCollectionQueryObject,
+  SetDocQuery,
+  SetDocQueryObject,
+} from ".";
 import {
   getCollection,
   getCollectionSnapshot,
@@ -12,7 +21,7 @@ import {
   subscribeDoc,
   subscribeDocSnapshot,
 } from "./getFunctions";
-import { setDoc, addDoc, updateDoc } from "./setFunctions";
+import { addDoc, setCollection, setDoc, updateDoc } from "./setFunctions";
 import { getHashCode } from "./utils";
 import {
   assertAcceptOutdatedOption,
@@ -26,9 +35,9 @@ export function generateHooksId(): HooksId {
     .toString(32)
     .substring(2);
 }
-// ----------
+// ------------------------------------------
 //  Get Base
-// ----------
+// ------------------------------------------
 
 function useLazyGetDocBase<State, InitialState = State>(
   path: string,
@@ -87,6 +96,7 @@ export function useSubscribeDocBase<State, InitialState = State>(
 ): [State | InitialState, boolean, any, () => void] {
   assertPath(path);
   assertCallbackOption(option);
+
   const [hooksId] = useState(generateHooksId());
   const [error, setError] = useState(null);
   const [doc, setDoc] = useState<State | InitialState>(initialValue);
@@ -186,6 +196,7 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
   const [unsubscribe, setUnsubscribe] = useState<{
     fn: () => void;
   }>({ fn: () => {} });
+
   useEffect(() => {
     const unsub = subscribeFunction(
       hooksId,
@@ -208,9 +219,9 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
   return [collection, loading, error, unsubscribe.fn];
 }
 
-// ----------
+// ------------------------------------------
 //  Get Snapshot
-// ----------
+// ------------------------------------------
 
 export function useLazyGetDocSnapshot(
   path: string,
@@ -279,9 +290,9 @@ export function useSubscribeCollectionSnapshot(
   return useSubscribeCollectionBase(path, [], subscribeCollectionSnapshot, option);
 }
 
-// ----------
+// ------------------------------------------
 //  Get Data
-// ----------
+// ------------------------------------------
 
 export const initialDocData: DocData = {
   data: null,
@@ -352,54 +363,149 @@ export function useSubscribeCollection(
   return useSubscribeCollectionBase(path, initialCollectionData, subscribeCollection, option);
 }
 
-// ----------
-//  Set Data
-// ----------
+// ------------------------------------------
+//  Set Base
+// ------------------------------------------
 
-function useWriteDoc(
+function useSetDocBase(
   path: string,
   query: SetDocQuery,
-  writeFunction: (
+  setFunction: (
     path: string,
     query: SetDocQueryObject,
     onWrite: () => void,
     onError: (error: any) => void,
+    option?: {
+      merge?: boolean;
+      mergeFields?: string[];
+      callback?: () => void;
+    },
   ) => void,
-  option: any,
+  option?: {
+    merge?: boolean;
+    mergeFields?: string[];
+    callback?: () => void;
+  },
 ) {
   const [writing, setWriting] = useState(false);
   const [called, setCalled] = useState(false);
   const [error, setError] = useState(null);
 
+  // ObjectでQueryを指定していた場合Functionに変換する
   const queryGenerator = query instanceof Function ? query : () => query;
 
   const writeFn = (...args: any) => {
     setWriting(true);
     setCalled(true);
-    writeFunction(
+    setFunction(
       path,
       queryGenerator(...args),
       () => {
         setError(null);
         setWriting(false);
+        if (option?.callback !== undefined) option.callback();
       },
       err => {
         setError(err);
         setWriting(false);
       },
+      option,
     );
   };
   return [writeFn, writing, called, error];
 }
 
-export function useSetDoc(path: string, query: SetDocQuery, option: any) {
-  return useWriteDoc(path, query, setDoc, option);
+function useSetCollectionBase(
+  path: string,
+  queries: SetCollectionQuery,
+  setFunction: (
+    path: string,
+    queries: SetCollectionQueryObject,
+    onWrite: () => void,
+    onError: (error: any) => void,
+    option?: {
+      merge?: boolean;
+      mergeFields?: string[];
+    },
+  ) => void,
+  option?: {
+    merge?: boolean;
+    mergeFields?: string[];
+    callback?: () => void;
+  },
+) {
+  const [writing, setWriting] = useState(false);
+  const [called, setCalled] = useState(false);
+  const [error, setError] = useState(null);
+
+  // ObjectでQueryを指定していた場合Functionに変換する
+  const queryGenerator = queries instanceof Function ? queries : () => queries;
+
+  const writeFn = (...args: any) => {
+    setWriting(true);
+    setCalled(true);
+    setFunction(
+      path,
+      queryGenerator(...args),
+      () => {
+        setError(null);
+        setWriting(false);
+        if (option?.callback !== undefined) option.callback();
+      },
+      err => {
+        setError(err);
+        setWriting(false);
+      },
+      option,
+    );
+  };
+  return [writeFn, writing, called, error];
 }
 
-export function useAddDoc(path: string, query: SetDocQuery, option: any) {
-  return useWriteDoc(path, query, addDoc, option);
+// ------------------------------------------
+//  Set Data
+// ------------------------------------------
+
+export function useSetDoc(
+  path: string,
+  query: SetDocQuery,
+  option?: {
+    merge?: boolean;
+    mergeFields?: string[];
+    callback?: () => void;
+  },
+) {
+  return useSetDocBase(path, query, setDoc, option);
 }
 
-export function useUpdateDoc(path: string, query: SetDocQuery, option: any) {
-  return useWriteDoc(path, query, updateDoc, option);
+export function useAddDoc(
+  path: string,
+  query: SetDocQuery,
+  option?: {
+    callback?: () => void;
+  },
+) {
+  return useSetDocBase(path, query, addDoc, option);
+}
+
+export function useUpdateDoc(
+  path: string,
+  query: SetDocQuery,
+  option?: {
+    callback?: () => void;
+  },
+) {
+  return useSetDocBase(path, query, updateDoc, option);
+}
+
+export function useSetCollection(
+  path: string,
+  query: SetCollectionQuery,
+  option?: {
+    merge?: boolean;
+    mergeFields?: string[];
+    callback?: () => void;
+  },
+) {
+  return useSetCollectionBase(path, query, setCollection, option);
 }
