@@ -244,6 +244,7 @@ export const Provider = provider.default;
 export const Context = provider.Context;
 
 export const getQueryId = fetchFunctions.getQueryId;
+export const getHashCode = fetchFunctions.getHashCode;
 
 export const useLazyGetDocSnapshot = hooks.useLazyGetDocSnapshot;
 export const useGetDocSnapshot = hooks.useGetDocSnapshot;

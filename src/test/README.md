@@ -1,4 +1,4 @@
-# Prepare firestore
+# Fireclient test
 
 To test our library, you have to import our Firestore backup.
 
@@ -24,7 +24,15 @@ yarn install
 node importFirestoreBackup.js
 ```
 
-4. Run test by executing below.
+4. Define composite indexes in Firestore
+
+CollectionID : cities
+
+1 - population / Acending
+
+2 - foo / Ascending
+
+5. Run test by executing below.
 
 ```
 yarn test
