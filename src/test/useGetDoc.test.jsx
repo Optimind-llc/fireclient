@@ -43,6 +43,7 @@ describe("useGetDoc", () => {
     let app;
     const callback = () => {
       const obj = JSON.parse(app.find(".obj").text());
+      expect;
       const { doc, loading, error } = obj;
       expect(doc.data.country).toEqual("Japan");
       expect(doc.data.name).toEqual("Tokyo");
@@ -50,7 +51,6 @@ describe("useGetDoc", () => {
       expect(doc.id).toEqual("Tokyo");
       expect(loading).toEqual(false);
       expect(error).toEqual(null);
-      app.find("button").simulate("click");
       done();
     };
     app = mount(

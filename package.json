@@ -8,8 +8,7 @@
   ],
   "scripts": {
     "build": "tsc --jsx react",
-    "test": "jest src/test/* --silent",
-    "test-v": "jest src/test/*"
+    "test": "jest src/test/* --silent"
   },
   "peerDependencies": {
     "react": ">=16.8.0",

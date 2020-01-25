@@ -42,7 +42,6 @@ exports.convertStateToJson = provider.convertStateToJson;
 exports.Provider = provider.default;
 exports.Context = provider.Context;
 exports.getQueryId = fetchFunctions.getQueryId;
-exports.getHashCode = fetchFunctions.getHashCode;
 exports.useLazyGetDocSnapshot = hooks.useLazyGetDocSnapshot;
 exports.useGetDocSnapshot = hooks.useGetDocSnapshot;
 exports.useSubscribeDocSnapshot = hooks.useSubscribeDocSnapshot;

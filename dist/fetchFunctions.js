@@ -7,12 +7,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var immutable_1 = require("immutable");
 var firebase_1 = require("firebase");
+var immutable_1 = require("immutable");
 var pathlib = __importStar(require("path"));
 var provider_1 = require("./provider");
 var validation_1 = require("./validation");
-function sortedFromJS(object) {
+function orderedFromJS(object) {
     // CursorでOriginにSnapshotを指定することがある
     if (object instanceof firebase_1.firestore.DocumentSnapshot) {
         return object.ref.path;
@@ -27,22 +27,21 @@ function sortedFromJS(object) {
     else {
         return validation_1.isArray(object)
             ? immutable_1.Seq(object)
-                .map(sortedFromJS)
+                .map(orderedFromJS)
                 .filter(function (v) { return v !== undefined; })
                 .toList()
             : immutable_1.Seq(object)
-                .map(sortedFromJS)
+                .map(orderedFromJS)
                 .filter(function (v) { return v !== undefined; })
-                .toOrderedMap()
-                .sortBy(function (v, k) { return k; });
+                .toOrderedMap();
     }
 }
 function getHashCode(obj) {
     if (obj === undefined) {
-        return sortedFromJS({}).hashCode();
+        return orderedFromJS({}).hashCode();
     }
     else {
-        return sortedFromJS(obj).hashCode();
+        return orderedFromJS(obj).hashCode();
     }
 }
 exports.getHashCode = getHashCode;

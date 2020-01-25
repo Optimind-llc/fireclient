@@ -9,7 +9,7 @@ import { providerContext, unwrapContext } from "./provider";
 import { assert, isArray } from "./validation";
 import { Actions } from "./reducer";
 
-function sortedFromJS(object: any): any {
+function orderedFromJS(object: any): any {
   // CursorでOriginにSnapshotを指定することがある
   if (object instanceof firestore.DocumentSnapshot) {
     return object.ref.path;
@@ -23,22 +23,21 @@ function sortedFromJS(object: any): any {
   } else {
     return isArray(object)
       ? Seq(object)
-          .map(sortedFromJS)
+          .map(orderedFromJS)
           .filter((v: any) => v !== undefined)
           .toList()
       : Seq(object)
-          .map(sortedFromJS)
+          .map(orderedFromJS)
           .filter((v: any) => v !== undefined)
-          .toOrderedMap()
-          .sortBy((v: any, k: any) => k);
+          .toOrderedMap();
   }
 }
 
 export function getHashCode(obj: any): number {
   if (obj === undefined) {
-    return sortedFromJS({}).hashCode();
+    return orderedFromJS({}).hashCode();
   } else {
-    return sortedFromJS(obj).hashCode();
+    return orderedFromJS(obj).hashCode();
   }
 }
 
@@ -67,7 +66,7 @@ function saveCollection(
   dispatch: React.Dispatch<Actions>,
   path: string,
   option: QueryOption,
-  collection: firestore.DocumentSnapshot[],
+  collection: firestore.DocumentSnapshot[]
 ) {
   collection.forEach(doc => {
     const docId = pathlib.resolve(path, doc.id);
@@ -99,7 +98,7 @@ function connectCollectionToState(
   dispatch: React.Dispatch<Actions>,
   collectionId: CollectionId,
   uuid: HooksId,
-  docIds: List<DocId>,
+  docIds: List<DocId>
 ) {
   dispatch({
     type: "connectCollection",
@@ -126,7 +125,7 @@ function disconnectCollectionFromState(
   dispatch: React.Dispatch<Actions>,
   collectionId: CollectionId,
   uuid: HooksId,
-  docIds: List<DocId>,
+  docIds: List<DocId>
 ) {
   dispatch({
     type: "disconnectCollection",
@@ -181,7 +180,7 @@ function withCursor(ref: firestore.Query, cursor: Cursor): firestore.Query {
   const _multipleFields = multipleFields !== undefined ? multipleFields : false;
   assert(
     !_multipleFields || origin instanceof Array,
-    '"origin" should be array if "multipleFields" is true.',
+    '"origin" should be array if "multipleFields" is true.'
   );
 
   if (!_multipleFields) {
@@ -196,7 +195,7 @@ function withCursor(ref: firestore.Query, cursor: Cursor): firestore.Query {
         return ref.endBefore(origin);
       default:
         throw new Error(
-          'Query cursor.direction should be any of "startAt" / "startAfter" / "endAt" / "endBefore"',
+          'Query cursor.direction should be any of "startAt" / "startAfter" / "endAt" / "endBefore"'
         );
     }
   } else {
@@ -211,7 +210,7 @@ function withCursor(ref: firestore.Query, cursor: Cursor): firestore.Query {
         return ref.endBefore(...origin);
       default:
         throw new Error(
-          'Query cursor.direction should be any of "startAt" / "startAfter" / "endAt" / "endBefore"',
+          'Query cursor.direction should be any of "startAt" / "startAfter" / "endAt" / "endBefore"'
         );
     }
   }
@@ -219,7 +218,7 @@ function withCursor(ref: firestore.Query, cursor: Cursor): firestore.Query {
 
 function withOption(
   ref: firestore.CollectionReference,
-  { where, limit, order, cursor }: QueryOption,
+  { where, limit, order, cursor }: QueryOption
 ): firestore.Query {
   const optionFn: {
     fn: (ref: firestore.Query, option: any) => firestore.Query;
@@ -239,7 +238,7 @@ export function getDoc(
   path: string,
   onGet: (doc: firestore.DocumentSnapshot) => void,
   onError: (err: any) => void,
-  acceptOutdated = false,
+  acceptOutdated = false
 ) {
   const docId = pathlib.resolve(path);
   const { state, dispatch, firestoreDB } = unwrapContext(providerContext);
@@ -272,7 +271,7 @@ export function subscribeDoc(
   path: string,
   onChange: (doc: firestore.DocumentSnapshot) => void,
   onError: (err: any) => void,
-  onListen: () => void = () => {},
+  onListen: () => void = () => {}
 ): () => void {
   const docId = pathlib.resolve(path);
   const { dispatch, firestoreDB } = unwrapContext(providerContext);
@@ -288,7 +287,7 @@ export function subscribeDoc(
       },
       err => {
         onError(err);
-      },
+      }
     );
     return () => {
       unsubscribe();
@@ -305,7 +304,7 @@ export function getCollection(
   option: QueryOption = {},
   onGet: (collection: firestore.DocumentSnapshot[]) => void,
   onError: (err: any) => void,
-  acceptOutdated = false,
+  acceptOutdated = false
 ): void {
   const collectionId = getQueryId(path, option);
   const { state, dispatch, firestoreDB } = unwrapContext(providerContext);
@@ -319,7 +318,7 @@ export function getCollection(
         state
           .get("doc")
           .get(docId)
-          .get("snapshot"),
+          .get("snapshot")
       )
       .toJS();
     onGet(collectionSnapshot);
@@ -348,7 +347,7 @@ export function subscribeCollection(
   option: QueryOption = {},
   onChange: (collection: firestore.DocumentSnapshot[]) => void,
   onError: (err: any) => void,
-  onListen: () => void = () => {},
+  onListen: () => void = () => {}
 ): () => void {
   const collectionId = getQueryId(path, option);
   const { dispatch, firestoreDB } = unwrapContext(providerContext);
@@ -372,7 +371,7 @@ export function subscribeCollection(
       },
       err => {
         onError(err);
-      },
+      }
     );
     return () => {
       unsubscribe();
