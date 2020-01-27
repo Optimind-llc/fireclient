@@ -1,7 +1,8 @@
 import { firestore } from "firebase";
 import { List, Map, Set } from "immutable";
 import * as advancedHooks from "./advancedHooks";
-import * as hooks from "./hooks";
+import * as getHooks from "./getHooks";
+import * as setHooks from "./setHooks";
 import * as provider from "./provider";
 import * as reducer from "./reducer";
 import * as utils from "./utils";
@@ -105,7 +106,7 @@ export type QueryOption = {
    *    value: 15000000
    * }
    */
-  where?: Where | [Where];
+  where?: Where | Where[];
   /**
    * @example
    * limit: 150
@@ -118,7 +119,7 @@ export type QueryOption = {
    *    direction: "desc" // optional
    * }
    */
-  order?: Order | [Order];
+  order?: Order | Order[];
   /**
    * @example
    * cursor: {
@@ -209,15 +210,19 @@ export type ArrayQuerySchema = {
 
 export type SetDocQueryObject = {
   id?: string;
-  fields: {
+  fields?: {
     [field: string]: any;
   };
-  subCollection: {
-    [name: string]: SetDocQueryObject;
+  subCollection?: {
+    [name: string]: SetCollectionQueryObject;
   };
 };
 export type SetDocQueryGenerator = (...args: any) => SetDocQueryObject;
 export type SetDocQuery = SetDocQueryObject | SetDocQueryGenerator;
+
+export type SetCollectionQueryObject = SetDocQueryObject[];
+export type SetCollectionQueryGenerator = (...args: any) => SetCollectionQueryObject;
+export type SetCollectionQuery = SetCollectionQueryObject | SetCollectionQueryGenerator;
 
 export type ProviderContext = {
   state: FireclientState | null;
@@ -237,27 +242,28 @@ export const createDataFromCollection = utils.createDataFromCollection;
 
 export const getQueryId = utils.getQueryId;
 
-export const useLazyGetDocSnapshot = hooks.useLazyGetDocSnapshot;
-export const useGetDocSnapshot = hooks.useGetDocSnapshot;
-export const useSubscribeDocSnapshot = hooks.useSubscribeDocSnapshot;
+export const useLazyGetDocSnapshot = getHooks.useLazyGetDocSnapshot;
+export const useGetDocSnapshot = getHooks.useGetDocSnapshot;
+export const useSubscribeDocSnapshot = getHooks.useSubscribeDocSnapshot;
+export const useLazyGetCollectionSnapshot = getHooks.useLazyGetCollectionSnapshot;
+export const useGetCollectionSnapshot = getHooks.useGetCollectionSnapshot;
+export const useSubscribeCollectionSnapshot = getHooks.useSubscribeCollectionSnapshot;
+export const useLazyGetDoc = getHooks.useLazyGetDoc;
+export const useGetDoc = getHooks.useGetDoc;
+export const useSubscribeDoc = getHooks.useSubscribeDoc;
+export const useLazyGetCollection = getHooks.useLazyGetCollection;
+export const useGetCollection = getHooks.useGetCollection;
+export const useSubscribeCollection = getHooks.useSubscribeCollection;
 
-export const useLazyGetCollectionSnapshot = hooks.useLazyGetCollectionSnapshot;
-export const useGetCollectionSnapshot = hooks.useGetCollectionSnapshot;
-export const useSubscribeCollectionSnapshot = hooks.useSubscribeCollectionSnapshot;
-
-export const useLazyGetDoc = hooks.useLazyGetDoc;
-export const useGetDoc = hooks.useGetDoc;
-export const useSubscribeDoc = hooks.useSubscribeDoc;
-
-export const useLazyGetCollection = hooks.useLazyGetCollection;
-export const useGetCollection = hooks.useGetCollection;
-export const useSubscribeCollection = hooks.useSubscribeCollection;
+export const useSetDoc = setHooks.useSetDoc;
+export const useAddDoc = setHooks.useAddDoc;
+export const useUpdateDoc = setHooks.useUpdateDoc;
+export const useSetDocs = setHooks.useSetDocs;
+export const useAddDocs = setHooks.useAddDocs;
+export const useUpdateDocs = setHooks.useUpdateDocs;
+export const useSetCollection = setHooks.useSetCollection;
 
 export const useArrayQuery = advancedHooks.useArrayQuery;
 export const useQuery = advancedHooks.useQuery;
 export const usePaginateCollection = advancedHooks.usePaginateCollection;
 export const useGetSubCollection = advancedHooks.useGetSubCollection;
-
-export const useSetDoc = hooks.useSetDoc;
-export const useAddDoc = hooks.useAddDoc;
-export const useUpdateDoc = hooks.useUpdateDoc;

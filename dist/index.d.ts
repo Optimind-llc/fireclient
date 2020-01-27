@@ -2,7 +2,8 @@
 import { firestore } from "firebase";
 import { List, Map, Set } from "immutable";
 import * as advancedHooks from "./advancedHooks";
-import * as hooks from "./hooks";
+import * as getHooks from "./getHooks";
+import * as setHooks from "./setHooks";
 import * as provider from "./provider";
 import * as reducer from "./reducer";
 import * as utils from "./utils";
@@ -100,7 +101,7 @@ export declare type QueryOption = {
      *    value: 15000000
      * }
      */
-    where?: Where | [Where];
+    where?: Where | Where[];
     /**
      * @example
      * limit: 150
@@ -113,7 +114,7 @@ export declare type QueryOption = {
      *    direction: "desc" // optional
      * }
      */
-    order?: Order | [Order];
+    order?: Order | Order[];
     /**
      * @example
      * cursor: {
@@ -204,15 +205,18 @@ export declare type ArrayQuerySchema = {
 };
 export declare type SetDocQueryObject = {
     id?: string;
-    fields: {
+    fields?: {
         [field: string]: any;
     };
-    subCollection: {
-        [name: string]: SetDocQueryObject;
+    subCollection?: {
+        [name: string]: SetCollectionQueryObject;
     };
 };
 export declare type SetDocQueryGenerator = (...args: any) => SetDocQueryObject;
 export declare type SetDocQuery = SetDocQueryObject | SetDocQueryGenerator;
+export declare type SetCollectionQueryObject = SetDocQueryObject[];
+export declare type SetCollectionQueryGenerator = (...args: any) => SetCollectionQueryObject;
+export declare type SetCollectionQuery = SetCollectionQueryObject | SetCollectionQueryGenerator;
 export declare type ProviderContext = {
     state: FireclientState | null;
     dispatch: React.Dispatch<reducer.Actions> | null;
@@ -226,23 +230,27 @@ export declare const getHashCode: typeof utils.getHashCode;
 export declare const createDataFromDoc: typeof utils.createDataFromDoc;
 export declare const createDataFromCollection: typeof utils.createDataFromCollection;
 export declare const getQueryId: typeof utils.getQueryId;
-export declare const useLazyGetDocSnapshot: typeof hooks.useLazyGetDocSnapshot;
-export declare const useGetDocSnapshot: typeof hooks.useGetDocSnapshot;
-export declare const useSubscribeDocSnapshot: typeof hooks.useSubscribeDocSnapshot;
-export declare const useLazyGetCollectionSnapshot: typeof hooks.useLazyGetCollectionSnapshot;
-export declare const useGetCollectionSnapshot: typeof hooks.useGetCollectionSnapshot;
-export declare const useSubscribeCollectionSnapshot: typeof hooks.useSubscribeCollectionSnapshot;
-export declare const useLazyGetDoc: typeof hooks.useLazyGetDoc;
-export declare const useGetDoc: typeof hooks.useGetDoc;
-export declare const useSubscribeDoc: typeof hooks.useSubscribeDoc;
-export declare const useLazyGetCollection: typeof hooks.useLazyGetCollection;
-export declare const useGetCollection: typeof hooks.useGetCollection;
-export declare const useSubscribeCollection: typeof hooks.useSubscribeCollection;
+export declare const useLazyGetDocSnapshot: typeof getHooks.useLazyGetDocSnapshot;
+export declare const useGetDocSnapshot: typeof getHooks.useGetDocSnapshot;
+export declare const useSubscribeDocSnapshot: typeof getHooks.useSubscribeDocSnapshot;
+export declare const useLazyGetCollectionSnapshot: typeof getHooks.useLazyGetCollectionSnapshot;
+export declare const useGetCollectionSnapshot: typeof getHooks.useGetCollectionSnapshot;
+export declare const useSubscribeCollectionSnapshot: typeof getHooks.useSubscribeCollectionSnapshot;
+export declare const useLazyGetDoc: typeof getHooks.useLazyGetDoc;
+export declare const useGetDoc: typeof getHooks.useGetDoc;
+export declare const useSubscribeDoc: typeof getHooks.useSubscribeDoc;
+export declare const useLazyGetCollection: typeof getHooks.useLazyGetCollection;
+export declare const useGetCollection: typeof getHooks.useGetCollection;
+export declare const useSubscribeCollection: typeof getHooks.useSubscribeCollection;
+export declare const useSetDoc: typeof setHooks.useSetDoc;
+export declare const useAddDoc: typeof setHooks.useAddDoc;
+export declare const useUpdateDoc: typeof setHooks.useUpdateDoc;
+export declare const useSetDocs: typeof setHooks.useSetDocs;
+export declare const useAddDocs: typeof setHooks.useAddDocs;
+export declare const useUpdateDocs: typeof setHooks.useUpdateDocs;
+export declare const useSetCollection: typeof setHooks.useSetCollection;
 export declare const useArrayQuery: typeof advancedHooks.useArrayQuery;
 export declare const useQuery: typeof advancedHooks.useQuery;
 export declare const usePaginateCollection: typeof advancedHooks.usePaginateCollection;
 export declare const useGetSubCollection: typeof advancedHooks.useGetSubCollection;
-export declare const useSetDoc: typeof hooks.useSetDoc;
-export declare const useAddDoc: typeof hooks.useAddDoc;
-export declare const useUpdateDoc: typeof hooks.useUpdateDoc;
 export {};

@@ -36,7 +36,10 @@ export function getDocSnapshot(
         saveDoc(dispatch, docId, createDataFromDoc(doc));
         onGet(doc);
       })
-      .catch(onError);
+      .catch(err => {
+        console.error(err);
+        onError(err);
+      });
   } catch (err) {
     onError(err);
   }
@@ -125,7 +128,10 @@ export function getCollectionSnapshot(
         saveCollection(dispatch, path, option, createDataFromCollection(collection.docs));
         onGet(collection.docs);
       })
-      .catch(onError);
+      .catch(err => {
+        console.error(err);
+        onError(err);
+      });
   } catch (err) {
     onError(err);
   }

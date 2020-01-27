@@ -1,7 +1,7 @@
 import { firestore } from "firebase";
 import "firebase/firestore";
 import { useEffect, useState } from "react";
-import { CollectionData, DocData, HooksId, QueryOption, SetDocQuery, SetDocQueryObject } from ".";
+import { CollectionData, DocData, HooksId, QueryOption } from ".";
 import {
   getCollection,
   getCollectionSnapshot,
@@ -12,23 +12,18 @@ import {
   subscribeDoc,
   subscribeDocSnapshot,
 } from "./getFunctions";
-import { setDoc, addDoc, updateDoc } from "./setFunctions";
 import { getHashCode } from "./utils";
-import {
-  assertAcceptOutdatedOption,
-  assertCallbackOption,
-  assertPath,
-  assertQueryOption,
-} from "./validation";
+import * as validation from "./validation";
+import { assertRule, matches } from "./validation";
 
 export function generateHooksId(): HooksId {
   return Math.random()
     .toString(32)
     .substring(2);
 }
-// ----------
-//  Get Base
-// ----------
+// ------------------------------------------
+//  Get Doc Hooks Base
+// ------------------------------------------
 
 function useLazyGetDocBase<State, InitialState = State>(
   path: string,
@@ -44,9 +39,15 @@ function useLazyGetDocBase<State, InitialState = State>(
     acceptOutdated?: boolean;
   },
 ): [State | InitialState, boolean, any, () => void] {
-  assertPath(path);
-  assertCallbackOption(option);
-  assertAcceptOutdatedOption(option);
+  // Arg validation
+  assertRule([
+    { key: "path", fn: validation.isString },
+    {
+      key: "option",
+      optional: true,
+      fn: validation.matches(validation.callbackRule.concat(validation.acceptOutdatedRule)),
+    },
+  ])({ path, option }, "Argument");
 
   const [error, setError] = useState(null);
   const [doc, setDoc] = useState<State | InitialState>(initialValue);
@@ -85,8 +86,16 @@ export function useSubscribeDocBase<State, InitialState = State>(
     callback?: (snapshot: State) => void;
   },
 ): [State | InitialState, boolean, any, () => void] {
-  assertPath(path);
-  assertCallbackOption(option);
+  // Arg validation
+  assertRule([
+    { key: "path", fn: validation.isString },
+    {
+      key: "option",
+      optional: true,
+      fn: matches(validation.callbackRule),
+    },
+  ])({ path, option }, "Argument");
+
   const [hooksId] = useState(generateHooksId());
   const [error, setError] = useState(null);
   const [doc, setDoc] = useState<State | InitialState>(initialValue);
@@ -116,6 +125,10 @@ export function useSubscribeDocBase<State, InitialState = State>(
   return [doc, loading, error, unsubscribe.fn];
 }
 
+// ------------------------------------------
+//  Get Collection Hooks Base
+// ------------------------------------------
+
 export function useLazyGetCollectionBase<State, InitialState = State>(
   path: string,
   initialValue: State | InitialState,
@@ -131,10 +144,16 @@ export function useLazyGetCollectionBase<State, InitialState = State>(
     acceptOutdated?: boolean;
   } & QueryOption,
 ): [State | InitialState, boolean, any, () => void] {
-  assertPath(path);
-  assertQueryOption(option);
-  assertCallbackOption(option);
-  assertAcceptOutdatedOption(option);
+  // Arg validation
+  assertRule([
+    { key: "path", fn: validation.isString },
+    {
+      key: "option",
+      fn: matches(
+        validation.queryOptionRule.concat(validation.callbackRule, validation.acceptOutdatedRule),
+      ),
+    },
+  ])({ path, option }, "Argument");
 
   const [error, setError] = useState(null);
   const [collection, setCollection] = useState<State | InitialState>(initialValue);
@@ -175,9 +194,13 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
     callback?: (data: State) => void;
   } & QueryOption,
 ): [State | InitialState, boolean, any, () => void] {
-  assertPath(path);
-  assertQueryOption(option);
-  assertCallbackOption(option);
+  assertRule([
+    { key: "path", fn: validation.isString },
+    {
+      key: "option",
+      fn: matches(validation.queryOptionRule.concat(validation.acceptOutdatedRule)),
+    },
+  ])({ path, option }, "Argument");
 
   const [hooksId] = useState(generateHooksId());
   const [error, setError] = useState(null);
@@ -186,6 +209,7 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
   const [unsubscribe, setUnsubscribe] = useState<{
     fn: () => void;
   }>({ fn: () => {} });
+
   useEffect(() => {
     const unsub = subscribeFunction(
       hooksId,
@@ -208,9 +232,9 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
   return [collection, loading, error, unsubscribe.fn];
 }
 
-// ----------
-//  Get Snapshot
-// ----------
+// ------------------------------------------
+//  Get Doc Snapshot Hooks
+// ------------------------------------------
 
 export function useLazyGetDocSnapshot(
   path: string,
@@ -242,6 +266,10 @@ export function useSubscribeDocSnapshot(
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
   return useSubscribeDocBase(path, null, subscribeDocSnapshot, option);
 }
+
+// ------------------------------------------
+//  Get Collection Snapshot Hooks
+// ------------------------------------------
 
 export function useLazyGetCollectionSnapshot(
   path: string,
@@ -279,9 +307,9 @@ export function useSubscribeCollectionSnapshot(
   return useSubscribeCollectionBase(path, [], subscribeCollectionSnapshot, option);
 }
 
-// ----------
-//  Get Data
-// ----------
+// ------------------------------------------
+//  Get Doc Hooks
+// ------------------------------------------
 
 export const initialDocData: DocData = {
   data: null,
@@ -321,6 +349,10 @@ export function useSubscribeDoc(
   return useSubscribeDocBase(path, initialDocData, subscribeDoc, option);
 }
 
+// ------------------------------------------
+//  Get Collection Hooks
+// ------------------------------------------
+
 export function useLazyGetCollection(
   path: string,
   option?: {
@@ -350,56 +382,4 @@ export function useSubscribeCollection(
   } & QueryOption,
 ): [CollectionData, boolean, any, () => void] {
   return useSubscribeCollectionBase(path, initialCollectionData, subscribeCollection, option);
-}
-
-// ----------
-//  Set Data
-// ----------
-
-function useWriteDoc(
-  path: string,
-  query: SetDocQuery,
-  writeFunction: (
-    path: string,
-    query: SetDocQueryObject,
-    onWrite: () => void,
-    onError: (error: any) => void,
-  ) => void,
-  option: any,
-) {
-  const [writing, setWriting] = useState(false);
-  const [called, setCalled] = useState(false);
-  const [error, setError] = useState(null);
-
-  const queryGenerator = query instanceof Function ? query : () => query;
-
-  const writeFn = (...args: any) => {
-    setWriting(true);
-    setCalled(true);
-    writeFunction(
-      path,
-      queryGenerator(...args),
-      () => {
-        setError(null);
-        setWriting(false);
-      },
-      err => {
-        setError(err);
-        setWriting(false);
-      },
-    );
-  };
-  return [writeFn, writing, called, error];
-}
-
-export function useSetDoc(path: string, query: SetDocQuery, option: any) {
-  return useWriteDoc(path, query, setDoc, option);
-}
-
-export function useAddDoc(path: string, query: SetDocQuery, option: any) {
-  return useWriteDoc(path, query, addDoc, option);
-}
-
-export function useUpdateDoc(path: string, query: SetDocQuery, option: any) {
-  return useWriteDoc(path, query, updateDoc, option);
 }

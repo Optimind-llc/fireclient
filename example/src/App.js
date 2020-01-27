@@ -12,6 +12,8 @@ import UpdateDoc from "./container/UpdateDoc";
 import SetCollection from "./container/SetCollection";
 import AddDocWithSubCollection from "./container/AddDocWithSubCollection";
 
+import Playground from "./container/Playground";
+
 const PageContainer = styled.div`
   padding: 20px;
 `;
@@ -109,6 +111,10 @@ const pagesTemplate = (docPath, collectionPath, query) => [
       ) : (
         <h2>Collection path is required.</h2>
       ),
+  },
+  {
+    title: "playground",
+    component: <Playground />,
   },
 ];
 

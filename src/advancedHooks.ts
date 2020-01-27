@@ -22,16 +22,10 @@ import {
   initialDocData,
   useGetCollectionSnapshot,
   useGetDoc,
-} from "./hooks";
+} from "./getHooks";
 import { isDocPath } from "./utils";
-import {
-  assert,
-  assertArrayQuerySchema,
-  assertPaginateOption,
-  assertPath,
-  assertQuerySchema,
-  assertSubCollectionOption,
-} from "./validation";
+import * as validation from "./validation";
+import { assert, assertRule, matches } from "./validation";
 
 type ArrayQueryData = (DocData | CollectionData)[];
 
@@ -41,7 +35,7 @@ type ArrayQueryData = (DocData | CollectionData)[];
 export function useArrayQuery(
   querySchema: ArrayQuerySchema,
 ): [ArrayQueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
-  assertArrayQuerySchema(querySchema);
+  assertRule(validation.arrayQuerySchemaRule)(querySchema, "querySchema");
   const { queries, callback, acceptOutdated } = querySchema;
   const connects = querySchema.connects ? querySchema.connects : false;
   const initialQueryData: ArrayQueryData = queries.map(query =>
@@ -141,7 +135,7 @@ type QueryData = Map<string, DocData | CollectionData | {}>;
 export function useQuery(
   querySchema: QuerySchema,
 ): [QueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
-  assertQuerySchema(querySchema);
+  assertRule(validation.querySchemaRule)(querySchema, "querySchema");
   const { queries } = querySchema;
 
   const idxToKey = Object.keys(queries).reduce(
@@ -204,6 +198,12 @@ function reverseDirection(reverse: boolean, direction: OrderDirection = "asc"): 
   }
 }
 
+function reverseOrder(reverse: boolean, order: Order | Order[]): Order | Order[] {
+  return Array.isArray(order)
+    ? order.map(o => ({ ...o, direction: reverseDirection(reverse, o.direction) }))
+    : { ...order, direction: reverseDirection(reverse, order.direction) };
+}
+
 export function usePaginateCollection(
   path: string,
   option: {
@@ -211,8 +211,21 @@ export function usePaginateCollection(
     acceptOutdated?: boolean;
   } & QueryOption,
 ) {
-  assertPath(path);
-  assertPaginateOption(option);
+  assertRule([
+    {
+      key: "path",
+      fn: validation.isString,
+    },
+    {
+      key: "option",
+      fn: matches(
+        validation.paginateOptionRule.concat(
+          validation.callbackRule,
+          validation.acceptOutdatedRule,
+        ),
+      ),
+    },
+  ])({ path, option }, "Argument");
   const order = option.order as Order;
   const [min, max, reloadMin, reloadMax] = useGetMinMax(path, option);
   const [first, setFirst] = useState<any>(null);
@@ -230,10 +243,7 @@ export function usePaginateCollection(
       : {
           ...option,
           // reversedを反映
-          order: {
-            ...order,
-            direction: reverseDirection(queryReversed, order.direction),
-          },
+          order: reverseOrder(queryReversed, order),
           // originを反映
           cursor: {
             origin,
@@ -294,8 +304,16 @@ export function useGetSubCollection(
   path: string,
   option: { field: string; collectionPath: string; acceptOutdated?: boolean },
 ) {
-  assertPath(path);
-  assertSubCollectionOption(option);
+  assertRule([
+    {
+      key: "path",
+      fn: validation.isString,
+    },
+    {
+      key: "option",
+      fn: matches(validation.subCollectionOptionRule.concat(validation.acceptOutdatedRule)),
+    },
+  ])({ path, option }, "Argument");
   const { field, collectionPath, acceptOutdated } = option;
   const [docData, docLoading, docError, reloadDoc] = useGetDoc(path);
   // null -> データ取得前, undfeined -> fieldが存在しない（エラー）

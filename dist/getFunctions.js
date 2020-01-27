@@ -25,7 +25,10 @@ function getDocSnapshot(path, onGet, onError, acceptOutdated) {
             utils_1.saveDoc(dispatch, docId, utils_1.createDataFromDoc(doc));
             onGet(doc);
         })
-            .catch(onError);
+            .catch(function (err) {
+            console.error(err);
+            onError(err);
+        });
     }
     catch (err) {
         onError(err);
@@ -89,7 +92,10 @@ function getCollectionSnapshot(path, onGet, onError, option, acceptOutdated) {
             utils_1.saveCollection(dispatch, path, option, utils_1.createDataFromCollection(collection.docs));
             onGet(collection.docs);
         })
-            .catch(onError);
+            .catch(function (err) {
+            console.error(err);
+            onError(err);
+        });
     }
     catch (err) {
         onError(err);

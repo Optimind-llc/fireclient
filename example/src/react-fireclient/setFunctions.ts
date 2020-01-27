@@ -2,7 +2,7 @@ import * as pathlib from "path";
 import { SetCollectionQueryObject, SetDocQueryObject } from ".";
 import { getContext } from "./provider";
 import { Actions } from "./reducer";
-import { createData, saveDoc } from "./utils";
+import { createData, isDocPath, saveDoc } from "./utils";
 
 type Fields = { [field: string]: any };
 type SubCollection = {
@@ -14,8 +14,6 @@ const setDocCallback = (
   dispatch: React.Dispatch<Actions>,
   onSet: () => void,
   onError: (error: any) => void,
-  // collectionPath: string,
-  // docId: string,
   docPath: string,
   fields: Fields,
   subCollection?: SubCollection,
@@ -45,37 +43,51 @@ const setDocCallback = (
       ),
     )
       .then(onSet)
-      .catch(onError);
+      .catch(err => {
+        console.error(err);
+        onError(err);
+      });
   }
 };
 
 export function addDoc(
-  collectionPath: string,
+  path: string,
   query: SetDocQueryObject,
   onSet: () => void,
   onError: (error: any) => void,
 ) {
   const { firestoreDB, dispatch } = getContext();
-  const { fields, id, subCollection } = query;
+  const { id, subCollection } = query;
+  const fields = query.fields !== undefined ? query.fields : {};
+
+  const isDoc = isDocPath(path);
+  const idExists = id !== undefined;
 
   try {
-    const ref = firestoreDB.collection(collectionPath);
-    if (id !== undefined) {
+    if (isDoc) {
+      // doc path が渡された時
+      const ref = firestoreDB.doc(path);
       ref
-        .doc(id)
         .set(fields)
-        .then(() =>
-          setDocCallback(
-            dispatch,
-            onSet,
-            onError,
-            pathlib.resolve(collectionPath, id),
-            fields,
-            subCollection,
-          ),
-        )
-        .catch(err => onError(err));
+        .then(() => setDocCallback(dispatch, onSet, onError, path, fields, subCollection))
+        .catch(err => {
+          console.error(err);
+          onError(err);
+        });
+    } else if (idExists) {
+      // collection path と id が渡された時
+      const docPath = pathlib.resolve(path, id!);
+      const ref = firestoreDB.doc(docPath);
+      ref
+        .set(fields)
+        .then(() => setDocCallback(dispatch, onSet, onError, path, fields, subCollection))
+        .catch(err => {
+          console.error(err);
+          onError(err);
+        });
     } else {
+      // collection path のみ渡された時（ランダムな doc id が割り振られる）
+      const ref = firestoreDB.collection(path);
       ref
         .add(fields)
         .then(doc =>
@@ -83,12 +95,15 @@ export function addDoc(
             dispatch,
             onSet,
             onError,
-            pathlib.resolve(collectionPath, doc.id),
+            pathlib.resolve(path, doc.id),
             fields,
             subCollection,
           ),
         )
-        .catch(err => onError(err));
+        .catch(err => {
+          console.error(err);
+          onError(err);
+        });
     }
   } catch (err) {
     onError(err);
@@ -106,7 +121,9 @@ export function setDoc(
   },
 ) {
   const { firestoreDB, dispatch } = getContext();
-  const { fields, subCollection } = query;
+  const { subCollection } = query;
+
+  const fields = query.fields !== undefined ? query.fields : {};
 
   try {
     const promise =
@@ -117,7 +134,10 @@ export function setDoc(
       .then(() => {
         setDocCallback(dispatch, onSet, onError, docPath, fields, subCollection);
       })
-      .catch(onError);
+      .catch(err => {
+        console.error(err);
+        onError(err);
+      });
   } catch (err) {
     onError(err);
   }
@@ -130,7 +150,7 @@ export function updateDoc(
   onError: (error: any) => void,
 ) {
   const { firestoreDB, dispatch } = getContext();
-  const { fields } = query;
+  const fields = query.fields !== undefined ? query.fields : {};
 
   try {
     const ref = firestoreDB.doc(docPath);
@@ -139,7 +159,10 @@ export function updateDoc(
       .then(() => {
         setDocCallback(dispatch, onUpdate, onError, docPath, fields);
       })
-      .catch(err => onError(err));
+      .catch(err => {
+        console.error(err);
+        onError(err);
+      });
   } catch (err) {
     onError(err);
   }
@@ -183,5 +206,8 @@ export function setCollection(
     ),
   )
     .then(onSet)
-    .catch(onError);
+    .catch(err => {
+      console.error(err);
+      onError(err);
+    });
 }

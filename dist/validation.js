@@ -1,210 +1,345 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var firestoreWhereFilterOp = ["<", "<=", "==", ">=", ">", "array-contains", "in", "array-contains-any"];
-var isAnyOf = function (targets) { return function (obj) { return targets.indexOf(obj) >= 0; }; };
-var isString = function (obj) { return typeof obj === "string"; };
-var isNumber = function (obj) { return typeof obj === "number"; };
-var isBoolean = function (obj) { return typeof obj === "boolean"; };
-exports.isArray = function (obj) { return obj instanceof Array; };
-var isFunction = function (obj) { return obj instanceof Function; };
-var containKey = function (key) { return function (obj) { return key in obj; }; };
-var requiredProperty = function (key, valueassert) { return function (obj) {
-    return valueassert ? containKey(key)(obj) && valueassert(obj[key]) : containKey(key)(obj);
+var firestoreWhereFilterOp = [
+    "<",
+    "<=",
+    "==",
+    ">=",
+    ">",
+    "array-contains",
+    "in",
+    "array-contains-any",
+];
+var isNull = function (obj) { return obj === undefined || obj === null; };
+exports.isObject = function (obj, target) { return ({
+    valid: typeof obj === "object",
+    message: target + " should be object.",
+}); };
+exports.isAnyOf = function (candidate) { return function (obj, target) { return ({
+    valid: candidate.indexOf(obj) >= 0,
+    message: target + " should be any of [" + candidate + "].",
+}); }; };
+exports.isArrayOf = function (rule) { return function (obj, target) {
+    if (!Array.isArray(obj)) {
+        return {
+            valid: false,
+            message: target + " should be array.",
+        };
+    }
+    var notMatched = obj
+        .map(function (obj) { return rule(obj, "Element"); })
+        .filter(function (res) { return !res.valid; });
+    return notMatched.length > 0
+        ? {
+            valid: false,
+            message: target + " should be array and every element should satisfy below.\n\"" + notMatched[0].message + "\"",
+        }
+        : {
+            valid: true,
+            message: "",
+        };
 }; };
-var optionalProperty = function (key, valueassert) { return function (obj) {
-    return valueassert ? !(key in obj) || valueassert(obj[key]) : !(key in obj);
+exports.isString = function (obj, target) { return ({
+    valid: typeof obj === "string",
+    message: target + " should be string.",
+}); };
+exports.isNumber = function (obj, target) { return ({
+    valid: typeof obj === "number",
+    message: target + " should be number.",
+}); };
+exports.isBoolean = function (obj, target) { return ({
+    valid: typeof obj === "boolean",
+    message: target + " should be boolean.",
+}); };
+exports.isNotNull = function (obj, target) { return ({
+    valid: !isNull(obj),
+    message: target + " should not be null or undefined.",
+}); };
+exports.isFunction = function (obj, target) { return ({
+    valid: obj instanceof Function,
+    message: target + " should be function.",
+}); };
+exports.condition = function (condition, fn1, fn2) { return function (obj, target) {
+    return condition(obj) ? fn1(obj, target) : fn2(obj, target);
 }; };
+exports.matches = function (rule) { return function (obj, target) {
+    if (typeof obj !== "object") {
+        return exports.isObject(obj, target);
+    }
+    for (var i = 0; i < rule.length; i++) {
+        var _a = rule[i], fn = _a.fn, key = _a.key, optional = _a.optional;
+        var value = obj[key];
+        if (value !== undefined) {
+            var matchesRule = fn(value, "\"" + key + "\"");
+            console.log("result", target, obj, matchesRule);
+            if (!matchesRule.valid) {
+                return matchesRule;
+            }
+            // optional can be undefined
+        }
+        else if (!(optional === true)) {
+            return {
+                valid: false,
+                message: "\"" + key + "\" should not be null or undefined.",
+            };
+        }
+    }
+    return {
+        valid: true,
+        message: "",
+    };
+}; };
+exports.matchesArrayOf = function (rule) { return function (obj, target) {
+    if (!Array.isArray(obj)) {
+        return {
+            valid: false,
+            message: target + " should not be null or undefined.",
+        };
+    }
+    for (var i = 0; i < obj.length; i++) {
+        var ele = obj[i];
+        var matchesRule = exports.matches(rule)(ele, "Element of " + target);
+        if (!matchesRule.valid) {
+            return matchesRule;
+        }
+    }
+    return {
+        valid: true,
+        message: "",
+    };
+}; };
+exports.matchesObjectOf = function (rule) { return function (obj, target) {
+    if (Array.isArray(obj)) {
+        return {
+            valid: false,
+            message: target + " should not be array.",
+        };
+    }
+    if (typeof obj !== "object") {
+        return {
+            valid: false,
+            message: target + " should not be null or undefined.",
+        };
+    }
+    var entries = Object.entries(obj);
+    for (var i = 0; i < entries.length; i++) {
+        var key = entries[i][0];
+        var value = entries[i][1];
+        var matchesRule = exports.matches(rule)(value, "\"" + key + "\"");
+        if (!matchesRule.valid) {
+            return matchesRule;
+        }
+    }
+    return {
+        valid: true,
+        message: "",
+    };
+}; };
+var whereRule = [
+    {
+        key: "field",
+        fn: exports.isString,
+    },
+    {
+        key: "operator",
+        fn: exports.isAnyOf(firestoreWhereFilterOp),
+    },
+    {
+        key: "value",
+        fn: exports.isNotNull,
+    },
+];
+var orderRule = [
+    {
+        key: "by",
+        fn: exports.isString,
+    },
+    {
+        key: "direction",
+        optional: true,
+        fn: exports.isAnyOf(["asc", "desc"]),
+    },
+];
+var cursorRule = [
+    {
+        key: "origin",
+        fn: exports.isNotNull,
+    },
+    {
+        key: "direction",
+        fn: exports.isAnyOf(["startAt", "startAfter", "endAt", "endBefore"]),
+    },
+    {
+        key: "multipleFields",
+        fn: exports.isBoolean,
+    },
+];
+exports.queryOptionRule = [
+    {
+        key: "where",
+        optional: true,
+        fn: exports.condition(function (obj) { return !Array.isArray(obj); }, exports.matches(whereRule), exports.matchesArrayOf(whereRule)),
+    },
+    {
+        key: "limit",
+        optional: true,
+        fn: exports.isNumber,
+    },
+    {
+        key: "order",
+        optional: true,
+        fn: exports.condition(function (obj) { return !Array.isArray(obj); }, exports.matches(orderRule), exports.matchesArrayOf(orderRule)),
+    },
+    {
+        key: "cursor",
+        optional: true,
+        fn: exports.matches(cursorRule),
+    },
+];
+exports.queryRule = [
+    {
+        key: "location",
+        fn: exports.isString,
+    },
+    {
+        key: "connects",
+        optional: true,
+        fn: exports.isBoolean,
+    },
+].concat(exports.queryOptionRule);
+exports.acceptOutdatedRule = [
+    {
+        key: "acceptOutdated",
+        fn: exports.isBoolean,
+    },
+];
+exports.callbackRule = [
+    {
+        key: "callback",
+        fn: exports.isFunction,
+    },
+];
+exports.mergeRule = [
+    {
+        key: "merge",
+        optional: true,
+        fn: exports.isBoolean,
+    },
+    {
+        key: "mergeFields",
+        optional: true,
+        fn: exports.isArrayOf(exports.isString),
+    },
+];
+exports.arrayQuerySchemaRule = [
+    {
+        key: "connects",
+        fn: exports.isBoolean,
+        optional: true,
+    },
+    {
+        key: "queries",
+        fn: exports.matchesArrayOf(exports.queryRule),
+    },
+].concat(exports.acceptOutdatedRule, exports.callbackRule);
+exports.querySchemaRule = [
+    {
+        key: "connects",
+        fn: exports.isBoolean,
+    },
+    {
+        key: "queries",
+        fn: exports.matchesObjectOf(exports.queryRule),
+    },
+];
+exports.subCollectionOptionRule = [
+    {
+        key: "field",
+        fn: exports.isString,
+    },
+    {
+        key: "collectionPath",
+        fn: exports.isString,
+    },
+];
+exports.paginateOptionRule = [
+    {
+        key: "limit",
+        fn: exports.isNumber,
+    },
+    {
+        key: "order",
+        fn: exports.condition(function (obj) { return !Array.isArray(obj); }, exports.matches(orderRule), exports.matchesArrayOf(orderRule)),
+    },
+].concat(exports.queryOptionRule);
 exports.assert = function (isValid, errorMessage) {
     if (!isValid)
         throw Error(errorMessage);
 };
-/**
- * Check if `obj` satisfies `Where` type.
- * @example
- * type Where = {
- *  field: string;
- *  operator: firestore.WhereFilterOp;
- *  value: string;
- * };
- */
-var assertWhere = function (obj) {
-    exports.assert(requiredProperty("field", isString)(obj), 'Where should contain "field" property with string value.');
-    exports.assert(requiredProperty("operator", isAnyOf(firestoreWhereFilterOp))(obj), 'Where should contain "operator" property with Firestore where filter operation.');
-    exports.assert(requiredProperty("value")(obj), 'Where should contain "value" property.');
+exports.assertObject = function (obj, target) {
+    exports.assert(obj !== undefined, target + " is undefined.");
+    exports.assert(obj !== null, target + " is null.");
+    exports.assert(typeof obj === "object", target + " should be object.");
 };
-/**
- * Check if `obj` satisfies `Limit` type.
- * @example
- * type Limit = number
- */
-var assertLimit = function (obj) {
-    exports.assert(isNumber(obj), "Limit should be number.");
+exports.assertArray = function (obj, target) {
+    exports.assert(obj !== undefined, target + " is undefined.");
+    exports.assert(obj !== null, target + " is null.");
+    exports.assert(Array.isArray(obj), target + " should be array.");
 };
-/**
- * Check if `obj` satisfies `Order` type.
- * @example
- * type Order = {
- *  by: string;
- *  direction?: OrderDirection;
- * };
- */
-var assertOrder = function (obj) {
-    exports.assert(requiredProperty("by", isString)(obj), 'Order should contain "by" property with string value.');
-    exports.assert(optionalProperty("direction", isAnyOf(["asc", "desc"]))(obj), 'Order should contain "direction" property with any of "asc" or "desc".');
-};
-/**
- * Check if `obj` satisfies `Cursor` type.
- * @example
- * type Cursor = {
- *  origin: any;
- *  direction: "startAt" | "startAfter" | "endAt" | "endBefore";
- *  multipleFields?: boolean;
- * };
- */
-var assertCursor = function (obj) {
-    exports.assert(requiredProperty("origin")(obj), 'Cursor should contain "origin" property.');
-    exports.assert(requiredProperty("direction", isAnyOf(["startAt", "startAfter", "endAt", "endBefore"]))(obj), 'Cursor should contain "direction" property with value any of "startAt", "startAfter", "endAt", "endBefore".');
-    exports.assert(optionalProperty("multipleFields", isBoolean)(obj), 'Value of "multipleFields" property should be boolean.');
-};
-/**
- * Check if `obj` satisfies `QueryOption` type.
- * @example
- * type Option = {
- *    where?: Where | [Where];
- *    limit?: Limit;
- *    order?: Order | [Order];
- *    cursor?: Cursor;
- * }
- * ```
- */
-exports.assertQueryOption = function (obj) {
-    if (obj === undefined) {
-        return;
-    }
-    exports.assert(obj !== null, "Option is null.");
-    if (containKey("where")(obj)) {
-        if (exports.isArray(obj.where)) {
-            obj.where.forEach(function (ele) { return assertWhere(ele); });
-        }
-        else {
-            assertWhere(obj.where);
-        }
-    }
-    if (containKey("limit")(obj)) {
-        assertLimit(obj.limit);
-    }
-    if (containKey("order")(obj)) {
-        if (exports.isArray(obj.order)) {
-            obj.order.forEach(function (ele) { return assertOrder(ele); });
-        }
-        else {
-            assertOrder(obj.order);
-        }
-    }
-    if (containKey("cursor")(obj)) {
-        assertCursor(obj.cursor);
+exports.assertRule = function (rule) { return function (obj, target) {
+    var matchesRule = exports.matches(rule)(obj, target);
+    exports.assert(matchesRule.valid, matchesRule.message);
+}; };
+exports.assertSetDocQueryObject = function (obj, target) {
+    if (target === void 0) { target = "SetDocQuery"; }
+    exports.assertObject(obj, target);
+    exports.assertRule([
+        {
+            key: "id",
+            optional: true,
+            fn: exports.isString,
+        },
+        {
+            key: "fields",
+            optional: true,
+            fn: exports.isObject,
+        },
+    ])(obj, "Set doc query");
+    if (obj.subCollection !== undefined) {
+        exports.assertSubCollectionQuery(obj.subCollection, '"subCollection"');
     }
 };
-/**
- * Check if `obj` satisfies `Query` type.
- * @example
- * type Query = {
- *    location: string;
- *    connects?: boolean;
- * } & Option;
- */
-var assertQuery = function (obj) {
-    exports.assert(requiredProperty("location", isString)(obj), 'Query should contain "location" property with string value.');
-    exports.assert(optionalProperty("connects", isBoolean)(obj), 'Value of "connects" property should be boolean.');
-    exports.assertQueryOption(obj);
-};
-exports.assertAcceptOutdatedOption = function (obj) {
-    if (obj === undefined) {
-        return;
+exports.assertSetDocQuery = function (obj, target) {
+    if (target === void 0) { target = "SetDocQuery"; }
+    if (!(obj instanceof Function)) {
+        exports.assertSetDocQueryObject(obj, target);
     }
-    exports.assert(typeof obj === "object", "Option should be object.");
-    exports.assert(optionalProperty("acceptOutdated", isBoolean)(obj), '"acceptOutdated" property should be boolean.');
 };
-exports.assertCallbackOption = function (obj) {
-    if (obj === undefined) {
-        return;
+var assertSetCollectionQueryOjbect = function (obj, target) {
+    exports.assertArray(obj, target);
+    obj.forEach(function (ele) { return exports.assertSetDocQuery(ele); });
+};
+exports.assertSetCollectionQuery = function (obj, target) {
+    if (target === void 0) { target = "SetCollectionQuery"; }
+    if (!(obj instanceof Function)) {
+        assertSetCollectionQueryOjbect(obj, target);
     }
-    exports.assert(typeof obj === "object", "Option should be object.");
-    exports.assert(optionalProperty("callback", isFunction)(obj), '"callback" property should be function.');
 };
-/**
- * Check if `obj` satisfies `ArrayQuerySchema` type.
- * @example
- * type ArrayQuerySchema = {
- *    connects?: boolean;
- *    queries: Query[];
- * };
- */
-exports.assertArrayQuerySchema = function (obj) {
-    exports.assert(obj !== undefined, "Query schema is undefined.");
-    exports.assert(obj !== null, "Query schema is null.");
-    exports.assert(typeof obj === "object", "Option should be object.");
-    exports.assert(optionalProperty("connects", isBoolean)(obj), 'Value of "connects" property should be boolean.');
-    exports.assert(requiredProperty("queries")(obj), 'Schema should contain "queries" property.');
-    exports.assert(exports.isArray(obj.queries), 'Schema should contain "queries" with Array');
-    obj.queries.forEach(function (query) { return assertQuery(query); });
-    exports.assertAcceptOutdatedOption(obj);
-    exports.assertCallbackOption(obj);
+exports.assertSubCollectionQuery = function (obj, target) {
+    if (target === void 0) { target = "SubCollectionQuery"; }
+    exports.assertObject(obj, target);
+    var values = Object.values(obj);
+    values.forEach(function (value) {
+        exports.assert(Array.isArray(value), "Value of " + target + " should be array.");
+        value.forEach(function (ele) { return exports.assertSetDocQueryObject(ele, "Element"); });
+    });
 };
-/**
- * Check if `obj` satisfies `QuerySchema` type.
- * @example
- * type QuerySchema = {
- *    connects?: boolean;
- *    queries: {
- *      [field: string]: Query;
- *    };
- * };
- */
-exports.assertQuerySchema = function (obj) {
-    exports.assert(obj !== undefined, "Query schema is undefined.");
-    exports.assert(obj !== null, "Query schema is null.");
-    exports.assert(typeof obj === "object", "Option should be object.");
-    exports.assert(optionalProperty("connects", isBoolean)(obj), 'Value of "connects" property should be boolean.');
-    exports.assert(requiredProperty("queries")(obj), 'Schema should contain "queries" property.');
-    exports.assert(obj.queries instanceof Object, 'Schema should contain "queries" with Object');
-    Object.values(obj.queries).forEach(function (query) { return assertQuery(query); });
-    exports.assertAcceptOutdatedOption(obj);
-    exports.assertCallbackOption(obj);
-};
-/**
- * Check if `obj` satisfies `string` type.
- */
-exports.assertPath = function (obj) { return exports.assert(isString(obj), "Path should be string."); };
-/**
- * Check if `obj` satisfies option of `usePaginateCollection`.
- */
-exports.assertPaginateOption = function (obj) {
-    exports.assert(obj !== undefined, "Option is undefined.");
-    exports.assert(typeof obj === "object", "Option should be object.");
-    exports.assert(obj !== null, "Option is null.");
-    if (containKey("where")(obj)) {
-        if (exports.isArray(obj.where)) {
-            obj.where.forEach(function (ele) { return assertWhere(ele); });
-        }
-        else {
-            assertWhere(obj.where);
-        }
-    }
-    // only in paginate
-    exports.assert(containKey("limit")(obj), 'Option in usePaginateCollection should contain "limit" property.');
-    assertLimit(obj.limit);
-    exports.assert(containKey("order")(obj), 'Option in usePaginateCollection should contain "order" property.');
-    exports.assert(!exports.isArray(obj.order), '"order" property in usePaginateCollection should not be array.');
-    assertOrder(obj.order);
-};
-/**
- * Check if `obj` satisfies option of `useGetSubCollection`.
- */
-exports.assertSubCollectionOption = function (obj) {
-    exports.assert(obj !== undefined, "Option is undefined.");
-    exports.assert(typeof obj === "object", "Option should be object.");
-    exports.assert(obj !== null, "Option is null.");
-    exports.assert(containKey("field")(obj), 'Option in useGetSubCollection should contain "field" property.');
-    exports.assert(containKey("collectionPath")(obj), 'Option in useGetSubCollection should contain "collectionPath" property.');
+exports.assertSetDocsQuery = function (obj, target) {
+    if (target === void 0) { target = "SetDocQuery"; }
+    exports.assertObject(obj, target);
+    var entries = Object.entries(obj);
+    entries.forEach(function (_a) {
+        var key = _a[0], value = _a[1];
+        return exports.assertSetDocQuery(value, "\"" + key + "\"");
+    });
 };

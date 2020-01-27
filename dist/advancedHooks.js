@@ -24,21 +24,22 @@ var pathlib = __importStar(require("path"));
 var react_1 = require("react");
 var _1 = require(".");
 var getFunctions_1 = require("./getFunctions");
-var hooks_1 = require("./hooks");
+var getHooks_1 = require("./getHooks");
 var utils_1 = require("./utils");
+var validation = __importStar(require("./validation"));
 var validation_1 = require("./validation");
 // TODO:
 // https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
 // トランザクションを使用する
 function useArrayQuery(querySchema) {
-    validation_1.assertArrayQuerySchema(querySchema);
+    validation_1.assertRule(validation.arrayQuerySchemaRule)(querySchema, "querySchema");
     var queries = querySchema.queries, callback = querySchema.callback, acceptOutdated = querySchema.acceptOutdated;
     var connects = querySchema.connects ? querySchema.connects : false;
     var initialQueryData = queries.map(function (query) {
-        return utils_1.isDocPath(query.location) ? hooks_1.initialDocData : hooks_1.initialCollectionData;
+        return utils_1.isDocPath(query.location) ? getHooks_1.initialDocData : getHooks_1.initialCollectionData;
     });
     // Subscribeする場合があるので、HooksのIdを持っておく
-    var hooksId = react_1.useState(hooks_1.generateHooksId())[0];
+    var hooksId = react_1.useState(getHooks_1.generateHooksId())[0];
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialQueryData), queryData = _b[0], setQueryData = _b[1];
     var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
@@ -109,7 +110,7 @@ function useArrayQuery(querySchema) {
 }
 exports.useArrayQuery = useArrayQuery;
 function useQuery(querySchema) {
-    validation_1.assertQuerySchema(querySchema);
+    validation_1.assertRule(validation.querySchemaRule)(querySchema, "querySchema");
     var queries = querySchema.queries;
     var idxToKey = Object.keys(queries).reduce(function (acc, key, i) { return acc.set(i, key); }, immutable_1.Map());
     var arrayQueries = Object.values(queries);
@@ -128,8 +129,8 @@ function useGetMinMax(path, option) {
     var isDesc = order.direction === "desc";
     var minDocOption = __assign(__assign({}, option), { limit: 1 });
     var maxDocOption = __assign(__assign({}, option), { limit: 1, order: __assign(__assign({}, order), { direction: (isDesc ? "asc" : "desc") }) });
-    var _a = hooks_1.useGetCollectionSnapshot(path, minDocOption), min = _a[0], reloadMin = _a[3];
-    var _b = hooks_1.useGetCollectionSnapshot(path, maxDocOption), max = _b[0], reloadMax = _b[3];
+    var _a = getHooks_1.useGetCollectionSnapshot(path, minDocOption), min = _a[0], reloadMin = _a[3];
+    var _b = getHooks_1.useGetCollectionSnapshot(path, maxDocOption), max = _b[0], reloadMax = _b[3];
     return [
         min !== null && min[0] !== undefined ? min[0] : null,
         max !== null && max[0] !== undefined ? max[0] : null,
@@ -146,9 +147,22 @@ function reverseDirection(reverse, direction) {
             return !reverse ? "asc" : "desc";
     }
 }
+function reverseOrder(reverse, order) {
+    return Array.isArray(order)
+        ? order.map(function (o) { return (__assign(__assign({}, o), { direction: reverseDirection(reverse, o.direction) })); })
+        : __assign(__assign({}, order), { direction: reverseDirection(reverse, order.direction) });
+}
 function usePaginateCollection(path, option) {
-    validation_1.assertPath(path);
-    validation_1.assertPaginateOption(option);
+    validation_1.assertRule([
+        {
+            key: "path",
+            fn: validation.isString,
+        },
+        {
+            key: "option",
+            fn: validation_1.matches(validation.paginateOptionRule.concat(validation.callbackRule, validation.acceptOutdatedRule)),
+        },
+    ])({ path: path, option: option }, "Argument");
     var order = option.order;
     var _a = useGetMinMax(path, option), min = _a[0], max = _a[1], reloadMin = _a[2], reloadMax = _a[3];
     var _b = react_1.useState(null), first = _b[0], setFirst = _b[1];
@@ -162,7 +176,7 @@ function usePaginateCollection(path, option) {
         ? option
         : __assign(__assign({}, option), { 
             // reversedを反映
-            order: __assign(__assign({}, order), { direction: reverseDirection(queryReversed, order.direction) }), 
+            order: reverseOrder(queryReversed, order), 
             // originを反映
             cursor: {
                 origin: origin,
@@ -196,7 +210,7 @@ function usePaginateCollection(path, option) {
             : function () { },
         enabled: remainsNext,
     };
-    var _g = hooks_1.useGetCollectionSnapshot(path, optionWithCursor), collection = _g[0], loading = _g[1], error = _g[2];
+    var _g = getHooks_1.useGetCollectionSnapshot(path, optionWithCursor), collection = _g[0], loading = _g[1], error = _g[2];
     var nextFirst = collection !== null && collection.length > 0 ? collection[0] : null;
     var nextLast = collection !== null && collection.length > 0 ? collection[collection.length - 1] : null;
     react_1.useEffect(function () {
@@ -214,10 +228,18 @@ function usePaginateCollection(path, option) {
 }
 exports.usePaginateCollection = usePaginateCollection;
 function useGetSubCollection(path, option) {
-    validation_1.assertPath(path);
-    validation_1.assertSubCollectionOption(option);
+    validation_1.assertRule([
+        {
+            key: "path",
+            fn: validation.isString,
+        },
+        {
+            key: "option",
+            fn: validation_1.matches(validation.subCollectionOptionRule.concat(validation.acceptOutdatedRule)),
+        },
+    ])({ path: path, option: option }, "Argument");
     var field = option.field, collectionPath = option.collectionPath, acceptOutdated = option.acceptOutdated;
-    var _a = hooks_1.useGetDoc(path), docData = _a[0], docLoading = _a[1], docError = _a[2], reloadDoc = _a[3];
+    var _a = getHooks_1.useGetDoc(path), docData = _a[0], docLoading = _a[1], docError = _a[2], reloadDoc = _a[3];
     // null -> データ取得前, undfeined -> fieldが存在しない（エラー）
     var docIds = docData.data !== null ? docData.data[field] : null;
     // 取得したDocが field プロパティを持つこと

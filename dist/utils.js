@@ -7,7 +7,7 @@ var firebase_1 = require("firebase");
 var immutable_1 = require("immutable");
 var path_1 = __importDefault(require("path"));
 var validation_1 = require("./validation");
-function orderedFromJS(object) {
+function sortedFromJS(object) {
     // CursorでOriginにSnapshotを指定することがある
     if (object instanceof firebase_1.firestore.DocumentSnapshot) {
         return object.ref.path;
@@ -22,21 +22,22 @@ function orderedFromJS(object) {
     else {
         return Array.isArray(object)
             ? immutable_1.Seq(object)
-                .map(orderedFromJS)
+                .map(sortedFromJS)
                 .filter(function (v) { return v !== undefined; })
                 .toList()
             : immutable_1.Seq(object)
-                .map(orderedFromJS)
+                .map(sortedFromJS)
                 .filter(function (v) { return v !== undefined; })
-                .toOrderedMap();
+                .toOrderedMap()
+                .sortBy(function (v, k) { return k; });
     }
 }
 function getHashCode(obj) {
     if (obj === undefined) {
-        return orderedFromJS({}).hashCode();
+        return sortedFromJS({}).hashCode();
     }
     else {
-        return orderedFromJS(obj).hashCode();
+        return sortedFromJS(obj).hashCode();
     }
 }
 exports.getHashCode = getHashCode;
@@ -52,6 +53,13 @@ function isDocPath(path) {
     return p.split("/").length % 2 === 1;
 }
 exports.isDocPath = isDocPath;
+function createData(id, fields) {
+    return {
+        data: fields,
+        id: id,
+    };
+}
+exports.createData = createData;
 /**
  * Converts Firestore document snapshot into `DocData`.
  * @param {firestore.DocumentData} doc
@@ -62,10 +70,7 @@ exports.isDocPath = isDocPath;
 function createDataFromDoc(doc) {
     var id = doc.id;
     var data = doc.data();
-    return {
-        data: data !== undefined ? data : null,
-        id: id,
-    };
+    return createData(id, data !== undefined ? data : null);
 }
 exports.createDataFromDoc = createDataFromDoc;
 /**
@@ -80,11 +85,11 @@ function createDataFromCollection(collection) {
 }
 exports.createDataFromCollection = createDataFromCollection;
 // stateにdocのデータを保存
-function saveDoc(dispatch, docId, doc) {
+function saveDoc(dispatch, docPath, doc) {
     dispatch({
         type: "setDoc",
         payload: {
-            docId: docId,
+            docId: path_1.default.resolve(docPath),
             data: doc,
         },
     });
@@ -156,7 +161,7 @@ function disconnectCollectionFromState(dispatch, collectionId, uuid, docIds) {
 }
 exports.disconnectCollectionFromState = disconnectCollectionFromState;
 function withWhere(ref, where) {
-    if (validation_1.isArray(where)) {
+    if (Array.isArray(where)) {
         return where.reduce(function (acc, cond) { return withWhere(acc, cond); }, ref);
     }
     if (where === undefined) {
@@ -169,7 +174,7 @@ function withLimit(ref, limit) {
     return limit === undefined ? ref : ref.limit(limit);
 }
 function withOrder(ref, order) {
-    if (validation_1.isArray(order)) {
+    if (Array.isArray(order)) {
         return order.reduce(function (acc, ord) {
             return withOrder(acc, ord);
         }, ref);

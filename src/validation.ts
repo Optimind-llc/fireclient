@@ -1,216 +1,355 @@
-const firestoreWhereFilterOp = ["<", "<=", "==", ">=", ">", "array-contains", "in", "array-contains-any"];
+const firestoreWhereFilterOp = [
+  "<",
+  "<=",
+  "==",
+  ">=",
+  ">",
+  "array-contains",
+  "in",
+  "array-contains-any",
+];
+type ValidateResult = {
+  valid: boolean;
+  message: string;
+};
+type ValidateFunction = (obj: any, target: string) => ValidateResult;
+type Rule = {
+  key: string;
+  fn: ValidateFunction;
+  optional?: boolean;
+}[];
 
-const isAnyOf = (targets: any[]) => (obj: any) => targets.indexOf(obj) >= 0;
-const isString = (obj: any) => typeof obj === "string";
-const isNumber = (obj: any) => typeof obj === "number";
-const isBoolean = (obj: any) => typeof obj === "boolean";
-export const isArray = (obj: any) => obj instanceof Array;
-const isFunction = (obj: any) => obj instanceof Function;
+const isNull = (obj: any) => obj === undefined || obj === null;
+export const isObject = (obj: any, target: string) => ({
+  valid: typeof obj === "object",
+  message: `${target} should be object.`,
+});
+export const isAnyOf = (candidate: any[]) => (obj: any, target: string) => ({
+  valid: candidate.indexOf(obj) >= 0,
+  message: `${target} should be any of [${candidate}].`,
+});
+export const isArrayOf = (rule: ValidateFunction) => (obj: any, target: string) => {
+  if (!Array.isArray(obj)) {
+    return {
+      valid: false,
+      message: `${target} should be array.`,
+    };
+  }
+  const notMatched = obj
+    .map(obj => rule(obj, "Element"))
+    .filter((res: ValidateResult) => !res.valid);
+  return notMatched.length > 0
+    ? {
+        valid: false,
+        message: `${target} should be array and every element should satisfy below.\n"${notMatched[0].message}"`,
+      }
+    : {
+        valid: true,
+        message: "",
+      };
+};
+export const isString = (obj: any, target: string) => ({
+  valid: typeof obj === "string",
+  message: `${target} should be string.`,
+});
+export const isNumber = (obj: any, target: string) => ({
+  valid: typeof obj === "number",
+  message: `${target} should be number.`,
+});
+export const isBoolean = (obj: any, target: string) => ({
+  valid: typeof obj === "boolean",
+  message: `${target} should be boolean.`,
+});
+export const isNotNull = (obj: any, target: string) => ({
+  valid: !isNull(obj),
+  message: `${target} should not be null or undefined.`,
+});
+export const isFunction = (obj: any, target: string) => ({
+  valid: obj instanceof Function,
+  message: `${target} should be function.`,
+});
+export const condition = (
+  condition: (obj: any) => boolean,
+  fn1: ValidateFunction,
+  fn2: ValidateFunction,
+) => (obj: any, target: string) => {
+  return condition(obj) ? fn1(obj, target) : fn2(obj, target);
+};
 
-const containKey = (key: string) => (obj: any) => key in obj;
-const requiredProperty = (key: string, valueassert?: (value: any) => boolean) => (obj: any) =>
-  valueassert ? containKey(key)(obj) && valueassert(obj[key]) : containKey(key)(obj);
-const optionalProperty = (key: string, valueassert?: (value: any) => boolean) => (obj: any) =>
-  valueassert ? !(key in obj) || valueassert(obj[key]) : !(key in obj);
+export const matches = (rule: Rule) => (obj: any, target: string) => {
+  if (typeof obj !== "object") {
+    return isObject(obj, target);
+  }
+  for (let i = 0; i < rule.length; i++) {
+    const { fn, key, optional } = rule[i];
+    const value = obj[key];
+    if (value !== undefined) {
+      const matchesRule = fn(value, `"${key}"`);
+      console.log("result", target, obj, matchesRule);
+      if (!matchesRule.valid) {
+        return matchesRule;
+      }
+      // optional can be undefined
+    } else if (!(optional === true)) {
+      return {
+        valid: false,
+        message: `"${key}" should not be null or undefined.`,
+      };
+    }
+  }
+  return {
+    valid: true,
+    message: "",
+  };
+};
+export const matchesArrayOf = (rule: Rule) => (obj: any, target: string) => {
+  if (!Array.isArray(obj)) {
+    return {
+      valid: false,
+      message: `${target} should not be null or undefined.`,
+    };
+  }
+  for (let i = 0; i < obj.length; i++) {
+    const ele = obj[i];
+    const matchesRule = matches(rule)(ele, `Element of ${target}`);
+    if (!matchesRule.valid) {
+      return matchesRule;
+    }
+  }
+  return {
+    valid: true,
+    message: "",
+  };
+};
+export const matchesObjectOf = (rule: Rule) => (obj: any, target: string) => {
+  if (Array.isArray(obj)) {
+    return {
+      valid: false,
+      message: `${target} should not be array.`,
+    };
+  }
+  if (typeof obj !== "object") {
+    return {
+      valid: false,
+      message: `${target} should not be null or undefined.`,
+    };
+  }
+  const entries = Object.entries(obj);
+  for (let i = 0; i < entries.length; i++) {
+    const key = entries[i][0];
+    const value = entries[i][1];
+    const matchesRule = matches(rule)(value, `"${key}"`);
+    if (!matchesRule.valid) {
+      return matchesRule;
+    }
+  }
+  return {
+    valid: true,
+    message: "",
+  };
+};
+const whereRule: Rule = [
+  {
+    key: "field",
+    fn: isString,
+  },
+  {
+    key: "operator",
+    fn: isAnyOf(firestoreWhereFilterOp),
+  },
+  {
+    key: "value",
+    fn: isNotNull,
+  },
+];
+const orderRule: Rule = [
+  {
+    key: "by",
+    fn: isString,
+  },
+  {
+    key: "direction",
+    optional: true,
+    fn: isAnyOf(["asc", "desc"]),
+  },
+];
+const cursorRule: Rule = [
+  {
+    key: "origin",
+    fn: isNotNull,
+  },
+  {
+    key: "direction",
+    fn: isAnyOf(["startAt", "startAfter", "endAt", "endBefore"]),
+  },
+  {
+    key: "multipleFields",
+    fn: isBoolean,
+  },
+];
+
+export const queryOptionRule: Rule = [
+  {
+    key: "where",
+    optional: true,
+    fn: condition((obj: any) => !Array.isArray(obj), matches(whereRule), matchesArrayOf(whereRule)),
+  },
+  {
+    key: "limit",
+    optional: true,
+    fn: isNumber,
+  },
+  {
+    key: "order",
+    optional: true,
+    fn: condition((obj: any) => !Array.isArray(obj), matches(orderRule), matchesArrayOf(orderRule)),
+  },
+  {
+    key: "cursor",
+    optional: true,
+    fn: matches(cursorRule),
+  },
+];
+export const queryRule: Rule = [
+  {
+    key: "location",
+    fn: isString,
+  },
+  {
+    key: "connects",
+    optional: true,
+    fn: isBoolean,
+  },
+].concat(queryOptionRule as any[]);
+
+export const acceptOutdatedRule: Rule = [
+  {
+    key: "acceptOutdated",
+    fn: isBoolean,
+  },
+];
+export const callbackRule: Rule = [
+  {
+    key: "callback",
+    fn: isFunction,
+  },
+];
+export const mergeRule: Rule = [
+  {
+    key: "merge",
+    optional: true,
+    fn: isBoolean,
+  },
+  {
+    key: "mergeFields",
+    optional: true,
+    fn: isArrayOf(isString),
+  },
+];
+export const arrayQuerySchemaRule: Rule = [
+  {
+    key: "connects",
+    fn: isBoolean,
+    optional: true,
+  },
+  {
+    key: "queries",
+    fn: matchesArrayOf(queryRule),
+  },
+].concat(acceptOutdatedRule as any, callbackRule as any);
+
+export const querySchemaRule: Rule = [
+  {
+    key: "connects",
+    fn: isBoolean,
+  },
+  {
+    key: "queries",
+    fn: matchesObjectOf(queryRule),
+  },
+];
+export const subCollectionOptionRule = [
+  {
+    key: "field",
+    fn: isString,
+  },
+  {
+    key: "collectionPath",
+    fn: isString,
+  },
+];
+export const paginateOptionRule = [
+  {
+    key: "limit",
+    fn: isNumber,
+  },
+  {
+    key: "order",
+    fn: condition((obj: any) => !Array.isArray(obj), matches(orderRule), matchesArrayOf(orderRule)),
+  },
+].concat(queryOptionRule);
 
 export const assert = (isValid: boolean, errorMessage: string) => {
   if (!isValid) throw Error(errorMessage);
 };
-/**
- * Check if `obj` satisfies `Where` type.
- * @example
- * type Where = {
- *  field: string;
- *  operator: firestore.WhereFilterOp;
- *  value: string;
- * };
- */
-const assertWhere = (obj: any) => {
-  assert(requiredProperty("field", isString)(obj), 'Where should contain "field" property with string value.');
-  assert(
-    requiredProperty("operator", isAnyOf(firestoreWhereFilterOp))(obj),
-    'Where should contain "operator" property with Firestore where filter operation.'
-  );
-  assert(requiredProperty("value")(obj), 'Where should contain "value" property.');
+export const assertObject = (obj: any, target: string) => {
+  assert(obj !== undefined, `${target} is undefined.`);
+  assert(obj !== null, `${target} is null.`);
+  assert(typeof obj === "object", `${target} should be object.`);
 };
-/**
- * Check if `obj` satisfies `Limit` type.
- * @example
- * type Limit = number
- */
-const assertLimit = (obj: any) => {
-  assert(isNumber(obj), "Limit should be number.");
+export const assertArray = (obj: any, target: string) => {
+  assert(obj !== undefined, `${target} is undefined.`);
+  assert(obj !== null, `${target} is null.`);
+  assert(Array.isArray(obj), `${target} should be array.`);
 };
-/**
- * Check if `obj` satisfies `Order` type.
- * @example
- * type Order = {
- *  by: string;
- *  direction?: OrderDirection;
- * };
- */
-const assertOrder = (obj: any) => {
-  assert(requiredProperty("by", isString)(obj), 'Order should contain "by" property with string value.');
-  assert(
-    optionalProperty("direction", isAnyOf(["asc", "desc"]))(obj),
-    'Order should contain "direction" property with any of "asc" or "desc".'
-  );
+export const assertRule = (rule: Rule) => (obj: any, target: string) => {
+  const matchesRule = matches(rule)(obj, target);
+  assert(matchesRule.valid, matchesRule.message);
 };
-/**
- * Check if `obj` satisfies `Cursor` type.
- * @example
- * type Cursor = {
- *  origin: any;
- *  direction: "startAt" | "startAfter" | "endAt" | "endBefore";
- *  multipleFields?: boolean;
- * };
- */
-const assertCursor = (obj: any) => {
-  assert(requiredProperty("origin")(obj), 'Cursor should contain "origin" property.');
-  assert(
-    requiredProperty("direction", isAnyOf(["startAt", "startAfter", "endAt", "endBefore"]))(obj),
-    'Cursor should contain "direction" property with value any of "startAt", "startAfter", "endAt", "endBefore".'
-  );
-  assert(optionalProperty("multipleFields", isBoolean)(obj), 'Value of "multipleFields" property should be boolean.');
-};
-/**
- * Check if `obj` satisfies `QueryOption` type.
- * @example
- * type Option = {
- *    where?: Where | [Where];
- *    limit?: Limit;
- *    order?: Order | [Order];
- *    cursor?: Cursor;
- * }
- * ```
- */
-export const assertQueryOption = (obj: any) => {
-  if (obj === undefined) {
-    return;
-  }
-  assert(obj !== null, "Option is null.");
-  if (containKey("where")(obj)) {
-    if (isArray(obj.where)) {
-      obj.where.forEach((ele: any) => assertWhere(ele));
-    } else {
-      assertWhere(obj.where);
-    }
-  }
-  if (containKey("limit")(obj)) {
-    assertLimit(obj.limit);
-  }
-  if (containKey("order")(obj)) {
-    if (isArray(obj.order)) {
-      obj.order.forEach((ele: any) => assertOrder(ele));
-    } else {
-      assertOrder(obj.order);
-    }
-  }
-  if (containKey("cursor")(obj)) {
-    assertCursor(obj.cursor);
-  }
-};
-/**
- * Check if `obj` satisfies `Query` type.
- * @example
- * type Query = {
- *    location: string;
- *    connects?: boolean;
- * } & Option;
- */
-const assertQuery = (obj: any) => {
-  assert(requiredProperty("location", isString)(obj), 'Query should contain "location" property with string value.');
-  assert(optionalProperty("connects", isBoolean)(obj), 'Value of "connects" property should be boolean.');
-  assertQueryOption(obj);
-};
-export const assertAcceptOutdatedOption = (obj: any) => {
-  if (obj === undefined) {
-    return;
-  }
-  assert(typeof obj === "object", "Option should be object.");
-  assert(optionalProperty("acceptOutdated", isBoolean)(obj), '"acceptOutdated" property should be boolean.');
-};
-export const assertCallbackOption = (obj: any) => {
-  if (obj === undefined) {
-    return;
-  }
-  assert(typeof obj === "object", "Option should be object.");
-  assert(optionalProperty("callback", isFunction)(obj), '"callback" property should be function.');
-};
-/**
- * Check if `obj` satisfies `ArrayQuerySchema` type.
- * @example
- * type ArrayQuerySchema = {
- *    connects?: boolean;
- *    queries: Query[];
- * };
- */
-export const assertArrayQuerySchema = (obj: any) => {
-  assert(obj !== undefined, "Query schema is undefined.");
-  assert(obj !== null, "Query schema is null.");
-  assert(typeof obj === "object", "Option should be object.");
-  assert(optionalProperty("connects", isBoolean)(obj), 'Value of "connects" property should be boolean.');
-  assert(requiredProperty("queries")(obj), 'Schema should contain "queries" property.');
-  assert(isArray(obj.queries), 'Schema should contain "queries" with Array');
-  obj.queries.forEach((query: any) => assertQuery(query));
-  assertAcceptOutdatedOption(obj);
-  assertCallbackOption(obj);
-};
-/**
- * Check if `obj` satisfies `QuerySchema` type.
- * @example
- * type QuerySchema = {
- *    connects?: boolean;
- *    queries: {
- *      [field: string]: Query;
- *    };
- * };
- */
-export const assertQuerySchema = (obj: any) => {
-  assert(obj !== undefined, "Query schema is undefined.");
-  assert(obj !== null, "Query schema is null.");
-  assert(typeof obj === "object", "Option should be object.");
-  assert(optionalProperty("connects", isBoolean)(obj), 'Value of "connects" property should be boolean.');
-  assert(requiredProperty("queries")(obj), 'Schema should contain "queries" property.');
-  assert(obj.queries instanceof Object, 'Schema should contain "queries" with Object');
-  Object.values(obj.queries).forEach((query: any) => assertQuery(query));
-  assertAcceptOutdatedOption(obj);
-  assertCallbackOption(obj);
-};
-/**
- * Check if `obj` satisfies `string` type.
- */
-export const assertPath = (obj: any) => assert(isString(obj), "Path should be string.");
-/**
- * Check if `obj` satisfies option of `usePaginateCollection`.
- */
-export const assertPaginateOption = (obj: any) => {
-  assert(obj !== undefined, "Option is undefined.");
-  assert(typeof obj === "object", "Option should be object.");
-  assert(obj !== null, "Option is null.");
 
-  if (containKey("where")(obj)) {
-    if (isArray(obj.where)) {
-      obj.where.forEach((ele: any) => assertWhere(ele));
-    } else {
-      assertWhere(obj.where);
-    }
+export const assertSetDocQueryObject = (obj: any, target: string = "SetDocQuery") => {
+  assertObject(obj, target);
+  assertRule([
+    {
+      key: "id",
+      optional: true,
+      fn: isString,
+    },
+    {
+      key: "fields",
+      optional: true,
+      fn: isObject,
+    },
+  ])(obj, "Set doc query");
+  if (obj.subCollection !== undefined) {
+    assertSubCollectionQuery(obj.subCollection, '"subCollection"');
   }
-  // only in paginate
-  assert(containKey("limit")(obj), 'Option in usePaginateCollection should contain "limit" property.');
-  assertLimit(obj.limit);
-  assert(containKey("order")(obj), 'Option in usePaginateCollection should contain "order" property.');
-  assert(!isArray(obj.order), '"order" property in usePaginateCollection should not be array.');
-  assertOrder(obj.order);
 };
-/**
- * Check if `obj` satisfies option of `useGetSubCollection`.
- */
-export const assertSubCollectionOption = (obj: any) => {
-  assert(obj !== undefined, "Option is undefined.");
-  assert(typeof obj === "object", "Option should be object.");
-  assert(obj !== null, "Option is null.");
+export const assertSetDocQuery = (obj: any, target: string = "SetDocQuery") => {
+  if (!(obj instanceof Function)) {
+    assertSetDocQueryObject(obj, target);
+  }
+};
+const assertSetCollectionQueryOjbect = (obj: any, target: string) => {
+  assertArray(obj, target);
+  (obj as any[]).forEach(ele => assertSetDocQuery(ele));
+};
+export const assertSetCollectionQuery = (obj: any, target: string = "SetCollectionQuery") => {
+  if (!(obj instanceof Function)) {
+    assertSetCollectionQueryOjbect(obj, target);
+  }
+};
 
-  assert(containKey("field")(obj), 'Option in useGetSubCollection should contain "field" property.');
-  assert(containKey("collectionPath")(obj), 'Option in useGetSubCollection should contain "collectionPath" property.');
+export const assertSubCollectionQuery = (obj: any, target: string = "SubCollectionQuery") => {
+  assertObject(obj, target);
+  const values = Object.values(obj);
+  values.forEach(value => {
+    assert(Array.isArray(value), `Value of ${target} should be array.`);
+    (value as any[]).forEach((ele: any) => assertSetDocQueryObject(ele, "Element"));
+  });
+};
+export const assertSetDocsQuery = (obj: any, target: string = "SetDocQuery") => {
+  assertObject(obj, target);
+  const entries = Object.entries(obj);
+  entries.forEach(([key, value]) => assertSetDocQuery(value, `"${key}"`));
 };

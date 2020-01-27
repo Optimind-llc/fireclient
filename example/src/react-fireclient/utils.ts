@@ -6,7 +6,7 @@ import { CollectionData, DocData } from "./";
 import { Actions } from "./reducer";
 import { assert } from "./validation";
 
-function orderedFromJS(object: any): any {
+function sortedFromJS(object: any): any {
   // CursorでOriginにSnapshotを指定することがある
   if (object instanceof firestore.DocumentSnapshot) {
     return object.ref.path;
@@ -20,21 +20,22 @@ function orderedFromJS(object: any): any {
   } else {
     return Array.isArray(object)
       ? Seq(object)
-          .map(orderedFromJS)
+          .map(sortedFromJS)
           .filter((v: any) => v !== undefined)
           .toList()
       : Seq(object)
-          .map(orderedFromJS)
+          .map(sortedFromJS)
           .filter((v: any) => v !== undefined)
-          .toOrderedMap();
+          .toOrderedMap()
+          .sortBy((v: any, k: any) => k);
   }
 }
 
 export function getHashCode(obj: any): number {
   if (obj === undefined) {
-    return orderedFromJS({}).hashCode();
+    return sortedFromJS({}).hashCode();
   } else {
-    return orderedFromJS(obj).hashCode();
+    return sortedFromJS(obj).hashCode();
   }
 }
 
@@ -79,11 +80,11 @@ export function createDataFromCollection(collection: firestore.DocumentSnapshot[
 }
 
 // stateにdocのデータを保存
-export function saveDoc(dispatch: React.Dispatch<Actions>, docId: DocId, doc: DocData) {
+export function saveDoc(dispatch: React.Dispatch<Actions>, docPath: string, doc: DocData) {
   dispatch({
     type: "setDoc",
     payload: {
-      docId,
+      docId: pathlib.resolve(docPath),
       data: doc,
     },
   });

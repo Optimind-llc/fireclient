@@ -4,9 +4,9 @@ import pathlib from "path";
 import { CollectionId, Cursor, DocId, HooksId, Limit, Order, QueryOption, Where } from ".";
 import { CollectionData, DocData } from "./";
 import { Actions } from "./reducer";
-import { assert, isArray } from "./validation";
+import { assert } from "./validation";
 
-function orderedFromJS(object: any): any {
+function sortedFromJS(object: any): any {
   // CursorでOriginにSnapshotを指定することがある
   if (object instanceof firestore.DocumentSnapshot) {
     return object.ref.path;
@@ -20,21 +20,22 @@ function orderedFromJS(object: any): any {
   } else {
     return Array.isArray(object)
       ? Seq(object)
-          .map(orderedFromJS)
+          .map(sortedFromJS)
           .filter((v: any) => v !== undefined)
           .toList()
       : Seq(object)
-          .map(orderedFromJS)
+          .map(sortedFromJS)
           .filter((v: any) => v !== undefined)
-          .toOrderedMap();
+          .toOrderedMap()
+          .sortBy((v: any, k: any) => k);
   }
 }
 
 export function getHashCode(obj: any): number {
   if (obj === undefined) {
-    return orderedFromJS({}).hashCode();
+    return sortedFromJS({}).hashCode();
   } else {
-    return orderedFromJS(obj).hashCode();
+    return sortedFromJS(obj).hashCode();
   }
 }
 
@@ -49,7 +50,12 @@ export function isDocPath(path: string): boolean {
   const p = pathlib.resolve(path);
   return p.split("/").length % 2 === 1;
 }
-
+export function createData(id: string, fields: { [fields: string]: any }): DocData {
+  return {
+    data: fields,
+    id,
+  };
+}
 /**
  * Converts Firestore document snapshot into `DocData`.
  * @param {firestore.DocumentData} doc
@@ -60,10 +66,7 @@ export function isDocPath(path: string): boolean {
 export function createDataFromDoc(doc: firestore.DocumentData): DocData {
   const { id } = doc;
   const data = doc.data();
-  return {
-    data: data !== undefined ? data : null,
-    id,
-  };
+  return createData(id, data !== undefined ? data : null);
 }
 /**
  * Converts Firestore collection snapshot into `CollectionData`.
@@ -77,11 +80,11 @@ export function createDataFromCollection(collection: firestore.DocumentSnapshot[
 }
 
 // stateにdocのデータを保存
-export function saveDoc(dispatch: React.Dispatch<Actions>, docId: DocId, doc: DocData) {
+export function saveDoc(dispatch: React.Dispatch<Actions>, docPath: string, doc: DocData) {
   dispatch({
     type: "setDoc",
     payload: {
-      docId,
+      docId: pathlib.resolve(docPath),
       data: doc,
     },
   });
@@ -172,7 +175,7 @@ export function disconnectCollectionFromState(
 }
 
 function withWhere(ref: firestore.Query, where: Where | [Where]): firestore.Query {
-  if (isArray(where)) {
+  if (Array.isArray(where)) {
     return (where as [Where]).reduce((acc, cond) => withWhere(acc, cond), ref);
   }
 
@@ -190,7 +193,7 @@ function withLimit(ref: firestore.Query, limit: Limit): firestore.Query {
 }
 
 function withOrder(ref: firestore.Query, order: Order | [Order]): firestore.Query {
-  if (isArray(order)) {
+  if (Array.isArray(order)) {
     return (order as [Order]).reduce((acc, ord) => {
       return withOrder(acc, ord);
     }, ref);
@@ -256,7 +259,7 @@ export function withOption(
 ): firestore.Query {
   const optionFn: {
     fn: (ref: firestore.Query, option: any) => firestore.Query;
-    param: Where | [Where] | Limit | Order | [Order] | Cursor | undefined;
+    param: Where | Where[] | Limit | Order | Order[] | Cursor | undefined;
   }[] = [
     { fn: withWhere, param: where },
     { fn: withOrder, param: order },
