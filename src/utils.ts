@@ -216,7 +216,7 @@ function withCursor(ref: firestore.Query, cursor: Cursor): firestore.Query {
   const { direction, origin, multipleFields } = cursor;
   const _multipleFields = multipleFields !== undefined ? multipleFields : false;
   assert(
-    !_multipleFields || origin instanceof Array,
+    !_multipleFields || Array.isArray(origin),
     '"origin" should be array if "multipleFields" is true.',
   );
 

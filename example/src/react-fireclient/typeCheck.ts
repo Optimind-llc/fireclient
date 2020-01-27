@@ -184,6 +184,7 @@ const cursorRule: Rule = [
   },
   {
     key: "multipleFields",
+    optional: true,
     fn: isBoolean,
   },
 ];
@@ -225,12 +226,14 @@ export const queryRule: Rule = [
 export const acceptOutdatedRule: Rule = [
   {
     key: "acceptOutdated",
+    optional: true,
     fn: isBoolean,
   },
 ];
 export const callbackRule: Rule = [
   {
     key: "callback",
+    optional: true,
     fn: isFunction,
   },
 ];

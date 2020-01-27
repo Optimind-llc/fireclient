@@ -191,7 +191,7 @@ function withCursor(ref, cursor) {
     }
     var direction = cursor.direction, origin = cursor.origin, multipleFields = cursor.multipleFields;
     var _multipleFields = multipleFields !== undefined ? multipleFields : false;
-    typeCheck_1.assert(!_multipleFields || origin instanceof Array, '"origin" should be array if "multipleFields" is true.');
+    typeCheck_1.assert(!_multipleFields || Array.isArray(origin), '"origin" should be array if "multipleFields" is true.');
     if (!_multipleFields) {
         switch (direction) {
             case "startAt":

@@ -170,6 +170,7 @@ var cursorRule = [
     },
     {
         key: "multipleFields",
+        optional: true,
         fn: exports.isBoolean,
     },
 ];
@@ -209,12 +210,14 @@ exports.queryRule = [
 exports.acceptOutdatedRule = [
     {
         key: "acceptOutdated",
+        optional: true,
         fn: exports.isBoolean,
     },
 ];
 exports.callbackRule = [
     {
         key: "callback",
+        optional: true,
         fn: exports.isFunction,
     },
 ];

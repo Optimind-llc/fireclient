@@ -92,6 +92,7 @@ function useLazyGetCollectionBase(path, initialValue, getFunction, options) {
         { key: "path", fn: typeCheck.isString },
         {
             key: "options",
+            optional: true,
             fn: typeCheck_1.matches(typeCheck.queryOptionRule.concat(typeCheck.callbackRule, typeCheck.acceptOutdatedRule)),
         },
     ])({ path: path, options: options }, "Argument");

@@ -149,6 +149,7 @@ export function useLazyGetCollectionBase<State, InitialState = State>(
     { key: "path", fn: typeCheck.isString },
     {
       key: "options",
+      optional: true,
       fn: matches(
         typeCheck.queryOptionRule.concat(typeCheck.callbackRule, typeCheck.acceptOutdatedRule),
       ),
