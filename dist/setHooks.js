@@ -10,22 +10,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("firebase/firestore");
 var react_1 = require("react");
 var setFunctions_1 = require("./setFunctions");
-var validation = __importStar(require("./validation"));
-var validation_1 = require("./validation");
+var typeCheck = __importStar(require("./typeCheck"));
+var typeCheck_1 = require("./typeCheck");
 // ------------------------------------------
 //  Set Hooks Base
 // ------------------------------------------
-function useSetBase(path, query, setFunction, option) {
-    // Arg validation
-    validation_1.assertRule([
-        { key: "path", fn: validation.isString },
+function useSetBase(path, query, setFunction, options) {
+    // Arg typeCheck
+    typeCheck_1.assertRule([
+        { key: "path", fn: typeCheck.isString },
         {
-            key: "option",
+            key: "options",
             optional: true,
-            fn: validation_1.matches(validation.mergeRule.concat(validation.callbackRule)),
+            fn: typeCheck_1.matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
         },
-    ])({ path: path, option: option }, "Argument");
-    validation.assertSetDocSchema(query);
+    ])({ path: path, options: options }, "Argument");
+    typeCheck.assertSetDocSchema(query);
     var _a = react_1.useState(false), writing = _a[0], setWriting = _a[1];
     var _b = react_1.useState(false), called = _b[0], setCalled = _b[1];
     var _c = react_1.useState(null), error = _c[0], setError = _c[1];
@@ -37,32 +37,32 @@ function useSetBase(path, query, setFunction, option) {
             args[_i] = arguments[_i];
         }
         var queryObject = queryGenerator.apply(void 0, args);
-        validation_1.assertSetDocSchemaObject(queryObject);
+        typeCheck_1.assertSetDocSchemaObject(queryObject);
         setWriting(true);
         setCalled(true);
         setFunction(path, queryGenerator.apply(void 0, args), function () {
             var _a;
             setError(null);
             setWriting(false);
-            if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
-                option.callback();
+            if (((_a = options) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
+                options.callback();
         }, function (err) {
             setError(err);
             setWriting(false);
-        }, option);
+        }, options);
     };
     return [writeFn, writing, called, error];
 }
-function useSetDocsBase(queries, setFunction, option) {
-    // Arg validation
-    validation_1.assertRule([
+function useSetDocsBase(queries, setFunction, options) {
+    // Arg typeCheck
+    typeCheck_1.assertRule([
         {
-            key: "option",
+            key: "options",
             optional: true,
-            fn: validation_1.matches(validation.mergeRule.concat(validation.callbackRule)),
+            fn: typeCheck_1.matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
         },
-    ])({ option: option }, "Argument");
-    validation.assertSetDocsQuery(queries);
+    ])({ options: options }, "Argument");
+    typeCheck.assertSetDocsQuery(queries);
     var _a = react_1.useState(false), writing = _a[0], setWriting = _a[1];
     var _b = react_1.useState(false), called = _b[0], setCalled = _b[1];
     var _c = react_1.useState(null), error = _c[0], setError = _c[1];
@@ -79,16 +79,16 @@ function useSetDocsBase(queries, setFunction, option) {
             return new Promise(function (resolve, reject) {
                 var queryGenerator = query instanceof Function ? query : function () { return query; };
                 var queryObject = queryGenerator.apply(void 0, args);
-                validation_1.assertSetDocSchemaObject(queryObject);
-                setFunction(path, queryObject, resolve, reject, option);
+                typeCheck_1.assertSetDocSchemaObject(queryObject);
+                setFunction(path, queryObject, resolve, reject, options);
             });
         }))
             .then(function () {
             var _a;
             setError(null);
             setWriting(false);
-            if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
-                option.callback();
+            if (((_a = options) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
+                options.callback();
         })
             .catch(function (err) {
             setError(err);
@@ -97,64 +97,64 @@ function useSetDocsBase(queries, setFunction, option) {
     };
     return [writeFn, writing, called, error];
 }
-function useSetDocBase(path, query, setFunction, option) {
-    // Arg validation
-    validation.assertSetDocSchema(query);
-    validation_1.matches([
-        { key: "path", fn: validation.isString },
+function useSetDocBase(path, query, setFunction, options) {
+    // Arg typeCheck
+    typeCheck.assertSetDocSchema(query);
+    typeCheck_1.matches([
+        { key: "path", fn: typeCheck.isString },
         {
-            key: "option",
-            fn: validation_1.matches(validation.queryOptionRule.concat(validation.acceptOutdatedRule)),
+            key: "options",
+            fn: typeCheck_1.matches(typeCheck.queryOptionRule.concat(typeCheck.acceptOutdatedRule)),
         },
-    ])({ path: path, option: option }, "Argument");
-    return useSetBase(path, query, setFunction, option);
+    ])({ path: path, options: options }, "Argument");
+    return useSetBase(path, query, setFunction, options);
 }
-function useSetCollectionBase(path, queries, setFunction, option) {
-    // Arg validation
-    validation.assertSetCollectionSchema(queries);
-    validation_1.matches([
-        { key: "path", fn: validation.isString },
+function useSetCollectionBase(path, queries, setFunction, options) {
+    // Arg typeCheck
+    typeCheck.assertSetCollectionSchema(queries);
+    typeCheck_1.matches([
+        { key: "path", fn: typeCheck.isString },
         {
-            key: "option",
-            fn: validation_1.matches(validation.queryOptionRule.concat(validation.acceptOutdatedRule)),
+            key: "options",
+            fn: typeCheck_1.matches(typeCheck.queryOptionRule.concat(typeCheck.acceptOutdatedRule)),
         },
-    ])({ path: path, option: option }, "Argument");
-    return useSetBase(path, queries, setFunction, option);
+    ])({ path: path, options: options }, "Argument");
+    return useSetBase(path, queries, setFunction, options);
 }
 // ------------------------------------------
 //  Set Doc Hooks
 // ------------------------------------------
-function useSetDoc(docPath, query, option) {
-    return useSetDocBase(docPath, query, setFunctions_1.setDoc, option);
+function useSetDoc(docPath, query, options) {
+    return useSetDocBase(docPath, query, setFunctions_1.setDoc, options);
 }
 exports.useSetDoc = useSetDoc;
-function useAddDoc(collectionPath, query, option) {
-    return useSetDocBase(collectionPath, query, setFunctions_1.addDoc, option);
+function useAddDoc(collectionPath, query, options) {
+    return useSetDocBase(collectionPath, query, setFunctions_1.addDoc, options);
 }
 exports.useAddDoc = useAddDoc;
-function useUpdateDoc(docPath, query, option) {
-    return useSetDocBase(docPath, query, setFunctions_1.updateDoc, option);
+function useUpdateDoc(docPath, query, options) {
+    return useSetDocBase(docPath, query, setFunctions_1.updateDoc, options);
 }
 exports.useUpdateDoc = useUpdateDoc;
 // ------------------------------------------
 //  Set Docs Hooks
 // ------------------------------------------
-function useAddDocs(queries, option) {
-    return useSetDocsBase(queries, setFunctions_1.addDoc, option);
+function useAddDocs(queries, options) {
+    return useSetDocsBase(queries, setFunctions_1.addDoc, options);
 }
 exports.useAddDocs = useAddDocs;
-function useSetDocs(queries, option) {
-    return useSetDocsBase(queries, setFunctions_1.setDoc, option);
+function useSetDocs(queries, options) {
+    return useSetDocsBase(queries, setFunctions_1.setDoc, options);
 }
 exports.useSetDocs = useSetDocs;
-function useUpdateDocs(queries, option) {
-    return useSetDocsBase(queries, setFunctions_1.updateDoc, option);
+function useUpdateDocs(queries, options) {
+    return useSetDocsBase(queries, setFunctions_1.updateDoc, options);
 }
 exports.useUpdateDocs = useUpdateDocs;
 // ------------------------------------------
 //  Set Collection Hooks
 // ------------------------------------------
-function useSetCollection(collectionPath, query, option) {
-    return useSetCollectionBase(collectionPath, query, setFunctions_1.setCollection, option);
+function useSetCollection(collectionPath, query, options) {
+    return useSetCollectionBase(collectionPath, query, setFunctions_1.setCollection, options);
 }
 exports.useSetCollection = useSetCollection;

@@ -26,13 +26,13 @@ var _1 = require(".");
 var getFunctions_1 = require("./getFunctions");
 var getHooks_1 = require("./getHooks");
 var utils_1 = require("./utils");
-var validation = __importStar(require("./validation"));
-var validation_1 = require("./validation");
+var typeCheck = __importStar(require("./typeCheck"));
+var typeCheck_1 = require("./typeCheck");
 // TODO:
 // https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
 // トランザクションを使用する
 function useArrayQuery(querySchema) {
-    validation_1.assertRule(validation.arrayQuerySchemaRule)(querySchema, "querySchema");
+    typeCheck_1.assertRule(typeCheck.arrayQuerySchemaRule)(querySchema, "querySchema");
     var queries = querySchema.queries, callback = querySchema.callback, acceptOutdated = querySchema.acceptOutdated;
     var connects = querySchema.connects ? querySchema.connects : false;
     var initialQueryData = queries.map(function (query) {
@@ -110,7 +110,7 @@ function useArrayQuery(querySchema) {
 }
 exports.useArrayQuery = useArrayQuery;
 function useQuery(querySchema) {
-    validation_1.assertRule(validation.querySchemaRule)(querySchema, "querySchema");
+    typeCheck_1.assertRule(typeCheck.querySchemaRule)(querySchema, "querySchema");
     var queries = querySchema.queries;
     var idxToKey = Object.keys(queries).reduce(function (acc, key, i) { return acc.set(i, key); }, immutable_1.Map());
     var arrayQueries = Object.values(queries);
@@ -124,11 +124,11 @@ function useQuery(querySchema) {
     ];
 }
 exports.useQuery = useQuery;
-function useGetMinMax(path, option) {
-    var order = option.order;
+function useGetMinMax(path, options) {
+    var order = options.order;
     var isDesc = order.direction === "desc";
-    var minDocOption = __assign(__assign({}, option), { limit: 1 });
-    var maxDocOption = __assign(__assign({}, option), { limit: 1, order: __assign(__assign({}, order), { direction: (isDesc ? "asc" : "desc") }) });
+    var minDocOption = __assign(__assign({}, options), { limit: 1 });
+    var maxDocOption = __assign(__assign({}, options), { limit: 1, order: __assign(__assign({}, order), { direction: (isDesc ? "asc" : "desc") }) });
     var _a = getHooks_1.useGetCollectionSnapshot(path, minDocOption), min = _a[0], reloadMin = _a[3];
     var _b = getHooks_1.useGetCollectionSnapshot(path, maxDocOption), max = _b[0], reloadMax = _b[3];
     return [
@@ -152,19 +152,19 @@ function reverseOrder(reverse, order) {
         ? order.map(function (o) { return (__assign(__assign({}, o), { direction: reverseDirection(reverse, o.direction) })); })
         : __assign(__assign({}, order), { direction: reverseDirection(reverse, order.direction) });
 }
-function usePaginateCollection(path, option) {
-    validation_1.assertRule([
+function usePaginateCollection(path, options) {
+    typeCheck_1.assertRule([
         {
             key: "path",
-            fn: validation.isString,
+            fn: typeCheck.isString,
         },
         {
-            key: "option",
-            fn: validation_1.matches(validation.paginateOptionRule.concat(validation.callbackRule, validation.acceptOutdatedRule)),
+            key: "options",
+            fn: typeCheck_1.matches(typeCheck.paginateOptionRule.concat(typeCheck.callbackRule, typeCheck.acceptOutdatedRule)),
         },
-    ])({ path: path, option: option }, "Argument");
-    var order = option.order;
-    var _a = useGetMinMax(path, option), min = _a[0], max = _a[1], reloadMin = _a[2], reloadMax = _a[3];
+    ])({ path: path, options: options }, "Argument");
+    var order = options.order;
+    var _a = useGetMinMax(path, options), min = _a[0], max = _a[1], reloadMin = _a[2], reloadMax = _a[3];
     var _b = react_1.useState(null), first = _b[0], setFirst = _b[1];
     var _c = react_1.useState(null), last = _c[0], setLast = _c[1];
     // 前のページに戻る際、 orderを反転させてクエリする必要がある
@@ -172,9 +172,9 @@ function usePaginateCollection(path, option) {
     var _d = react_1.useState(false), queryReversed = _d[0], setQueryReversed = _d[1];
     var _e = react_1.useState(false), dataReversed = _e[0], setDataReversed = _e[1];
     var _f = react_1.useState(null), origin = _f[0], setOrigin = _f[1];
-    var optionWithCursor = origin === null
-        ? option
-        : __assign(__assign({}, option), { 
+    var optionsWithCursor = origin === null
+        ? options
+        : __assign(__assign({}, options), { 
             // reversedを反映
             order: reverseOrder(queryReversed, order), 
             // originを反映
@@ -182,8 +182,8 @@ function usePaginateCollection(path, option) {
                 origin: origin,
                 direction: "startAfter",
             }, callback: function () {
-                if (option.callback !== undefined)
-                    option.callback();
+                if (options.callback !== undefined)
+                    options.callback();
                 setDataReversed(queryReversed);
             } });
     // first,minは同じCollectionに含まれる
@@ -210,7 +210,7 @@ function usePaginateCollection(path, option) {
             : function () { },
         enabled: remainsNext,
     };
-    var _g = getHooks_1.useGetCollectionSnapshot(path, optionWithCursor), collection = _g[0], loading = _g[1], error = _g[2];
+    var _g = getHooks_1.useGetCollectionSnapshot(path, optionsWithCursor), collection = _g[0], loading = _g[1], error = _g[2];
     var nextFirst = collection !== null && collection.length > 0 ? collection[0] : null;
     var nextLast = collection !== null && collection.length > 0 ? collection[collection.length - 1] : null;
     react_1.useEffect(function () {
@@ -227,25 +227,25 @@ function usePaginateCollection(path, option) {
     ];
 }
 exports.usePaginateCollection = usePaginateCollection;
-function useGetSubCollection(path, option) {
-    validation_1.assertRule([
+function useGetSubCollection(path, options) {
+    typeCheck_1.assertRule([
         {
             key: "path",
-            fn: validation.isString,
+            fn: typeCheck.isString,
         },
         {
-            key: "option",
-            fn: validation_1.matches(validation.subCollectionOptionRule.concat(validation.acceptOutdatedRule)),
+            key: "options",
+            fn: typeCheck_1.matches(typeCheck.subCollectionOptionRule.concat(typeCheck.acceptOutdatedRule)),
         },
-    ])({ path: path, option: option }, "Argument");
-    var field = option.field, collectionPath = option.collectionPath, acceptOutdated = option.acceptOutdated;
+    ])({ path: path, options: options }, "Argument");
+    var field = options.field, collectionPath = options.collectionPath, acceptOutdated = options.acceptOutdated;
     var _a = getHooks_1.useGetDoc(path), docData = _a[0], docLoading = _a[1], docError = _a[2], reloadDoc = _a[3];
     // null -> データ取得前, undfeined -> fieldが存在しない（エラー）
     var docIds = docData.data !== null ? docData.data[field] : null;
     // 取得したDocが field プロパティを持つこと
-    validation_1.assert(docIds !== undefined, path + " does not contain field \"" + field + "\"");
+    typeCheck_1.assert(docIds !== undefined, path + " does not contain field \"" + field + "\"");
     // 取得したデータが string[] であること
-    validation_1.assert(docIds === null || // データ未取得
+    typeCheck_1.assert(docIds === null || // データ未取得
         (docIds instanceof Array && docIds.every(function (docId) { return typeof docId === "string"; })), "Value of " + field + " should be string array.");
     var queries = docIds === null
         ? []

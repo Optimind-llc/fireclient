@@ -79,17 +79,17 @@ function subscribeDoc(uuid, path, onChange, onError, onListen) {
     return subscribeDocSnapshot(uuid, path, function (doc) { return onChange(utils_1.createDataFromDoc(doc)); }, onError, onListen);
 }
 exports.subscribeDoc = subscribeDoc;
-function getCollectionSnapshot(path, onGet, onError, option, acceptOutdated) {
-    if (option === void 0) { option = {}; }
+function getCollectionSnapshot(path, onGet, onError, options, acceptOutdated) {
+    if (options === void 0) { options = {}; }
     if (acceptOutdated === void 0) { acceptOutdated = false; }
     var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB;
     try {
-        var ref = utils_1.withOption(firestoreDB.collection(path), option);
+        var ref = utils_1.withOption(firestoreDB.collection(path), options);
         onAccess();
         ref
             .get()
             .then(function (collection) {
-            utils_1.saveCollection(dispatch, path, option, utils_1.createDataFromCollection(collection.docs));
+            utils_1.saveCollection(dispatch, path, options, utils_1.createDataFromCollection(collection.docs));
             onGet(collection.docs);
         })
             .catch(function (err) {
@@ -102,11 +102,11 @@ function getCollectionSnapshot(path, onGet, onError, option, acceptOutdated) {
     }
 }
 exports.getCollectionSnapshot = getCollectionSnapshot;
-function getCollection(path, onGet, onError, option, acceptOutdated) {
-    if (option === void 0) { option = {}; }
+function getCollection(path, onGet, onError, options, acceptOutdated) {
+    if (options === void 0) { options = {}; }
     if (acceptOutdated === void 0) { acceptOutdated = false; }
     var _a, _b;
-    var collectionId = utils_1.getQueryId(path, option);
+    var collectionId = utils_1.getQueryId(path, options);
     var _c = provider_1.getContext(), state = _c.state, dispatch = _c.dispatch, firestoreDB = _c.firestoreDB;
     // state内でsubscribeされているかチェック
     var cache = state.get("collection").get(collectionId);
@@ -123,17 +123,17 @@ function getCollection(path, onGet, onError, option, acceptOutdated) {
         onGet(collectionCache);
         return;
     }
-    getCollectionSnapshot(path, function (collection) { return onGet(utils_1.createDataFromCollection(collection)); }, onError, option);
+    getCollectionSnapshot(path, function (collection) { return onGet(utils_1.createDataFromCollection(collection)); }, onError, options);
 }
 exports.getCollection = getCollection;
-function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, option) {
+function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, options) {
     if (onListen === void 0) { onListen = function () { }; }
-    if (option === void 0) { option = {}; }
-    var collectionId = utils_1.getQueryId(path, option);
+    if (options === void 0) { options = {}; }
+    var collectionId = utils_1.getQueryId(path, options);
     var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB;
     var docIds = immutable_1.List();
     try {
-        var ref = utils_1.withOption(firestoreDB.collection(path), option);
+        var ref = utils_1.withOption(firestoreDB.collection(path), options);
         onAccess();
         var unsubscribe_2 = ref.onSnapshot(function (collection) {
             onListen();
@@ -143,7 +143,7 @@ function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, op
             var decreased = docIds.filter(function (id) { return nextDocIds.indexOf(id) === -1; });
             decreased.forEach(function (docId) { return utils_1.disconnectDocFromState(dispatch, docId, uuid); });
             docIds = nextDocIds;
-            utils_1.saveCollection(dispatch, path, option, utils_1.createDataFromCollection(collection.docs));
+            utils_1.saveCollection(dispatch, path, options, utils_1.createDataFromCollection(collection.docs));
             utils_1.connectCollectionToState(dispatch, collectionId, uuid, docIds);
             onChange(collection.docs);
         }, onError);
@@ -158,9 +158,9 @@ function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, op
     }
 }
 exports.subscribeCollectionSnapshot = subscribeCollectionSnapshot;
-function subscribeCollection(uuid, path, onChange, onError, onListen, option) {
+function subscribeCollection(uuid, path, onChange, onError, onListen, options) {
     if (onListen === void 0) { onListen = function () { }; }
-    if (option === void 0) { option = {}; }
-    return subscribeCollectionSnapshot(uuid, path, function (collection) { return onChange(utils_1.createDataFromCollection(collection)); }, onError, onListen, option);
+    if (options === void 0) { options = {}; }
+    return subscribeCollectionSnapshot(uuid, path, function (collection) { return onChange(utils_1.createDataFromCollection(collection)); }, onError, onListen, options);
 }
 exports.subscribeCollection = subscribeCollection;

@@ -4,7 +4,7 @@ import { Map } from "immutable";
 import React from "react";
 import { FireclientState, ProviderContext } from ".";
 import reducer, { Actions } from "./reducer";
-import { assert } from "./validation";
+import { assert } from "./typeCheck";
 
 export const Context = React.createContext<any>(null);
 // ライブラリ内で共有する Context

@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var firebase_1 = require("firebase");
 var immutable_1 = require("immutable");
 var path_1 = __importDefault(require("path"));
-var validation_1 = require("./validation");
+var typeCheck_1 = require("./typeCheck");
 function sortedFromJS(object) {
     // CursorでOriginにSnapshotを指定することがある
     if (object instanceof firebase_1.firestore.DocumentSnapshot) {
@@ -41,10 +41,10 @@ function getHashCode(obj) {
     }
 }
 exports.getHashCode = getHashCode;
-function getQueryId(path, option) {
+function getQueryId(path, options) {
     return getHashCode({
         path: path_1.default.resolve(path),
-        option: option,
+        options: options,
     });
 }
 exports.getQueryId = getQueryId;
@@ -96,14 +96,14 @@ function saveDoc(dispatch, docPath, doc) {
 }
 exports.saveDoc = saveDoc;
 // state.collectionに対象のdocのIdを保存, state.docに各データを保存
-function saveCollection(dispatch, path, option, collection) {
+function saveCollection(dispatch, path, options, collection) {
     collection.forEach(function (doc) {
         if (doc.id === null) {
             return;
         }
         saveDoc(dispatch, path_1.default.resolve(path, doc.id), doc);
     });
-    var collectionId = getQueryId(path, option);
+    var collectionId = getQueryId(path, options);
     var docIds = immutable_1.List(collection.filter(function (doc) { return doc.id !== null; }).map(function (doc) { return path_1.default.resolve(path, doc.id); }));
     dispatch({
         type: "setCollection",
@@ -191,7 +191,7 @@ function withCursor(ref, cursor) {
     }
     var direction = cursor.direction, origin = cursor.origin, multipleFields = cursor.multipleFields;
     var _multipleFields = multipleFields !== undefined ? multipleFields : false;
-    validation_1.assert(!_multipleFields || origin instanceof Array, '"origin" should be array if "multipleFields" is true.');
+    typeCheck_1.assert(!_multipleFields || origin instanceof Array, '"origin" should be array if "multipleFields" is true.');
     if (!_multipleFields) {
         switch (direction) {
             case "startAt":

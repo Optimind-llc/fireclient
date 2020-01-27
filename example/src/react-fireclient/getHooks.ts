@@ -13,8 +13,8 @@ import {
   subscribeDocSnapshot,
 } from "./getFunctions";
 import { getHashCode } from "./utils";
-import * as validation from "./validation";
-import { assertRule, matches } from "./validation";
+import * as typeCheck from "./typeCheck";
+import { assertRule, matches } from "./typeCheck";
 
 export function generateHooksId(): HooksId {
   return Math.random()
@@ -39,13 +39,13 @@ function useLazyGetDocBase<State, InitialState = State>(
     acceptOutdated?: boolean;
   },
 ): [State | InitialState, boolean, any, () => void] {
-  // Arg validation
+  // Arg typeCheck
   assertRule([
-    { key: "path", fn: validation.isString },
+    { key: "path", fn: typeCheck.isString },
     {
       key: "options",
       optional: true,
-      fn: validation.matches(validation.callbackRule.concat(validation.acceptOutdatedRule)),
+      fn: typeCheck.matches(typeCheck.callbackRule.concat(typeCheck.acceptOutdatedRule)),
     },
   ])({ path, options }, "Argument");
 
@@ -86,13 +86,13 @@ export function useSubscribeDocBase<State, InitialState = State>(
     callback?: (snapshot: State) => void;
   },
 ): [State | InitialState, boolean, any, () => void] {
-  // Arg validation
+  // Arg typeCheck
   assertRule([
-    { key: "path", fn: validation.isString },
+    { key: "path", fn: typeCheck.isString },
     {
       key: "options",
       optional: true,
-      fn: matches(validation.callbackRule),
+      fn: matches(typeCheck.callbackRule),
     },
   ])({ path, options }, "Argument");
 
@@ -144,13 +144,13 @@ export function useLazyGetCollectionBase<State, InitialState = State>(
     acceptOutdated?: boolean;
   } & QueryOptions,
 ): [State | InitialState, boolean, any, () => void] {
-  // Arg validation
+  // Arg typeCheck
   assertRule([
-    { key: "path", fn: validation.isString },
+    { key: "path", fn: typeCheck.isString },
     {
       key: "options",
       fn: matches(
-        validation.queryOptionRule.concat(validation.callbackRule, validation.acceptOutdatedRule),
+        typeCheck.queryOptionRule.concat(typeCheck.callbackRule, typeCheck.acceptOutdatedRule),
       ),
     },
   ])({ path, options }, "Argument");
@@ -195,10 +195,10 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
   } & QueryOptions,
 ): [State | InitialState, boolean, any, () => void] {
   assertRule([
-    { key: "path", fn: validation.isString },
+    { key: "path", fn: typeCheck.isString },
     {
       key: "options",
-      fn: matches(validation.queryOptionRule.concat(validation.acceptOutdatedRule)),
+      fn: matches(typeCheck.queryOptionRule.concat(typeCheck.acceptOutdatedRule)),
     },
   ])({ path, options }, "Argument");
 

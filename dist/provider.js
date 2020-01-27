@@ -7,7 +7,7 @@ require("firebase/firestore");
 var immutable_1 = require("immutable");
 var react_1 = __importDefault(require("react"));
 var reducer_1 = __importDefault(require("./reducer"));
-var validation_1 = require("./validation");
+var typeCheck_1 = require("./typeCheck");
 exports.Context = react_1.default.createContext(null);
 // ライブラリ内で共有する Context
 exports.providerContext = {
@@ -43,8 +43,8 @@ function convertStateToJson(state) {
 exports.convertStateToJson = convertStateToJson;
 function Provider(_a) {
     var children = _a.children, firestoreDB = _a.firestoreDB, _b = _a.onAccess, onAccess = _b === void 0 ? function () { } : _b;
-    validation_1.assert(firestoreDB !== undefined, "firestoreDB props of Provider is undefined");
-    validation_1.assert(firestoreDB !== null, "firestoreDB props of Provider is null");
+    typeCheck_1.assert(firestoreDB !== undefined, "firestoreDB props of Provider is undefined");
+    typeCheck_1.assert(firestoreDB !== null, "firestoreDB props of Provider is null");
     var _c = react_1.default.useReducer(reducer_1.default, initialState), state = _c[0], dispatch = _c[1];
     // Provider呼び出し時にライブラリ共有 Contextをセットする
     exports.providerContext.state = state;

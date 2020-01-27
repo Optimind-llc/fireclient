@@ -7,8 +7,8 @@ import {
   SetDocSchemaObject,
 } from ".";
 import { addDoc, setCollection, setDoc, updateDoc } from "./setFunctions";
-import * as validation from "./validation";
-import { assertRule, matches, assertSetDocSchemaObject } from "./validation";
+import * as typeCheck from "./typeCheck";
+import { assertRule, matches, assertSetDocSchemaObject } from "./typeCheck";
 
 // ------------------------------------------
 //  Set Hooks Base
@@ -34,16 +34,16 @@ function useSetBase<SetQueryObject>(
     callback?: () => void;
   },
 ) {
-  // Arg validation
+  // Arg typeCheck
   assertRule([
-    { key: "path", fn: validation.isString },
+    { key: "path", fn: typeCheck.isString },
     {
       key: "options",
       optional: true,
-      fn: matches(validation.mergeRule.concat(validation.callbackRule)),
+      fn: matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
     },
   ])({ path, options }, "Argument");
-  validation.assertSetDocSchema(query);
+  typeCheck.assertSetDocSchema(query);
 
   const [writing, setWriting] = useState(false);
   const [called, setCalled] = useState(false);
@@ -94,15 +94,15 @@ function useSetDocsBase(
     callback?: () => void;
   },
 ) {
-  // Arg validation
+  // Arg typeCheck
   assertRule([
     {
       key: "options",
       optional: true,
-      fn: matches(validation.mergeRule.concat(validation.callbackRule)),
+      fn: matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
     },
   ])({ options }, "Argument");
-  validation.assertSetDocsQuery(queries);
+  typeCheck.assertSetDocsQuery(queries);
 
   const [writing, setWriting] = useState(false);
   const [called, setCalled] = useState(false);
@@ -158,13 +158,13 @@ function useSetDocBase(
     callback?: () => void;
   },
 ) {
-  // Arg validation
-  validation.assertSetDocSchema(query);
+  // Arg typeCheck
+  typeCheck.assertSetDocSchema(query);
   matches([
-    { key: "path", fn: validation.isString },
+    { key: "path", fn: typeCheck.isString },
     {
       key: "options",
-      fn: matches(validation.queryOptionRule.concat(validation.acceptOutdatedRule)),
+      fn: matches(typeCheck.queryOptionRule.concat(typeCheck.acceptOutdatedRule)),
     },
   ])({ path, options }, "Argument");
   return useSetBase(path, query, setFunction, options);
@@ -189,13 +189,13 @@ function useSetCollectionBase(
     callback?: () => void;
   },
 ) {
-  // Arg validation
-  validation.assertSetCollectionSchema(queries);
+  // Arg typeCheck
+  typeCheck.assertSetCollectionSchema(queries);
   matches([
-    { key: "path", fn: validation.isString },
+    { key: "path", fn: typeCheck.isString },
     {
       key: "options",
-      fn: matches(validation.queryOptionRule.concat(validation.acceptOutdatedRule)),
+      fn: matches(typeCheck.queryOptionRule.concat(typeCheck.acceptOutdatedRule)),
     },
   ])({ path, options }, "Argument");
   return useSetBase(path, queries, setFunction, options);

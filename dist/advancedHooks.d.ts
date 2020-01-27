@@ -11,11 +11,11 @@ export declare function useQuery(querySchema: QuerySchema<ObjectQuery>): [QueryD
     unsubscribeFn: () => void;
     reloadFn: () => void;
 }];
-export declare function usePaginateCollection(path: string, option: {
+export declare function usePaginateCollection(path: string, options: {
     callback?: () => void;
     acceptOutdated?: boolean;
 } & QueryOptions): any[];
-export declare function useGetSubCollection(path: string, option: {
+export declare function useGetSubCollection(path: string, options: {
     field: string;
     collectionPath: string;
     acceptOutdated?: boolean;

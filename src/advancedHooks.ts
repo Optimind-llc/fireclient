@@ -25,8 +25,8 @@ import {
   useGetDoc,
 } from "./getHooks";
 import { isDocPath } from "./utils";
-import * as validation from "./validation";
-import { assert, assertRule, matches } from "./validation";
+import * as typeCheck from "./typeCheck";
+import { assert, assertRule, matches } from "./typeCheck";
 
 type ArrayQueryData = (DocData | CollectionData)[];
 
@@ -36,7 +36,7 @@ type ArrayQueryData = (DocData | CollectionData)[];
 export function useArrayQuery(
   querySchema: QuerySchema<ArrayQuery>,
 ): [ArrayQueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
-  assertRule(validation.arrayQuerySchemaRule)(querySchema, "querySchema");
+  assertRule(typeCheck.arrayQuerySchemaRule)(querySchema, "querySchema");
   const { queries, callback, acceptOutdated } = querySchema;
   const connects = querySchema.connects ? querySchema.connects : false;
   const initialQueryData: ArrayQueryData = queries.map(query =>
@@ -136,7 +136,7 @@ type QueryData = Map<string, DocData | CollectionData | {}>;
 export function useQuery(
   querySchema: QuerySchema<ObjectQuery>,
 ): [QueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
-  assertRule(validation.querySchemaRule)(querySchema, "querySchema");
+  assertRule(typeCheck.querySchemaRule)(querySchema, "querySchema");
   const { queries } = querySchema;
 
   const idxToKey = Object.keys(queries).reduce(
@@ -215,15 +215,12 @@ export function usePaginateCollection(
   assertRule([
     {
       key: "path",
-      fn: validation.isString,
+      fn: typeCheck.isString,
     },
     {
       key: "options",
       fn: matches(
-        validation.paginateOptionRule.concat(
-          validation.callbackRule,
-          validation.acceptOutdatedRule,
-        ),
+        typeCheck.paginateOptionRule.concat(typeCheck.callbackRule, typeCheck.acceptOutdatedRule),
       ),
     },
   ])({ path, options }, "Argument");
@@ -308,11 +305,11 @@ export function useGetSubCollection(
   assertRule([
     {
       key: "path",
-      fn: validation.isString,
+      fn: typeCheck.isString,
     },
     {
       key: "options",
-      fn: matches(validation.subCollectionOptionRule.concat(validation.acceptOutdatedRule)),
+      fn: matches(typeCheck.subCollectionOptionRule.concat(typeCheck.acceptOutdatedRule)),
     },
   ])({ path, options }, "Argument");
   const { field, collectionPath, acceptOutdated } = options;

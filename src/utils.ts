@@ -4,7 +4,7 @@ import pathlib from "path";
 import { CollectionId, Cursor, DocId, HooksId, Limit, Order, QueryOptions, Where } from ".";
 import { CollectionData, DocData } from "./";
 import { Actions } from "./reducer";
-import { assert } from "./validation";
+import { assert } from "./typeCheck";
 
 function sortedFromJS(object: any): any {
   // CursorでOriginにSnapshotを指定することがある

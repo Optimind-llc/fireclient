@@ -11,8 +11,8 @@ require("firebase/firestore");
 var react_1 = require("react");
 var getFunctions_1 = require("./getFunctions");
 var utils_1 = require("./utils");
-var validation = __importStar(require("./validation"));
-var validation_1 = require("./validation");
+var typeCheck = __importStar(require("./typeCheck"));
+var typeCheck_1 = require("./typeCheck");
 function generateHooksId() {
     return Math.random()
         .toString(32)
@@ -22,16 +22,16 @@ exports.generateHooksId = generateHooksId;
 // ------------------------------------------
 //  Get Doc Hooks Base
 // ------------------------------------------
-function useLazyGetDocBase(path, initialValue, getFunction, option) {
-    // Arg validation
-    validation_1.assertRule([
-        { key: "path", fn: validation.isString },
+function useLazyGetDocBase(path, initialValue, getFunction, options) {
+    // Arg typeCheck
+    typeCheck_1.assertRule([
+        { key: "path", fn: typeCheck.isString },
         {
-            key: "option",
+            key: "options",
             optional: true,
-            fn: validation.matches(validation.callbackRule.concat(validation.acceptOutdatedRule)),
+            fn: typeCheck.matches(typeCheck.callbackRule.concat(typeCheck.acceptOutdatedRule)),
         },
-    ])({ path: path, option: option }, "Argument");
+    ])({ path: path, options: options }, "Argument");
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), doc = _b[0], setDoc = _b[1];
     var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
@@ -42,8 +42,8 @@ function useLazyGetDocBase(path, initialValue, getFunction, option) {
             setDoc(data);
             setError(null);
             setLoading(false);
-            if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
-                option.callback(data);
+            if (((_a = options) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
+                options.callback(data);
         }, function (err) {
             setError(err);
             setLoading(false);
@@ -51,16 +51,16 @@ function useLazyGetDocBase(path, initialValue, getFunction, option) {
     };
     return [doc, loading, error, loadDoc];
 }
-function useSubscribeDocBase(path, initialValue, subscribeFunction, option) {
-    // Arg validation
-    validation_1.assertRule([
-        { key: "path", fn: validation.isString },
+function useSubscribeDocBase(path, initialValue, subscribeFunction, options) {
+    // Arg typeCheck
+    typeCheck_1.assertRule([
+        { key: "path", fn: typeCheck.isString },
         {
-            key: "option",
+            key: "options",
             optional: true,
-            fn: validation_1.matches(validation.callbackRule),
+            fn: typeCheck_1.matches(typeCheck.callbackRule),
         },
-    ])({ path: path, option: option }, "Argument");
+    ])({ path: path, options: options }, "Argument");
     var hooksId = react_1.useState(generateHooksId())[0];
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), doc = _b[0], setDoc = _b[1];
@@ -72,8 +72,8 @@ function useSubscribeDocBase(path, initialValue, subscribeFunction, option) {
             setDoc(data);
             setError(null);
             setLoading(false);
-            if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
-                option.callback(data);
+            if (((_a = options) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
+                options.callback(data);
         }, function (err) {
             setError(err);
             setLoading(false);
@@ -86,15 +86,15 @@ exports.useSubscribeDocBase = useSubscribeDocBase;
 // ------------------------------------------
 //  Get Collection Hooks Base
 // ------------------------------------------
-function useLazyGetCollectionBase(path, initialValue, getFunction, option) {
-    // Arg validation
-    validation_1.assertRule([
-        { key: "path", fn: validation.isString },
+function useLazyGetCollectionBase(path, initialValue, getFunction, options) {
+    // Arg typeCheck
+    typeCheck_1.assertRule([
+        { key: "path", fn: typeCheck.isString },
         {
-            key: "option",
-            fn: validation_1.matches(validation.queryOptionRule.concat(validation.callbackRule, validation.acceptOutdatedRule)),
+            key: "options",
+            fn: typeCheck_1.matches(typeCheck.queryOptionRule.concat(typeCheck.callbackRule, typeCheck.acceptOutdatedRule)),
         },
-    ])({ path: path, option: option }, "Argument");
+    ])({ path: path, options: options }, "Argument");
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), collection = _b[0], setCollection = _b[1];
     var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
@@ -106,24 +106,24 @@ function useLazyGetCollectionBase(path, initialValue, getFunction, option) {
             setCollection(data);
             setError(null);
             setLoading(false);
-            if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
-                option.callback(data);
+            if (((_a = options) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
+                options.callback(data);
         }, function (err) {
             setError(err);
             setLoading(false);
-        }, option, (_a = option) === null || _a === void 0 ? void 0 : _a.acceptOutdated);
+        }, options, (_a = options) === null || _a === void 0 ? void 0 : _a.acceptOutdated);
     };
     return [collection, loading, error, loadCollection];
 }
 exports.useLazyGetCollectionBase = useLazyGetCollectionBase;
-function useSubscribeCollectionBase(path, initialValue, subscribeFunction, option) {
-    validation_1.assertRule([
-        { key: "path", fn: validation.isString },
+function useSubscribeCollectionBase(path, initialValue, subscribeFunction, options) {
+    typeCheck_1.assertRule([
+        { key: "path", fn: typeCheck.isString },
         {
-            key: "option",
-            fn: validation_1.matches(validation.queryOptionRule.concat(validation.acceptOutdatedRule)),
+            key: "options",
+            fn: typeCheck_1.matches(typeCheck.queryOptionRule.concat(typeCheck.acceptOutdatedRule)),
         },
-    ])({ path: path, option: option }, "Argument");
+    ])({ path: path, options: options }, "Argument");
     var hooksId = react_1.useState(generateHooksId())[0];
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), collection = _b[0], setCollection = _b[1];
@@ -135,49 +135,49 @@ function useSubscribeCollectionBase(path, initialValue, subscribeFunction, optio
             setCollection(snapshot);
             setError(null);
             setLoading(false);
-            if (((_a = option) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
-                option.callback(snapshot);
+            if (((_a = options) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
+                options.callback(snapshot);
         }, function (err) {
             setError(err);
             setLoading(false);
-        }, function () { return setLoading(true); }, option);
+        }, function () { return setLoading(true); }, options);
         setUnsubscribe({ fn: unsub });
-    }, [path, utils_1.getHashCode(option)]);
+    }, [path, utils_1.getHashCode(options)]);
     return [collection, loading, error, unsubscribe.fn];
 }
 exports.useSubscribeCollectionBase = useSubscribeCollectionBase;
 // ------------------------------------------
 //  Get Doc Snapshot Hooks
 // ------------------------------------------
-function useLazyGetDocSnapshot(path, option) {
-    return useLazyGetDocBase(path, null, getFunctions_1.getDocSnapshot, option);
+function useLazyGetDocSnapshot(path, options) {
+    return useLazyGetDocBase(path, null, getFunctions_1.getDocSnapshot, options);
 }
 exports.useLazyGetDocSnapshot = useLazyGetDocSnapshot;
-function useGetDocSnapshot(path, option) {
-    var _a = useLazyGetDocSnapshot(path, option), doc = _a[0], loading = _a[1], error = _a[2], reloadDoc = _a[3];
-    react_1.useEffect(function () { return reloadDoc(); }, [path, utils_1.getHashCode(option)]);
+function useGetDocSnapshot(path, options) {
+    var _a = useLazyGetDocSnapshot(path, options), doc = _a[0], loading = _a[1], error = _a[2], reloadDoc = _a[3];
+    react_1.useEffect(function () { return reloadDoc(); }, [path, utils_1.getHashCode(options)]);
     return [doc, loading, error, reloadDoc];
 }
 exports.useGetDocSnapshot = useGetDocSnapshot;
-function useSubscribeDocSnapshot(path, option) {
-    return useSubscribeDocBase(path, null, getFunctions_1.subscribeDocSnapshot, option);
+function useSubscribeDocSnapshot(path, options) {
+    return useSubscribeDocBase(path, null, getFunctions_1.subscribeDocSnapshot, options);
 }
 exports.useSubscribeDocSnapshot = useSubscribeDocSnapshot;
 // ------------------------------------------
 //  Get Collection Snapshot Hooks
 // ------------------------------------------
-function useLazyGetCollectionSnapshot(path, option) {
-    return useLazyGetCollectionBase(path, null, getFunctions_1.getCollectionSnapshot, option);
+function useLazyGetCollectionSnapshot(path, options) {
+    return useLazyGetCollectionBase(path, null, getFunctions_1.getCollectionSnapshot, options);
 }
 exports.useLazyGetCollectionSnapshot = useLazyGetCollectionSnapshot;
-function useGetCollectionSnapshot(path, option) {
-    var _a = useLazyGetCollectionSnapshot(path, option), collection = _a[0], loading = _a[1], error = _a[2], reloadCollection = _a[3];
-    react_1.useEffect(function () { return reloadCollection(); }, [path, utils_1.getHashCode(option)]);
+function useGetCollectionSnapshot(path, options) {
+    var _a = useLazyGetCollectionSnapshot(path, options), collection = _a[0], loading = _a[1], error = _a[2], reloadCollection = _a[3];
+    react_1.useEffect(function () { return reloadCollection(); }, [path, utils_1.getHashCode(options)]);
     return [collection, loading, error, reloadCollection];
 }
 exports.useGetCollectionSnapshot = useGetCollectionSnapshot;
-function useSubscribeCollectionSnapshot(path, option) {
-    return useSubscribeCollectionBase(path, [], getFunctions_1.subscribeCollectionSnapshot, option);
+function useSubscribeCollectionSnapshot(path, options) {
+    return useSubscribeCollectionBase(path, [], getFunctions_1.subscribeCollectionSnapshot, options);
 }
 exports.useSubscribeCollectionSnapshot = useSubscribeCollectionSnapshot;
 // ------------------------------------------
@@ -188,34 +188,34 @@ exports.initialDocData = {
     id: null,
 };
 exports.initialCollectionData = [];
-function useLazyGetDoc(path, option) {
-    return useLazyGetDocBase(path, exports.initialDocData, getFunctions_1.getDoc, option);
+function useLazyGetDoc(path, options) {
+    return useLazyGetDocBase(path, exports.initialDocData, getFunctions_1.getDoc, options);
 }
 exports.useLazyGetDoc = useLazyGetDoc;
-function useGetDoc(path, option) {
-    var _a = useLazyGetDoc(path, option), doc = _a[0], loading = _a[1], error = _a[2], reloadDoc = _a[3];
-    react_1.useEffect(function () { return reloadDoc(); }, [path, utils_1.getHashCode(option)]);
+function useGetDoc(path, options) {
+    var _a = useLazyGetDoc(path, options), doc = _a[0], loading = _a[1], error = _a[2], reloadDoc = _a[3];
+    react_1.useEffect(function () { return reloadDoc(); }, [path, utils_1.getHashCode(options)]);
     return [doc, loading, error, reloadDoc];
 }
 exports.useGetDoc = useGetDoc;
-function useSubscribeDoc(path, option) {
-    return useSubscribeDocBase(path, exports.initialDocData, getFunctions_1.subscribeDoc, option);
+function useSubscribeDoc(path, options) {
+    return useSubscribeDocBase(path, exports.initialDocData, getFunctions_1.subscribeDoc, options);
 }
 exports.useSubscribeDoc = useSubscribeDoc;
 // ------------------------------------------
 //  Get Collection Hooks
 // ------------------------------------------
-function useLazyGetCollection(path, option) {
-    return useLazyGetCollectionBase(path, exports.initialCollectionData, getFunctions_1.getCollection, option);
+function useLazyGetCollection(path, options) {
+    return useLazyGetCollectionBase(path, exports.initialCollectionData, getFunctions_1.getCollection, options);
 }
 exports.useLazyGetCollection = useLazyGetCollection;
-function useGetCollection(path, option) {
-    var _a = useLazyGetCollection(path, option), collection = _a[0], loading = _a[1], error = _a[2], reloadCollection = _a[3];
-    react_1.useEffect(function () { return reloadCollection(); }, [path, utils_1.getHashCode(option)]);
+function useGetCollection(path, options) {
+    var _a = useLazyGetCollection(path, options), collection = _a[0], loading = _a[1], error = _a[2], reloadCollection = _a[3];
+    react_1.useEffect(function () { return reloadCollection(); }, [path, utils_1.getHashCode(options)]);
     return [collection, loading, error, reloadCollection];
 }
 exports.useGetCollection = useGetCollection;
-function useSubscribeCollection(path, option) {
-    return useSubscribeCollectionBase(path, exports.initialCollectionData, getFunctions_1.subscribeCollection, option);
+function useSubscribeCollection(path, options) {
+    return useSubscribeCollectionBase(path, exports.initialCollectionData, getFunctions_1.subscribeCollection, options);
 }
 exports.useSubscribeCollection = useSubscribeCollection;

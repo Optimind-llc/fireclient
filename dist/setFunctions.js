@@ -85,13 +85,13 @@ function addDoc(path, query, onSet, onError) {
     }
 }
 exports.addDoc = addDoc;
-function setDoc(docPath, query, onSet, onError, option) {
+function setDoc(docPath, query, onSet, onError, options) {
     var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch;
     var subCollection = query.subCollection;
     var fields = query.fields !== undefined ? query.fields : {};
     try {
-        var promise = option !== undefined
-            ? firestoreDB.doc(docPath).set(fields, option)
+        var promise = options !== undefined
+            ? firestoreDB.doc(docPath).set(fields, options)
             : firestoreDB.doc(docPath).set(fields);
         promise
             .then(function () {
@@ -142,13 +142,13 @@ exports.updateDoc = updateDoc;
  * ]
  * ```
  */
-function setCollection(collectionPath, queries, onSet, onError, option) {
+function setCollection(collectionPath, queries, onSet, onError, options) {
     Promise.all(queries.map(function (query) {
         return new Promise(function (resolve, reject) {
             var id = query.id;
             if (id !== undefined) {
                 var docPath = pathlib.resolve(collectionPath, id);
-                setDoc(docPath, query, resolve, reject, option);
+                setDoc(docPath, query, resolve, reject, options);
             }
             else {
                 addDoc(collectionPath, query, resolve, reject);
