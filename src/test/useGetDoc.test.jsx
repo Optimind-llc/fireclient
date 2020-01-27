@@ -4,10 +4,8 @@ import { act } from "react-dom/test-utils";
 import { Provider, useGetDoc } from "../../dist";
 import db from "./firestore";
 
-const Wrapper = ({ callback }) => {
-  const [doc, loading, error, reloadFn] = useGetDoc("/cities/Tokyo", {
-    callback,
-  });
+const Wrapper = ({ options }) => {
+  const [doc, loading, error, reloadFn] = useGetDoc("/cities/Tokyo", options);
   return (
     <>
       <span className="obj">
@@ -41,7 +39,6 @@ describe("useGetDoc", () => {
     let app;
     const callback = () => {
       const obj = JSON.parse(app.find(".obj").text());
-      expect;
       const { doc, loading, error } = obj;
       expect(doc.data.country).toEqual("Japan");
       expect(doc.data.name).toEqual("Tokyo");
@@ -49,12 +46,40 @@ describe("useGetDoc", () => {
       expect(doc.id).toEqual("Tokyo");
       expect(loading).toEqual(false);
       expect(error).toEqual(null);
+      app.find("button").simulate("click");
       done();
     };
     app = mount(
       <Provider firestoreDB={db}>
-        <Wrapper callback={callback} />
+        <Wrapper options={{ callback }} />
       </Provider>,
     );
+  });
+});
+
+describe("options type error check", () => {
+  const fn = options => () =>
+    mount(
+      <Provider firestoreDB={db}>
+        <Wrapper options={options} />
+      </Provider>,
+    );
+  it("callback", () => {
+    expect(fn({ callback: 1 })).toThrow();
+    expect(fn({ callback: { foo: 123 } })).toThrow();
+    expect(fn({ callback: "foo" })).toThrow();
+    expect(fn({ callback: [1, 2, 3] })).toThrow();
+    expect(fn({ callback: null })).toThrow();
+    expect(fn({ callback: true })).toThrow();
+    expect(fn({ callback: () => console.log("foo") })).not.toThrow();
+  });
+  it("acceptOutdated", () => {
+    expect(fn({ acceptOutdated: 1 })).toThrow();
+    expect(fn({ acceptOutdated: { foo: 123 } })).toThrow();
+    expect(fn({ acceptOutdated: "foo" })).toThrow();
+    expect(fn({ acceptOutdated: [1, 2, 3] })).toThrow();
+    expect(fn({ acceptOutdated: null })).toThrow();
+    expect(fn({ acceptOutdated: true })).not.toThrow();
+    expect(fn({ acceptOutdated: () => console.log("foo") })).toThrow();
   });
 });

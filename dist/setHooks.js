@@ -62,7 +62,7 @@ function useSetDocsBase(queries, setFunction, options) {
             fn: typeCheck_1.matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
         },
     ])({ options: options }, "Argument");
-    typeCheck.assertSetDocsQuery(queries);
+    typeCheck.assertSetDocsSchema(queries);
     var _a = react_1.useState(false), writing = _a[0], setWriting = _a[1];
     var _b = react_1.useState(false), called = _b[0], setCalled = _b[1];
     var _c = react_1.useState(null), error = _c[0], setError = _c[1];
