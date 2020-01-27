@@ -2,16 +2,17 @@
   "cities": {
     "MexicoCity": {
       "population": 19028000,
+      "name": "Mexico City",
       "area": 1485,
       "foo": 2,
-      "name": "Mexico City",
       "country": "Mexico"
     },
     "Mumbai": {
       "name": "Mumbai",
       "country": "India",
       "foo": 1,
-      "area": 603
+      "area": 603,
+      "population": 18978000
     },
     "NewYork": {
       "population": 19354922,
@@ -26,9 +27,9 @@
     },
     "SaoPaulo": {
       "population": 18845000,
+      "name": "São Paulo",
       "foo": 2,
       "area": 1521,
-      "name": "São Paulo",
       "country": "Brazil"
     },
     "Tokyo": {

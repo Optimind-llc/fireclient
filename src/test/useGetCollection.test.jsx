@@ -18,6 +18,7 @@ const cities = {
     country: "India",
     foo: 1,
     area: 603,
+    population: 18978000,
   },
   NewYork: {
     population: 19354922,
@@ -58,7 +59,6 @@ const Wrapper = ({ option }) => {
     </>
   );
 };
-
 describe("getHashCode", () => {
   it("different key, different value", () => {
     expect(getHashCode({ foo: 123, bar: 456 })).toBe(getHashCode({ bar: 456, foo: 123 }));
@@ -72,7 +72,6 @@ describe("getHashCode", () => {
     );
   });
 });
-
 describe("useGetCollection", () => {
   it("Before fetching collection", () => {
     const app = mount(
@@ -80,7 +79,6 @@ describe("useGetCollection", () => {
         <Wrapper />
       </Provider>,
     );
-
     const obj = JSON.parse(app.find(".obj").text());
     const { collection, loading, error, accessCount } = obj;
     expect(collection.length).toBe(0);
@@ -114,7 +112,6 @@ describe("useGetCollection", () => {
   it("Condition1", done => {
     const callback = collection => {
       collection.forEach(coll => {
-        console.log(coll.data.population);
         expect(coll.data.population).toBeGreaterThanOrEqual(19354922);
       });
       done();
@@ -235,14 +232,14 @@ describe("useGetCollection", () => {
       let p = null;
       let f = null;
       collection.forEach(coll => {
-        if (p != null) {
-          expect(coll.data.foo).toBeGreaterThanOrEqual(f);
-          if (coll.data.foo === foo) {
-            expect(coll.data.population).toBeGreaterThanOrEqual(p);
+        if (p !== null && f !== null) {
+          expect(coll.data.population).toBeGreaterThanOrEqual(p);
+          if (coll.data.population === p) {
+            expect(coll.data.foo).toBeGreaterThanOrEqual(f);
           }
         }
-        p = coll.population;
-        f = coll.foo;
+        p = coll.data.population;
+        f = coll.data.foo;
       });
       done();
     };
@@ -266,7 +263,6 @@ describe("useGetCollection", () => {
   });
   it("Cursor startAt", done => {
     const callback = collection => {
-      console.log(collection);
       expect(collection.length).toBe(2);
       collection.forEach(coll => {
         expect(coll.data.population).toBeGreaterThanOrEqual(19028000);
@@ -321,12 +317,21 @@ describe("useGetCollection", () => {
   it("Cursor multiple fields", done => {
     const callback = collection => {
       expect(collection.length).toBe(2);
+      let p = null;
+      let f = null;
       collection.forEach(coll => {
-        expect(coll.data.population).toBeGreaterThanOrEqual(18845000);
-        expect(coll.data.foo).toBeGreaterThanOrEqual(2);
+        if (p !== null && f !== null) {
+          expect(coll.data.population).toBeGreaterThanOrEqual(p);
+          if (coll.data.population === p) {
+            expect(coll.data.foo).toBeGreaterThanOrEqual(f);
+          }
+        }
+        p = coll.data.population;
+        f = coll.data.foo;
       });
       done();
     };
+
     const app = mount(
       <Provider firestoreDB={db}>
         <Wrapper
@@ -334,10 +339,10 @@ describe("useGetCollection", () => {
             callback,
             order: [
               {
-                by: "population",
+                by: "foo",
               },
               {
-                by: "foo",
+                by: "population",
               },
             ],
             limit: 2,

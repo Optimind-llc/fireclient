@@ -4,49 +4,43 @@ import { fromJS, Map } from "immutable";
 import * as pathlib from "path";
 import { useEffect, useState } from "react";
 import {
-  ArrayQuerySchema,
+  ObjectQuery,
+  ArrayQuery,
+  CollectionData,
   createDataFromCollection,
-  createDataFromDoc,
   CursorDirection,
-  FireclientDoc,
+  DocData,
   Order,
   OrderDirection,
   Query,
-  QueryOption,
+  QueryOptions,
   QuerySchema,
 } from ".";
-import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "./fetchFunctions";
+import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "./getFunctions";
 import {
   generateHooksId,
   initialCollectionData,
   initialDocData,
   useGetCollectionSnapshot,
   useGetDoc,
-} from "./hooks";
-import {
-  assert,
-  assertArrayQuerySchema,
-  assertPaginateOption,
-  assertPath,
-  assertQuerySchema,
-  assertSubCollectionOption,
-} from "./validation";
+} from "./getHooks";
+import { isDocPath } from "./utils";
+import * as typeCheck from "./typeCheck";
+import { assert, assertRule, matches } from "./typeCheck";
 
-function isDoc(path: string): boolean {
-  const p = pathlib.resolve(path);
-  return p.split("/").length % 2 === 1;
-}
+type ArrayQueryData = (DocData | CollectionData)[];
 
-type ArrayQueryData = (FireclientDoc | FireclientDoc[])[];
-
+// TODO:
+// https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
+// トランザクションを使用する
 export function useArrayQuery(
-  querySchema: ArrayQuerySchema,
-): [ArrayQueryData, boolean, any, { unsubscribe: () => void; reload: () => void }] {
-  assertArrayQuerySchema(querySchema);
+  querySchema: QuerySchema<ArrayQuery>,
+): [ArrayQueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
+  assertRule(typeCheck.arrayQuerySchemaRule)(querySchema, "querySchema");
   const { queries, callback, acceptOutdated } = querySchema;
   const connects = querySchema.connects ? querySchema.connects : false;
   const initialQueryData: ArrayQueryData = queries.map(query =>
-    isDoc(query.location) ? initialDocData : initialCollectionData,
+    isDocPath(query.location) ? initialDocData : initialCollectionData,
   );
 
   // Subscribeする場合があるので、HooksのIdを持っておく
@@ -56,64 +50,60 @@ export function useArrayQuery(
   const [queryData, setQueryData] = useState<ArrayQueryData>(initialQueryData);
   const [loading, setLoading] = useState(false);
   const [unsubscribe, setUnsubscribe] = useState<{
-    unsubscribe: () => void;
-    reload: () => void;
-  }>({ unsubscribe: () => {}, reload: () => {} });
+    unsubscribeFn: () => void;
+    reloadFn: () => void;
+  }>({ unsubscribeFn: () => {}, reloadFn: () => {} });
 
   const loadQuery = () => {
     setLoading(true);
-    let reloads: (() => void)[] = [];
+    let reloadFns: (() => void)[] = [];
     let unsubFns: (() => void)[] = [];
 
     // React HooksはCallback内で呼び出せないので、
     // fetchFunctionsの関数を直接呼び出す
-    Promise.all<{ data: FireclientDoc | FireclientDoc[]; key: number }>(
+    Promise.all<{ data: DocData | CollectionData; key: number }>(
       queries.map(
         (query: Query, i: number) =>
           new Promise<{
-            data: FireclientDoc | FireclientDoc[];
+            data: DocData | CollectionData;
             key: number;
           }>((resolve, reject) => {
             const { location, limit, where, order, cursor } = query;
             const queryConnects = query.connects === undefined ? connects : query.connects;
-            const isDocQuery = isDoc(location);
+            const isDocQuery = isDocPath(location);
 
-            const onFetchDoc = (doc: firestore.DocumentSnapshot) => {
-              resolve({ data: createDataFromDoc(doc), key: i });
-              if (callback !== undefined) callback();
-            };
-            const onFetchCollection = (collection: firestore.DocumentSnapshot[]) => {
-              resolve({ data: createDataFromCollection(collection), key: i });
+            const onChange = (data: DocData | CollectionData) => {
+              resolve({ data: data, key: i });
               if (callback !== undefined) callback();
             };
             const onError = reject;
+            const onListen = () => {};
 
             if (isDocQuery && !queryConnects) {
-              const load = () => getDoc(location, onFetchDoc, onError, acceptOutdated);
+              const load = () => getDoc(location, onChange, onError, acceptOutdated);
               load();
-              reloads.push(load);
+              reloadFns.push(load);
             } else if (isDocQuery && queryConnects) {
-              const unsub = subscribeDoc(hooksId, location, onFetchDoc, onError);
+              const unsub = subscribeDoc(hooksId, location, onChange, onError, onListen);
               unsubFns.push(unsub);
             } else if (!isDocQuery && !queryConnects) {
               const load = () =>
                 getCollection(
                   location,
-                  { limit, where, order, cursor },
-                  onFetchCollection,
+                  onChange,
                   onError,
+                  { limit, where, order, cursor },
                   acceptOutdated,
                 );
               load();
-              reloads.push(load);
+              reloadFns.push(load);
             } else if (!isDocQuery && queryConnects) {
-              const unsub = subscribeCollection(
-                hooksId,
-                location,
-                { limit, where, order, cursor },
-                onFetchCollection,
-                onError,
-              );
+              const unsub = subscribeCollection(hooksId, location, onChange, onError, onListen, {
+                limit,
+                where,
+                order,
+                cursor,
+              });
               unsubFns.push(unsub);
             }
           }),
@@ -122,8 +112,8 @@ export function useArrayQuery(
       .then(res => {
         setQueryData(res.sort((a, b) => a.key - b.key).map(r => r.data));
         setUnsubscribe({
-          unsubscribe: () => unsubFns.forEach(fn => fn()),
-          reload: () => reloads.forEach(fn => fn()),
+          unsubscribeFn: () => unsubFns.forEach(fn => fn()),
+          reloadFn: () => reloadFns.forEach(fn => fn()),
         });
         setLoading(false);
       })
@@ -141,12 +131,12 @@ export function useArrayQuery(
   return [queryData, loading, error, unsubscribe];
 }
 
-type QueryData = Map<string, FireclientDoc | FireclientDoc[] | {}>;
+type QueryData = Map<string, DocData | CollectionData | {}>;
 
 export function useQuery(
-  querySchema: QuerySchema,
-): [QueryData, boolean, any, { unsubscribe: () => void; reload: () => void }] {
-  assertQuerySchema(querySchema);
+  querySchema: QuerySchema<ObjectQuery>,
+): [QueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
+  assertRule(typeCheck.querySchemaRule)(querySchema, "querySchema");
   const { queries } = querySchema;
 
   const idxToKey = Object.keys(queries).reduce(
@@ -170,19 +160,19 @@ export function useQuery(
 
 function useGetMinMax(
   path: string,
-  option: {
+  options: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption,
+  } & QueryOptions,
 ): [firestore.DocumentSnapshot | null, firestore.DocumentSnapshot | null, () => void, () => void] {
-  const order = option.order as Order;
+  const order = options.order as Order;
   const isDesc = order.direction === "desc";
   const minDocOption = {
-    ...option,
+    ...options,
     limit: 1,
   };
   const maxDocOption = {
-    ...option,
+    ...options,
     limit: 1,
     order: {
       ...order,
@@ -209,17 +199,33 @@ function reverseDirection(reverse: boolean, direction: OrderDirection = "asc"): 
   }
 }
 
+function reverseOrder(reverse: boolean, order: Order | Order[]): Order | Order[] {
+  return Array.isArray(order)
+    ? order.map(o => ({ ...o, direction: reverseDirection(reverse, o.direction) }))
+    : { ...order, direction: reverseDirection(reverse, order.direction) };
+}
+
 export function usePaginateCollection(
   path: string,
-  option: {
+  options: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption,
+  } & QueryOptions,
 ) {
-  assertPath(path);
-  assertPaginateOption(option);
-  const order = option.order as Order;
-  const [min, max, reloadMin, reloadMax] = useGetMinMax(path, option);
+  assertRule([
+    {
+      key: "path",
+      fn: typeCheck.isString,
+    },
+    {
+      key: "options",
+      fn: matches(
+        typeCheck.paginateOptionRule.concat(typeCheck.callbackRule, typeCheck.acceptOutdatedRule),
+      ),
+    },
+  ])({ path, options }, "Argument");
+  const order = options.order as Order;
+  const [min, max, reloadMin, reloadMax] = useGetMinMax(path, options);
   const [first, setFirst] = useState<any>(null);
   const [last, setLast] = useState<any>(null);
 
@@ -229,23 +235,20 @@ export function usePaginateCollection(
   const [dataReversed, setDataReversed] = useState<boolean>(false);
   const [origin, setOrigin] = useState<any>(null);
 
-  const optionWithCursor =
+  const optionsWithCursor =
     origin === null
-      ? option
+      ? options
       : {
-          ...option,
+          ...options,
           // reversedを反映
-          order: {
-            ...order,
-            direction: reverseDirection(queryReversed, order.direction),
-          },
+          order: reverseOrder(queryReversed, order),
           // originを反映
           cursor: {
             origin,
             direction: "startAfter" as CursorDirection,
           },
           callback: () => {
-            if (option.callback !== undefined) option.callback();
+            if (options.callback !== undefined) options.callback();
             setDataReversed(queryReversed);
           },
         };
@@ -274,7 +277,7 @@ export function usePaginateCollection(
     enabled: remainsNext,
   };
 
-  const [collection, loading, error]: any[] = useGetCollectionSnapshot(path, optionWithCursor);
+  const [collection, loading, error]: any[] = useGetCollectionSnapshot(path, optionsWithCursor);
   const nextFirst = collection !== null && collection.length > 0 ? collection[0] : null;
   const nextLast =
     collection !== null && collection.length > 0 ? collection[collection.length - 1] : null;
@@ -297,11 +300,19 @@ export function usePaginateCollection(
 
 export function useGetSubCollection(
   path: string,
-  option: { field: string; collectionPath: string; acceptOutdated?: boolean },
+  options: { field: string; collectionPath: string; acceptOutdated?: boolean },
 ) {
-  assertPath(path);
-  assertSubCollectionOption(option);
-  const { field, collectionPath, acceptOutdated } = option;
+  assertRule([
+    {
+      key: "path",
+      fn: typeCheck.isString,
+    },
+    {
+      key: "options",
+      fn: matches(typeCheck.subCollectionOptionRule.concat(typeCheck.acceptOutdatedRule)),
+    },
+  ])({ path, options }, "Argument");
+  const { field, collectionPath, acceptOutdated } = options;
   const [docData, docLoading, docError, reloadDoc] = useGetDoc(path);
   // null -> データ取得前, undfeined -> fieldが存在しない（エラー）
   const docIds = docData.data !== null ? docData.data[field] : null;

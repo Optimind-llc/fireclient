@@ -4,7 +4,7 @@ var immutable_1 = require("immutable");
 function reducer(state, action) {
     switch (action.type) {
         case "setDoc":
-            return state.setIn(["doc", action.payload.docId, "snapshot"], action.payload.snapshot);
+            return state.setIn(["doc", action.payload.docId, "data"], action.payload.data);
         case "setCollection":
             return state.setIn(["collection", action.payload.collectionId, "docIds"], action.payload.docIds);
         case "connectDoc":
