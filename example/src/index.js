@@ -4,7 +4,7 @@ import firebase from "firebase";
 import { Provider } from "./react-fireclient";
 import "./index.css";
 import App from "./App";
-import firebaseConfig from "./firebaseConfig.json";
+import firebaseConfig from "./firebaseConfig";
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();

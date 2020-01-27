@@ -1,11 +1,10 @@
-import { firestore } from "firebase";
 import { List } from "immutable";
-import { FireclientState, HooksId } from ".";
+import { DocData, FireclientState, HooksId } from ".";
 export declare type Actions = {
     type: "setDoc";
     payload: {
         docId: string;
-        snapshot: firestore.DocumentSnapshot;
+        data: DocData;
     };
 } | {
     type: "setCollection";

@@ -1,21 +1,21 @@
 import "firebase/firestore";
 import { Map } from "immutable";
-import { ArrayQuerySchema, FireclientDoc, QueryOption, QuerySchema } from ".";
-declare type ArrayQueryData = (FireclientDoc | FireclientDoc[])[];
-export declare function useArrayQuery(querySchema: ArrayQuerySchema): [ArrayQueryData, boolean, any, {
-    unsubscribe: () => void;
-    reload: () => void;
+import { ObjectQuery, ArrayQuery, CollectionData, DocData, QueryOptions, QuerySchema } from ".";
+declare type ArrayQueryData = (DocData | CollectionData)[];
+export declare function useArrayQuery(querySchema: QuerySchema<ArrayQuery>): [ArrayQueryData, boolean, any, {
+    unsubscribeFn: () => void;
+    reloadFn: () => void;
 }];
-declare type QueryData = Map<string, FireclientDoc | FireclientDoc[] | {}>;
-export declare function useQuery(querySchema: QuerySchema): [QueryData, boolean, any, {
-    unsubscribe: () => void;
-    reload: () => void;
+declare type QueryData = Map<string, DocData | CollectionData | {}>;
+export declare function useQuery(querySchema: QuerySchema<ObjectQuery>): [QueryData, boolean, any, {
+    unsubscribeFn: () => void;
+    reloadFn: () => void;
 }];
-export declare function usePaginateCollection(path: string, option: {
+export declare function usePaginateCollection(path: string, options: {
     callback?: () => void;
     acceptOutdated?: boolean;
-} & QueryOption): any[];
-export declare function useGetSubCollection(path: string, option: {
+} & QueryOptions): any[];
+export declare function useGetSubCollection(path: string, options: {
     field: string;
     collectionPath: string;
     acceptOutdated?: boolean;
