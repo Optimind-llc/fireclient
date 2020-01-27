@@ -6,9 +6,7 @@ import db from "./firestore";
 
 const Wrapper = ({ callback }) => {
   const [doc, loading, error, reloadFn] = useGetDoc("/cities/Tokyo", {
-    callback: () => {
-      callback();
-    },
+    callback,
   });
   return (
     <>
