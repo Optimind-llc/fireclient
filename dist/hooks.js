@@ -94,7 +94,7 @@ function useSubscribeDocBase(path, initialValue, subscribeFunction, option) {
 exports.useSubscribeDocBase = useSubscribeDocBase;
 function useLazyGetCollectionBase(path, initialValue, getFunction, option) {
   validation_1.assertPath(path);
-  validation_1.assertQueryOption(option);
+  validation_1.assertQueryOptions(option);
   validation_1.assertCallback(option?.callback);
   validation_1.assertAcceptOutdated(option?.acceptOutdated);
   var _a = react_1.useState(null),
@@ -132,7 +132,7 @@ function useLazyGetCollectionBase(path, initialValue, getFunction, option) {
 exports.useLazyGetCollectionBase = useLazyGetCollectionBase;
 function useSubscribeCollectionBase(path, initialValue, subscribeFunction, option) {
   validation_1.assertPath(path);
-  validation_1.assertQueryOption(option);
+  validation_1.assertQueryOptions(option);
   validation_1.assertCallback(option?.callback);
   var hooksId = react_1.useState(generateHooksId())[0];
   var _a = react_1.useState(null),

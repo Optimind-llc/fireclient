@@ -1,9 +1,14 @@
 import "firebase/firestore";
 import { useState } from "react";
-import { SetCollectionQuery, SetCollectionQueryObject, SetDocQuery, SetDocQueryObject } from ".";
+import {
+  SetCollectionSchema,
+  SetCollectionSchemaObject,
+  SetDocSchema,
+  SetDocSchemaObject,
+} from ".";
 import { addDoc, setCollection, setDoc, updateDoc } from "./setFunctions";
 import * as validation from "./validation";
-import { assertRule, matches, assertSetDocQueryObject } from "./validation";
+import { assertRule, matches, assertSetDocSchemaObject } from "./validation";
 
 // ------------------------------------------
 //  Set Hooks Base
@@ -38,7 +43,7 @@ function useSetBase<SetQueryObject>(
       fn: matches(validation.mergeRule.concat(validation.callbackRule)),
     },
   ])({ path, option }, "Argument");
-  validation.assertSetDocQuery(query);
+  validation.assertSetDocSchema(query);
 
   const [writing, setWriting] = useState(false);
   const [called, setCalled] = useState(false);
@@ -49,7 +54,7 @@ function useSetBase<SetQueryObject>(
 
   const writeFn = (...args: any) => {
     const queryObject = queryGenerator(...args);
-    assertSetDocQueryObject(queryObject);
+    assertSetDocSchemaObject(queryObject);
     setWriting(true);
     setCalled(true);
     setFunction(
@@ -71,10 +76,10 @@ function useSetBase<SetQueryObject>(
 }
 
 function useSetDocsBase(
-  queries: { [key: string]: SetDocQuery },
+  queries: { [key: string]: SetDocSchema },
   setFunction: (
     path: string,
-    query: SetDocQueryObject,
+    query: SetDocSchemaObject,
     onWrite: () => void,
     onError: (error: any) => void,
     option?: {
@@ -115,7 +120,7 @@ function useSetDocsBase(
           new Promise((resolve, reject) => {
             const queryGenerator = query instanceof Function ? query : () => query;
             const queryObject = queryGenerator(...args);
-            assertSetDocQueryObject(queryObject);
+            assertSetDocSchemaObject(queryObject);
             setFunction(path, queryObject, resolve, reject, option);
           }),
       ),
@@ -135,10 +140,10 @@ function useSetDocsBase(
 
 function useSetDocBase(
   path: string,
-  query: SetDocQuery,
+  query: SetDocSchema,
   setFunction: (
     path: string,
-    query: SetDocQueryObject,
+    query: SetDocSchemaObject,
     onWrite: () => void,
     onError: (error: any) => void,
     option?: {
@@ -154,7 +159,7 @@ function useSetDocBase(
   },
 ) {
   // Arg validation
-  validation.assertSetDocQuery(query);
+  validation.assertSetDocSchema(query);
   matches([
     { key: "path", fn: validation.isString },
     {
@@ -167,10 +172,10 @@ function useSetDocBase(
 
 function useSetCollectionBase(
   path: string,
-  queries: SetCollectionQuery,
+  queries: SetCollectionSchema,
   setFunction: (
     path: string,
-    queries: SetCollectionQueryObject,
+    queries: SetCollectionSchemaObject,
     onWrite: () => void,
     onError: (error: any) => void,
     option?: {
@@ -185,7 +190,7 @@ function useSetCollectionBase(
   },
 ) {
   // Arg validation
-  validation.assertSetCollectionQuery(queries);
+  validation.assertSetCollectionSchema(queries);
   matches([
     { key: "path", fn: validation.isString },
     {
@@ -202,7 +207,7 @@ function useSetCollectionBase(
 
 export function useSetDoc(
   docPath: string,
-  query: SetDocQuery,
+  query: SetDocSchema,
   option?: {
     merge?: boolean;
     mergeFields?: string[];
@@ -213,7 +218,7 @@ export function useSetDoc(
 }
 export function useAddDoc(
   collectionPath: string,
-  query: SetDocQuery,
+  query: SetDocSchema,
   option?: {
     callback?: () => void;
   },
@@ -222,7 +227,7 @@ export function useAddDoc(
 }
 export function useUpdateDoc(
   docPath: string,
-  query: SetDocQuery,
+  query: SetDocSchema,
   option?: {
     callback?: () => void;
   },
@@ -235,7 +240,7 @@ export function useUpdateDoc(
 // ------------------------------------------
 
 export function useAddDocs(
-  queries: { [key: string]: SetDocQuery },
+  queries: { [key: string]: SetDocSchema },
   option?: {
     callback?: () => void;
   },
@@ -243,7 +248,7 @@ export function useAddDocs(
   return useSetDocsBase(queries, addDoc, option);
 }
 export function useSetDocs(
-  queries: { [key: string]: SetDocQuery },
+  queries: { [key: string]: SetDocSchema },
   option?: {
     merge?: boolean;
     mergeFields?: string[];
@@ -253,7 +258,7 @@ export function useSetDocs(
   return useSetDocsBase(queries, setDoc, option);
 }
 export function useUpdateDocs(
-  queries: { [key: string]: SetDocQuery },
+  queries: { [key: string]: SetDocSchema },
   option?: {
     callback?: () => void;
   },
@@ -267,7 +272,7 @@ export function useUpdateDocs(
 
 export function useSetCollection(
   collectionPath: string,
-  query: SetCollectionQuery,
+  query: SetCollectionSchema,
   option?: {
     merge?: boolean;
     mergeFields?: string[];

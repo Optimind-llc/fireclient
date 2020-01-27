@@ -1,7 +1,7 @@
 import { firestore } from "firebase";
 import { List } from "immutable";
 import * as pathlib from "path";
-import { CollectionData, DocData, HooksId, QueryOption } from ".";
+import { CollectionData, DocData, HooksId, QueryOptions } from ".";
 import { getContext } from "./provider";
 import {
   connectCollectionToState,
@@ -114,7 +114,7 @@ export function getCollectionSnapshot(
   path: string,
   onGet: (collection: firestore.DocumentSnapshot[]) => void,
   onError: (err: any) => void,
-  option: QueryOption = {},
+  option: QueryOptions = {},
   acceptOutdated = false,
 ): void {
   const { dispatch, firestoreDB } = getContext();
@@ -141,7 +141,7 @@ export function getCollection(
   path: string,
   onGet: (collection: CollectionData) => void,
   onError: (err: any) => void,
-  option: QueryOption = {},
+  option: QueryOptions = {},
   acceptOutdated = false,
 ): void {
   const collectionId = getQueryId(path, option);
@@ -177,7 +177,7 @@ export function subscribeCollectionSnapshot(
   onChange: (collection: firestore.DocumentSnapshot[]) => void,
   onError: (err: any) => void,
   onListen: () => void = () => {},
-  option: QueryOption = {},
+  option: QueryOptions = {},
 ): () => void {
   const collectionId = getQueryId(path, option);
   const { dispatch, firestoreDB } = getContext();
@@ -215,7 +215,7 @@ export function subscribeCollection(
   onChange: (collection: CollectionData) => void,
   onError: (err: any) => void,
   onListen: () => void = () => {},
-  option: QueryOption = {},
+  option: QueryOptions = {},
 ): () => void {
   return subscribeCollectionSnapshot(
     uuid,

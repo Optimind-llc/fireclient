@@ -4,7 +4,8 @@ import { fromJS, Map } from "immutable";
 import * as pathlib from "path";
 import { useEffect, useState } from "react";
 import {
-  ArrayQuerySchema,
+  ObjectQuery,
+  ArrayQuery,
   CollectionData,
   createDataFromCollection,
   CursorDirection,
@@ -12,7 +13,7 @@ import {
   Order,
   OrderDirection,
   Query,
-  QueryOption,
+  QueryOptions,
   QuerySchema,
 } from ".";
 import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "./getFunctions";
@@ -33,7 +34,7 @@ type ArrayQueryData = (DocData | CollectionData)[];
 // https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
 // トランザクションを使用する
 export function useArrayQuery(
-  querySchema: ArrayQuerySchema,
+  querySchema: QuerySchema<ArrayQuery>,
 ): [ArrayQueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
   assertRule(validation.arrayQuerySchemaRule)(querySchema, "querySchema");
   const { queries, callback, acceptOutdated } = querySchema;
@@ -133,7 +134,7 @@ export function useArrayQuery(
 type QueryData = Map<string, DocData | CollectionData | {}>;
 
 export function useQuery(
-  querySchema: QuerySchema,
+  querySchema: QuerySchema<ObjectQuery>,
 ): [QueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
   assertRule(validation.querySchemaRule)(querySchema, "querySchema");
   const { queries } = querySchema;
@@ -162,7 +163,7 @@ function useGetMinMax(
   option: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption,
+  } & QueryOptions,
 ): [firestore.DocumentSnapshot | null, firestore.DocumentSnapshot | null, () => void, () => void] {
   const order = option.order as Order;
   const isDesc = order.direction === "desc";
@@ -209,7 +210,7 @@ export function usePaginateCollection(
   option: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption,
+  } & QueryOptions,
 ) {
   assertRule([
     {

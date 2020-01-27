@@ -1,12 +1,12 @@
 import * as pathlib from "path";
-import { SetCollectionQueryObject, SetDocQueryObject } from ".";
+import { SetCollectionSchemaObject, SetDocSchemaObject } from ".";
 import { getContext } from "./provider";
 import { Actions } from "./reducer";
 import { createData, isDocPath, saveDoc } from "./utils";
 
 type Fields = { [field: string]: any };
 type SubCollection = {
-  [name: string]: SetCollectionQueryObject;
+  [name: string]: SetCollectionSchemaObject;
 };
 
 // 書き込み完了時のCallback
@@ -52,7 +52,7 @@ const setDocCallback = (
 
 export function addDoc(
   path: string,
-  query: SetDocQueryObject,
+  query: SetDocSchemaObject,
   onSet: () => void,
   onError: (error: any) => void,
 ) {
@@ -112,7 +112,7 @@ export function addDoc(
 
 export function setDoc(
   docPath: string,
-  query: SetDocQueryObject,
+  query: SetDocSchemaObject,
   onSet: () => void,
   onError: (error: any) => void,
   option?: {
@@ -145,7 +145,7 @@ export function setDoc(
 // subCollectionを扱わない
 export function updateDoc(
   docPath: string,
-  query: SetDocQueryObject,
+  query: SetDocSchemaObject,
   onUpdate: () => void,
   onError: (error: any) => void,
 ) {
@@ -183,7 +183,7 @@ export function updateDoc(
  */
 export function setCollection(
   collectionPath: string,
-  queries: SetCollectionQueryObject,
+  queries: SetCollectionSchemaObject,
   onSet: () => void,
   onError: (error: any) => void,
   option?: {

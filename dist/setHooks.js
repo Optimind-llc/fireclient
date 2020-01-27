@@ -25,7 +25,7 @@ function useSetBase(path, query, setFunction, option) {
             fn: validation_1.matches(validation.mergeRule.concat(validation.callbackRule)),
         },
     ])({ path: path, option: option }, "Argument");
-    validation.assertSetDocQuery(query);
+    validation.assertSetDocSchema(query);
     var _a = react_1.useState(false), writing = _a[0], setWriting = _a[1];
     var _b = react_1.useState(false), called = _b[0], setCalled = _b[1];
     var _c = react_1.useState(null), error = _c[0], setError = _c[1];
@@ -37,7 +37,7 @@ function useSetBase(path, query, setFunction, option) {
             args[_i] = arguments[_i];
         }
         var queryObject = queryGenerator.apply(void 0, args);
-        validation_1.assertSetDocQueryObject(queryObject);
+        validation_1.assertSetDocSchemaObject(queryObject);
         setWriting(true);
         setCalled(true);
         setFunction(path, queryGenerator.apply(void 0, args), function () {
@@ -79,7 +79,7 @@ function useSetDocsBase(queries, setFunction, option) {
             return new Promise(function (resolve, reject) {
                 var queryGenerator = query instanceof Function ? query : function () { return query; };
                 var queryObject = queryGenerator.apply(void 0, args);
-                validation_1.assertSetDocQueryObject(queryObject);
+                validation_1.assertSetDocSchemaObject(queryObject);
                 setFunction(path, queryObject, resolve, reject, option);
             });
         }))
@@ -99,7 +99,7 @@ function useSetDocsBase(queries, setFunction, option) {
 }
 function useSetDocBase(path, query, setFunction, option) {
     // Arg validation
-    validation.assertSetDocQuery(query);
+    validation.assertSetDocSchema(query);
     validation_1.matches([
         { key: "path", fn: validation.isString },
         {
@@ -111,7 +111,7 @@ function useSetDocBase(path, query, setFunction, option) {
 }
 function useSetCollectionBase(path, queries, setFunction, option) {
     // Arg validation
-    validation.assertSetCollectionQuery(queries);
+    validation.assertSetCollectionSchema(queries);
     validation_1.matches([
         { key: "path", fn: validation.isString },
         {

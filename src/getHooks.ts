@@ -1,7 +1,7 @@
 import { firestore } from "firebase";
 import "firebase/firestore";
 import { useEffect, useState } from "react";
-import { CollectionData, DocData, HooksId, QueryOption } from ".";
+import { CollectionData, DocData, HooksId, QueryOptions } from ".";
 import {
   getCollection,
   getCollectionSnapshot,
@@ -136,13 +136,13 @@ export function useLazyGetCollectionBase<State, InitialState = State>(
     path: string,
     onGet: (data: State) => void,
     onError: (err: any) => void,
-    option?: QueryOption,
+    option?: QueryOptions,
     acceptOutdated?: boolean,
   ) => void,
   option?: {
     callback?: (data: State) => void;
     acceptOutdated?: boolean;
-  } & QueryOption,
+  } & QueryOptions,
 ): [State | InitialState, boolean, any, () => void] {
   // Arg validation
   assertRule([
@@ -188,11 +188,11 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
     onChange: (doc: State) => void,
     onError: (err: any) => void,
     onListen?: () => void,
-    option?: QueryOption,
+    option?: QueryOptions,
   ) => () => void,
   option?: {
     callback?: (data: State) => void;
-  } & QueryOption,
+  } & QueryOptions,
 ): [State | InitialState, boolean, any, () => void] {
   assertRule([
     { key: "path", fn: validation.isString },
@@ -276,7 +276,7 @@ export function useLazyGetCollectionSnapshot(
   option?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
     acceptOutdated?: boolean;
-  } & QueryOption,
+  } & QueryOptions,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
   return useLazyGetCollectionBase<firestore.DocumentSnapshot[], null>(
     path,
@@ -291,7 +291,7 @@ export function useGetCollectionSnapshot(
   option?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
     acceptOutdated?: boolean;
-  } & QueryOption,
+  } & QueryOptions,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
   const [collection, loading, error, reloadCollection] = useLazyGetCollectionSnapshot(path, option);
   useEffect(() => reloadCollection(), [path, getHashCode(option)]);
@@ -302,7 +302,7 @@ export function useSubscribeCollectionSnapshot(
   path: string,
   option?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
-  } & QueryOption,
+  } & QueryOptions,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
   return useSubscribeCollectionBase(path, [], subscribeCollectionSnapshot, option);
 }
@@ -358,7 +358,7 @@ export function useLazyGetCollection(
   option?: {
     callback?: (collection: CollectionData) => void;
     acceptOutdated?: boolean;
-  } & QueryOption,
+  } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
   return useLazyGetCollectionBase(path, initialCollectionData, getCollection, option);
 }
@@ -368,7 +368,7 @@ export function useGetCollection(
   option?: {
     callback?: (collection: CollectionData) => void;
     acceptOutdated?: boolean;
-  } & QueryOption,
+  } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
   const [collection, loading, error, reloadCollection] = useLazyGetCollection(path, option);
   useEffect(() => reloadCollection(), [path, getHashCode(option)]);
@@ -379,7 +379,7 @@ export function useSubscribeCollection(
   path: string,
   option?: {
     callback?: (collection: CollectionData) => void;
-  } & QueryOption,
+  } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
   return useSubscribeCollectionBase(path, initialCollectionData, subscribeCollection, option);
 }

@@ -4,7 +4,9 @@ import { useAddDocs, useUpdateDocs, useSetDocs } from "../react-fireclient";
 function View(props) {
   const [setFn, writing, called, error] = useSetDocs({
     "cities/nagoya": n => ({
-      fields: 123,
+      fields: {
+        common: 3 * n,
+      },
     }),
     "cities/chikusa": n => ({
       fields: {
@@ -14,7 +16,7 @@ function View(props) {
   });
   const handleClick = () => {
     console.log("fooo");
-    setFn("123");
+    setFn(123);
   };
   return (
     <>

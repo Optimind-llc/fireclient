@@ -22,22 +22,22 @@ interface ImmutableMap<T> extends Map<string, any> {
   get<K extends keyof T>(name: K): T[K];
 }
 
-export type DocDataState = ImmutableMap<{
+export type DocState = ImmutableMap<{
   data: DocData;
   connectedFrom: Set<HooksId>;
 }>;
 
-export type FireclientCollectionState = ImmutableMap<{
+export type CollectionState = ImmutableMap<{
   docIds: List<string>;
   connectedFrom: Set<HooksId>;
 }>;
 
 export type FireclientState = ImmutableMap<{
   doc: ImmutableMap<{
-    [docId: string]: DocDataState;
+    [docId: string]: DocState;
   }>;
   collection: ImmutableMap<{
-    [collectionId: string]: FireclientCollectionState;
+    [collectionId: string]: CollectionState;
   }>;
 }>;
 /**
@@ -97,7 +97,7 @@ export type Cursor = {
  * @property {Order?}  order   - Defines the order of docs.
  * @property {Cursor?} cursor  - Defines the start and end point.
  */
-export type QueryOption = {
+export type QueryOptions = {
   /**
    * @example
    * where: {
@@ -150,21 +150,64 @@ export type QueryOption = {
 export type Query = {
   location: string;
   connects?: boolean;
-} & QueryOption;
+} & QueryOptions;
+/**
+ * @example
+ * {
+ *    foo: {
+ *      location: 'doc/path/in/firestore',
+ *      limit: 15,
+ *      connects: true
+ *    },
+ *    bar: {
+ *      location: 'collection/path/in/firestore',
+ *      where: { ... },
+ *      order: { ... },
+ *    }
+ * }
+ * @property {string} location  - Where doc or collection is in firestore.
+ * @property {string?} connects - Whether doc or collection is to be subscribed.
+ * @property {Where?}  where    - Filters collection by doc's field.
+ * @property {Limit?}  limit    - Limits the number of fetching docs.
+ * @property {Order?}  order    - Defines the order of docs.
+ * @property {Cursor?} cursor   - Defines the start and end point.
+ */
+export type ObjectQuery = {
+  [field: string]: {
+    location: string;
+    connects?: boolean;
+  } & QueryOptions;
+};
+/**
+ * @example
+ * [
+ *    {
+ *      location: 'doc/path/in/firestore',
+ *      limit: 15,
+ *      connects: true
+ *    },
+ *    {
+ *      location: 'collection/path/in/firestore',
+ *      where: { ... },
+ *      order: { ... },
+ *    }
+ * ]
+ * @property {string} location  - Where doc or collection is in firestore.
+ * @property {string?} connects - Whether doc or collection is to be subscribed.
+ * @property {Where?}  where    - Filters collection by doc's field.
+ * @property {Limit?}  limit    - Limits the number of fetching docs.
+ * @property {Order?}  order    - Defines the order of docs.
+ * @property {Cursor?} cursor   - Defines the start and end point.
+ */
+export type ArrayQuery = ({
+  location: string;
+  connects?: boolean;
+} & QueryOptions)[];
 /**
  * @example
  * {
  *    connects: true,
- *    queries: {
- *      foo: {
- *        location: 'doc/path/in/firestore',
- *        connects: false
- *      },
- *      bar: {
- *        location: 'collection/path/in/firestore',
- *        where: { ... }
- *      }
- *    }
+ *    queries:
  * }
  *
  * @property {string?} connects               - Whether doc or collection is to be subscribed.
@@ -173,56 +216,27 @@ export type Query = {
  * @property {boolean}  acceptOutdated        - Whether if non-subscribed cache is used.
  * @property {()=>void} callback              - This is excecuted after fetching from Firestore or getting cache.
  */
-export type QuerySchema = {
+export type QuerySchema<QueryType> = {
   connects?: boolean;
-  queries: { [field: string]: Query };
+  queries: QueryType;
   acceptOutdated?: boolean;
   callback?: () => void;
 };
-/**
- * @example
- * {
- *    connects: true,
- *    queries: [
- *      {
- *        location: 'doc/path/in/firestore',
- *        connects: false
- *      },
- *      {
- *        location: 'collection/path/in/firestore',
- *        where: { ... }
- *      }
- *    ]
- * }
- *
- * @property {string?}  connects        - Whether doc or collection is to be subscribed.
- *                                        This is applied to all queries unless query has `connects` property.
- * @property {Query[]}  queries         - Query array.
- * @property {boolean}  acceptOutdated  - Whether if non-subscribed cache is used.
- * @property {()=>void} callback        - This is excecuted after fetching from Firestore or getting cache.
- */
-export type ArrayQuerySchema = {
-  connects?: boolean;
-  queries: Query[];
-  acceptOutdated?: boolean;
-  callback?: () => void;
-};
-
-export type SetDocQueryObject = {
+export type SetDocSchemaObject = {
   id?: string;
   fields?: {
     [field: string]: any;
   };
   subCollection?: {
-    [name: string]: SetCollectionQueryObject;
+    [name: string]: SetCollectionSchemaObject;
   };
 };
-export type SetDocQueryGenerator = (...args: any) => SetDocQueryObject;
-export type SetDocQuery = SetDocQueryObject | SetDocQueryGenerator;
+export type SetDocSchemaGenerator = (...args: any) => SetDocSchemaObject;
+export type SetDocSchema = SetDocSchemaObject | SetDocSchemaGenerator;
 
-export type SetCollectionQueryObject = SetDocQueryObject[];
-export type SetCollectionQueryGenerator = (...args: any) => SetCollectionQueryObject;
-export type SetCollectionQuery = SetCollectionQueryObject | SetCollectionQueryGenerator;
+export type SetCollectionSchemaObject = SetDocSchemaObject[];
+export type SetCollectionSchemaGenerator = (...args: any) => SetCollectionSchemaObject;
+export type SetCollectionSchema = SetCollectionSchemaObject | SetCollectionSchemaGenerator;
 
 export type ProviderContext = {
   state: FireclientState | null;

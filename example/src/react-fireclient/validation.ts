@@ -307,7 +307,7 @@ export const assertRule = (rule: Rule) => (obj: any, target: string) => {
   assert(matchesRule.valid, matchesRule.message);
 };
 
-export const assertSetDocQueryObject = (obj: any, target: string = "SetDocQuery") => {
+export const assertSetDocSchemaObject = (obj: any, target: string = "SetDocSchema") => {
   assertObject(obj, target);
   assertRule([
     {
@@ -325,18 +325,18 @@ export const assertSetDocQueryObject = (obj: any, target: string = "SetDocQuery"
     assertSubCollectionQuery(obj.subCollection, '"subCollection"');
   }
 };
-export const assertSetDocQuery = (obj: any, target: string = "SetDocQuery") => {
+export const assertSetDocSchema = (obj: any, target: string = "SetDocSchema") => {
   if (!(obj instanceof Function)) {
-    assertSetDocQueryObject(obj, target);
+    assertSetDocSchemaObject(obj, target);
   }
 };
-const assertSetCollectionQueryOjbect = (obj: any, target: string) => {
+const assertSetCollectionSchemaOjbect = (obj: any, target: string) => {
   assertArray(obj, target);
-  (obj as any[]).forEach(ele => assertSetDocQuery(ele));
+  (obj as any[]).forEach(ele => assertSetDocSchema(ele));
 };
-export const assertSetCollectionQuery = (obj: any, target: string = "SetCollectionQuery") => {
+export const assertSetCollectionSchema = (obj: any, target: string = "SetCollectionSchema") => {
   if (!(obj instanceof Function)) {
-    assertSetCollectionQueryOjbect(obj, target);
+    assertSetCollectionSchemaOjbect(obj, target);
   }
 };
 
@@ -345,11 +345,11 @@ export const assertSubCollectionQuery = (obj: any, target: string = "SubCollecti
   const values = Object.values(obj);
   values.forEach(value => {
     assert(Array.isArray(value), `Value of ${target} should be array.`);
-    (value as any[]).forEach((ele: any) => assertSetDocQueryObject(ele, "Element"));
+    (value as any[]).forEach((ele: any) => assertSetDocSchemaObject(ele, "Element"));
   });
 };
-export const assertSetDocsQuery = (obj: any, target: string = "SetDocQuery") => {
+export const assertSetDocsQuery = (obj: any, target: string = "SetDocSchema") => {
   assertObject(obj, target);
   const entries = Object.entries(obj);
-  entries.forEach(([key, value]) => assertSetDocQuery(value, `"${key}"`));
+  entries.forEach(([key, value]) => assertSetDocSchema(value, `"${key}"`));
 };

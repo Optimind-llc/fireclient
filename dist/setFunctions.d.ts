@@ -1,10 +1,10 @@
-import { SetCollectionQueryObject, SetDocQueryObject } from ".";
-export declare function addDoc(path: string, query: SetDocQueryObject, onSet: () => void, onError: (error: any) => void): void;
-export declare function setDoc(docPath: string, query: SetDocQueryObject, onSet: () => void, onError: (error: any) => void, option?: {
+import { SetCollectionSchemaObject, SetDocSchemaObject } from ".";
+export declare function addDoc(path: string, query: SetDocSchemaObject, onSet: () => void, onError: (error: any) => void): void;
+export declare function setDoc(docPath: string, query: SetDocSchemaObject, onSet: () => void, onError: (error: any) => void, option?: {
     merge?: boolean;
     mergeFields?: string[];
 }): void;
-export declare function updateDoc(docPath: string, query: SetDocQueryObject, onUpdate: () => void, onError: (error: any) => void): void;
+export declare function updateDoc(docPath: string, query: SetDocSchemaObject, onUpdate: () => void, onError: (error: any) => void): void;
 /**
  * ```js
  * queries: [
@@ -19,7 +19,7 @@ export declare function updateDoc(docPath: string, query: SetDocQueryObject, onU
  * ]
  * ```
  */
-export declare function setCollection(collectionPath: string, queries: SetCollectionQueryObject, onSet: () => void, onError: (error: any) => void, option?: {
+export declare function setCollection(collectionPath: string, queries: SetCollectionSchemaObject, onSet: () => void, onError: (error: any) => void, option?: {
     merge?: boolean;
     mergeFields?: string[];
 }): void;

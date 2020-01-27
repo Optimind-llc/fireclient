@@ -12,7 +12,7 @@ import {
   Order,
   OrderDirection,
   Query,
-  QueryOption,
+  QueryOptions,
   QuerySchema,
 } from ".";
 import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "./getFunctions";
@@ -162,7 +162,7 @@ function useGetMinMax(
   option: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption,
+  } & QueryOptions,
 ): [firestore.DocumentSnapshot | null, firestore.DocumentSnapshot | null, () => void, () => void] {
   const order = option.order as Order;
   const isDesc = order.direction === "desc";
@@ -209,7 +209,7 @@ export function usePaginateCollection(
   option: {
     callback?: () => void;
     acceptOutdated?: boolean;
-  } & QueryOption,
+  } & QueryOptions,
 ) {
   assertRule([
     {

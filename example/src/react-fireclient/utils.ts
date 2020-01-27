@@ -1,7 +1,7 @@
 import { firestore } from "firebase";
 import { List, Seq } from "immutable";
 import pathlib from "path";
-import { CollectionId, Cursor, DocId, HooksId, Limit, Order, QueryOption, Where } from ".";
+import { CollectionId, Cursor, DocId, HooksId, Limit, Order, QueryOptions, Where } from ".";
 import { CollectionData, DocData } from "./";
 import { Actions } from "./reducer";
 import { assert } from "./validation";
@@ -39,7 +39,7 @@ export function getHashCode(obj: any): number {
   }
 }
 
-export function getQueryId(path: string, option: QueryOption): CollectionId {
+export function getQueryId(path: string, option: QueryOptions): CollectionId {
   return getHashCode({
     path: pathlib.resolve(path),
     option,
@@ -94,7 +94,7 @@ export function saveDoc(dispatch: React.Dispatch<Actions>, docPath: string, doc:
 export function saveCollection(
   dispatch: React.Dispatch<Actions>,
   path: string,
-  option: QueryOption,
+  option: QueryOptions,
   collection: CollectionData,
 ) {
   collection.forEach(doc => {
@@ -255,7 +255,7 @@ function withCursor(ref: firestore.Query, cursor: Cursor): firestore.Query {
 
 export function withOption(
   ref: firestore.CollectionReference,
-  { where, limit, order, cursor }: QueryOption,
+  { where, limit, order, cursor }: QueryOptions,
 ): firestore.Query {
   const optionFn: {
     fn: (ref: firestore.Query, option: any) => firestore.Query;

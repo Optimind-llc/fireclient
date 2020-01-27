@@ -290,8 +290,8 @@ exports.assertRule = function (rule) { return function (obj, target) {
     var matchesRule = exports.matches(rule)(obj, target);
     exports.assert(matchesRule.valid, matchesRule.message);
 }; };
-exports.assertSetDocQueryObject = function (obj, target) {
-    if (target === void 0) { target = "SetDocQuery"; }
+exports.assertSetDocSchemaObject = function (obj, target) {
+    if (target === void 0) { target = "SetDocSchema"; }
     exports.assertObject(obj, target);
     exports.assertRule([
         {
@@ -309,20 +309,20 @@ exports.assertSetDocQueryObject = function (obj, target) {
         exports.assertSubCollectionQuery(obj.subCollection, '"subCollection"');
     }
 };
-exports.assertSetDocQuery = function (obj, target) {
-    if (target === void 0) { target = "SetDocQuery"; }
+exports.assertSetDocSchema = function (obj, target) {
+    if (target === void 0) { target = "SetDocSchema"; }
     if (!(obj instanceof Function)) {
-        exports.assertSetDocQueryObject(obj, target);
+        exports.assertSetDocSchemaObject(obj, target);
     }
 };
-var assertSetCollectionQueryOjbect = function (obj, target) {
+var assertSetCollectionSchemaOjbect = function (obj, target) {
     exports.assertArray(obj, target);
-    obj.forEach(function (ele) { return exports.assertSetDocQuery(ele); });
+    obj.forEach(function (ele) { return exports.assertSetDocSchema(ele); });
 };
-exports.assertSetCollectionQuery = function (obj, target) {
-    if (target === void 0) { target = "SetCollectionQuery"; }
+exports.assertSetCollectionSchema = function (obj, target) {
+    if (target === void 0) { target = "SetCollectionSchema"; }
     if (!(obj instanceof Function)) {
-        assertSetCollectionQueryOjbect(obj, target);
+        assertSetCollectionSchemaOjbect(obj, target);
     }
 };
 exports.assertSubCollectionQuery = function (obj, target) {
@@ -331,15 +331,15 @@ exports.assertSubCollectionQuery = function (obj, target) {
     var values = Object.values(obj);
     values.forEach(function (value) {
         exports.assert(Array.isArray(value), "Value of " + target + " should be array.");
-        value.forEach(function (ele) { return exports.assertSetDocQueryObject(ele, "Element"); });
+        value.forEach(function (ele) { return exports.assertSetDocSchemaObject(ele, "Element"); });
     });
 };
 exports.assertSetDocsQuery = function (obj, target) {
-    if (target === void 0) { target = "SetDocQuery"; }
+    if (target === void 0) { target = "SetDocSchema"; }
     exports.assertObject(obj, target);
     var entries = Object.entries(obj);
     entries.forEach(function (_a) {
         var key = _a[0], value = _a[1];
-        return exports.assertSetDocQuery(value, "\"" + key + "\"");
+        return exports.assertSetDocSchema(value, "\"" + key + "\"");
     });
 };
