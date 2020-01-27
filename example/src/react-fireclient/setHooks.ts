@@ -102,7 +102,7 @@ function useSetDocsBase(
       fn: matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
     },
   ])({ options }, "Argument");
-  typeCheck.assertSetDocsQuery(queries);
+  typeCheck.assertSetDocsSchema(queries);
 
   const [writing, setWriting] = useState(false);
   const [called, setCalled] = useState(false);

@@ -199,7 +199,7 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
     { key: "path", fn: typeCheck.isString },
     {
       key: "options",
-      fn: matches(typeCheck.queryOptionRule.concat(typeCheck.acceptOutdatedRule)),
+      fn: matches(typeCheck.queryOptionRule.concat(typeCheck.callbackRule)),
     },
   ])({ path, options }, "Argument");
 

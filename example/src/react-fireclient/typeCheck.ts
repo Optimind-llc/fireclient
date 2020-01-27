@@ -77,6 +77,7 @@ export const condition = (
 };
 
 export const matches = (rule: Rule) => (obj: any, target: string) => {
+  console.log("matches", target, obj, typeof obj !== "object");
   if (typeof obj !== "object") {
     return isObject(obj, target);
   }
@@ -129,10 +130,7 @@ export const matchesObjectOf = (rule: Rule) => (obj: any, target: string) => {
     };
   }
   if (typeof obj !== "object") {
-    return {
-      valid: false,
-      message: `${target} should not be null or undefined.`,
-    };
+    return isObject(obj, target);
   }
   const entries = Object.entries(obj);
   for (let i = 0; i < entries.length; i++) {
@@ -265,6 +263,7 @@ export const querySchemaRule: Rule = [
   {
     key: "connects",
     fn: isBoolean,
+    optional: true,
   },
   {
     key: "queries",
@@ -333,13 +332,13 @@ export const assertSetDocSchema = (obj: any, target: string = "SetDocSchema") =>
     assertSetDocSchemaObject(obj, target);
   }
 };
-const assertSetCollectionSchemaOjbect = (obj: any, target: string) => {
+export const assertSetCollectionSchemaObject = (obj: any, target: string) => {
   assertArray(obj, target);
   (obj as any[]).forEach(ele => assertSetDocSchema(ele));
 };
 export const assertSetCollectionSchema = (obj: any, target: string = "SetCollectionSchema") => {
   if (!(obj instanceof Function)) {
-    assertSetCollectionSchemaOjbect(obj, target);
+    assertSetCollectionSchemaObject(obj, target);
   }
 };
 
@@ -351,7 +350,7 @@ export const assertSubCollectionQuery = (obj: any, target: string = "SubCollecti
     (value as any[]).forEach((ele: any) => assertSetDocSchemaObject(ele, "Element"));
   });
 };
-export const assertSetDocsQuery = (obj: any, target: string = "SetDocSchema") => {
+export const assertSetDocsSchema = (obj: any, target: string = "SetDocSchema") => {
   assertObject(obj, target);
   const entries = Object.entries(obj);
   entries.forEach(([key, value]) => assertSetDocSchema(value, `"${key}"`));

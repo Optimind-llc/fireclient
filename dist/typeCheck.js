@@ -63,6 +63,7 @@ exports.condition = function (condition, fn1, fn2) { return function (obj, targe
     return condition(obj) ? fn1(obj, target) : fn2(obj, target);
 }; };
 exports.matches = function (rule) { return function (obj, target) {
+    console.log("matches", target, obj, typeof obj !== "object");
     if (typeof obj !== "object") {
         return exports.isObject(obj, target);
     }
@@ -115,10 +116,7 @@ exports.matchesObjectOf = function (rule) { return function (obj, target) {
         };
     }
     if (typeof obj !== "object") {
-        return {
-            valid: false,
-            message: target + " should not be null or undefined.",
-        };
+        return exports.isObject(obj, target);
     }
     var entries = Object.entries(obj);
     for (var i = 0; i < entries.length; i++) {
@@ -248,6 +246,7 @@ exports.querySchemaRule = [
     {
         key: "connects",
         fn: exports.isBoolean,
+        optional: true,
     },
     {
         key: "queries",
@@ -317,14 +316,14 @@ exports.assertSetDocSchema = function (obj, target) {
         exports.assertSetDocSchemaObject(obj, target);
     }
 };
-var assertSetCollectionSchemaOjbect = function (obj, target) {
+exports.assertSetCollectionSchemaObject = function (obj, target) {
     exports.assertArray(obj, target);
     obj.forEach(function (ele) { return exports.assertSetDocSchema(ele); });
 };
 exports.assertSetCollectionSchema = function (obj, target) {
     if (target === void 0) { target = "SetCollectionSchema"; }
     if (!(obj instanceof Function)) {
-        assertSetCollectionSchemaOjbect(obj, target);
+        exports.assertSetCollectionSchemaObject(obj, target);
     }
 };
 exports.assertSubCollectionQuery = function (obj, target) {
@@ -336,7 +335,7 @@ exports.assertSubCollectionQuery = function (obj, target) {
         value.forEach(function (ele) { return exports.assertSetDocSchemaObject(ele, "Element"); });
     });
 };
-exports.assertSetDocsQuery = function (obj, target) {
+exports.assertSetDocsSchema = function (obj, target) {
     if (target === void 0) { target = "SetDocSchema"; }
     exports.assertObject(obj, target);
     var entries = Object.entries(obj);

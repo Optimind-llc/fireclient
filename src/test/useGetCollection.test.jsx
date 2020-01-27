@@ -59,6 +59,7 @@ const Wrapper = ({ option }) => {
     </>
   );
 };
+
 describe("getHashCode", () => {
   it("different key, different value", () => {
     expect(getHashCode({ foo: 123, bar: 456 })).toBe(getHashCode({ bar: 456, foo: 123 }));
@@ -72,6 +73,7 @@ describe("getHashCode", () => {
     );
   });
 });
+
 describe("useGetCollection", () => {
   it("Before fetching collection", () => {
     const app = mount(
@@ -79,6 +81,7 @@ describe("useGetCollection", () => {
         <Wrapper />
       </Provider>,
     );
+
     const obj = JSON.parse(app.find(".obj").text());
     const { collection, loading, error, accessCount } = obj;
     expect(collection.length).toBe(0);
@@ -112,6 +115,7 @@ describe("useGetCollection", () => {
   it("Condition1", done => {
     const callback = collection => {
       collection.forEach(coll => {
+        console.log(coll.data.population);
         expect(coll.data.population).toBeGreaterThanOrEqual(19354922);
       });
       done();
@@ -232,7 +236,7 @@ describe("useGetCollection", () => {
       let p = null;
       let f = null;
       collection.forEach(coll => {
-        if (p !== null && f !== null) {
+        if (p != null) {
           expect(coll.data.population).toBeGreaterThanOrEqual(p);
           if (coll.data.population === p) {
             expect(coll.data.foo).toBeGreaterThanOrEqual(f);
@@ -263,6 +267,7 @@ describe("useGetCollection", () => {
   });
   it("Cursor startAt", done => {
     const callback = collection => {
+      console.log(collection);
       expect(collection.length).toBe(2);
       collection.forEach(coll => {
         expect(coll.data.population).toBeGreaterThanOrEqual(19028000);
@@ -320,10 +325,10 @@ describe("useGetCollection", () => {
       let p = null;
       let f = null;
       collection.forEach(coll => {
-        if (p !== null && f !== null) {
-          expect(coll.data.population).toBeGreaterThanOrEqual(p);
-          if (coll.data.population === p) {
-            expect(coll.data.foo).toBeGreaterThanOrEqual(f);
+        if (p != null) {
+          expect(coll.data.foo).toBeGreaterThanOrEqual(f);
+          if (coll.data.foo === f) {
+            expect(coll.data.population).toBeGreaterThanOrEqual(p);
           }
         }
         p = coll.data.population;
@@ -331,7 +336,6 @@ describe("useGetCollection", () => {
       });
       done();
     };
-
     const app = mount(
       <Provider firestoreDB={db}>
         <Wrapper

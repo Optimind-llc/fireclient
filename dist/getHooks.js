@@ -122,7 +122,7 @@ function useSubscribeCollectionBase(path, initialValue, subscribeFunction, optio
         { key: "path", fn: typeCheck.isString },
         {
             key: "options",
-            fn: typeCheck_1.matches(typeCheck.queryOptionRule.concat(typeCheck.acceptOutdatedRule)),
+            fn: typeCheck_1.matches(typeCheck.queryOptionRule.concat(typeCheck.callbackRule)),
         },
     ])({ path: path, options: options }, "Argument");
     var hooksId = react_1.useState(generateHooksId())[0];
