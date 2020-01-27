@@ -4,7 +4,8 @@ import { fromJS, Map } from "immutable";
 import * as pathlib from "path";
 import { useEffect, useState } from "react";
 import {
-  ArrayQuerySchema,
+  ObjectQuery,
+  ArrayQuery,
   CollectionData,
   createDataFromCollection,
   CursorDirection,
@@ -33,7 +34,7 @@ type ArrayQueryData = (DocData | CollectionData)[];
 // https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
 // トランザクションを使用する
 export function useArrayQuery(
-  querySchema: ArrayQuerySchema,
+  querySchema: QuerySchema<ArrayQuery>,
 ): [ArrayQueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
   assertRule(validation.arrayQuerySchemaRule)(querySchema, "querySchema");
   const { queries, callback, acceptOutdated } = querySchema;
@@ -133,7 +134,7 @@ export function useArrayQuery(
 type QueryData = Map<string, DocData | CollectionData | {}>;
 
 export function useQuery(
-  querySchema: QuerySchema,
+  querySchema: QuerySchema<ObjectQuery>,
 ): [QueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
   assertRule(validation.querySchemaRule)(querySchema, "querySchema");
   const { queries } = querySchema;
@@ -159,19 +160,19 @@ export function useQuery(
 
 function useGetMinMax(
   path: string,
-  option: {
+  options: {
     callback?: () => void;
     acceptOutdated?: boolean;
   } & QueryOptions,
 ): [firestore.DocumentSnapshot | null, firestore.DocumentSnapshot | null, () => void, () => void] {
-  const order = option.order as Order;
+  const order = options.order as Order;
   const isDesc = order.direction === "desc";
   const minDocOption = {
-    ...option,
+    ...options,
     limit: 1,
   };
   const maxDocOption = {
-    ...option,
+    ...options,
     limit: 1,
     order: {
       ...order,
@@ -206,7 +207,7 @@ function reverseOrder(reverse: boolean, order: Order | Order[]): Order | Order[]
 
 export function usePaginateCollection(
   path: string,
-  option: {
+  options: {
     callback?: () => void;
     acceptOutdated?: boolean;
   } & QueryOptions,
@@ -217,7 +218,7 @@ export function usePaginateCollection(
       fn: validation.isString,
     },
     {
-      key: "option",
+      key: "options",
       fn: matches(
         validation.paginateOptionRule.concat(
           validation.callbackRule,
@@ -225,9 +226,9 @@ export function usePaginateCollection(
         ),
       ),
     },
-  ])({ path, option }, "Argument");
-  const order = option.order as Order;
-  const [min, max, reloadMin, reloadMax] = useGetMinMax(path, option);
+  ])({ path, options }, "Argument");
+  const order = options.order as Order;
+  const [min, max, reloadMin, reloadMax] = useGetMinMax(path, options);
   const [first, setFirst] = useState<any>(null);
   const [last, setLast] = useState<any>(null);
 
@@ -237,11 +238,11 @@ export function usePaginateCollection(
   const [dataReversed, setDataReversed] = useState<boolean>(false);
   const [origin, setOrigin] = useState<any>(null);
 
-  const optionWithCursor =
+  const optionsWithCursor =
     origin === null
-      ? option
+      ? options
       : {
-          ...option,
+          ...options,
           // reversedを反映
           order: reverseOrder(queryReversed, order),
           // originを反映
@@ -250,7 +251,7 @@ export function usePaginateCollection(
             direction: "startAfter" as CursorDirection,
           },
           callback: () => {
-            if (option.callback !== undefined) option.callback();
+            if (options.callback !== undefined) options.callback();
             setDataReversed(queryReversed);
           },
         };
@@ -279,7 +280,7 @@ export function usePaginateCollection(
     enabled: remainsNext,
   };
 
-  const [collection, loading, error]: any[] = useGetCollectionSnapshot(path, optionWithCursor);
+  const [collection, loading, error]: any[] = useGetCollectionSnapshot(path, optionsWithCursor);
   const nextFirst = collection !== null && collection.length > 0 ? collection[0] : null;
   const nextLast =
     collection !== null && collection.length > 0 ? collection[collection.length - 1] : null;
@@ -302,7 +303,7 @@ export function usePaginateCollection(
 
 export function useGetSubCollection(
   path: string,
-  option: { field: string; collectionPath: string; acceptOutdated?: boolean },
+  options: { field: string; collectionPath: string; acceptOutdated?: boolean },
 ) {
   assertRule([
     {
@@ -310,11 +311,11 @@ export function useGetSubCollection(
       fn: validation.isString,
     },
     {
-      key: "option",
+      key: "options",
       fn: matches(validation.subCollectionOptionRule.concat(validation.acceptOutdatedRule)),
     },
-  ])({ path, option }, "Argument");
-  const { field, collectionPath, acceptOutdated } = option;
+  ])({ path, options }, "Argument");
+  const { field, collectionPath, acceptOutdated } = options;
   const [docData, docLoading, docError, reloadDoc] = useGetDoc(path);
   // null -> データ取得前, undfeined -> fieldが存在しない（エラー）
   const docIds = docData.data !== null ? docData.data[field] : null;

@@ -34,7 +34,7 @@ function useLazyGetDocBase<State, InitialState = State>(
     onError: (err: any) => void,
     acceptOutdated?: boolean,
   ) => void,
-  option?: {
+  options?: {
     callback?: (snapshot: State) => void;
     acceptOutdated?: boolean;
   },
@@ -43,11 +43,11 @@ function useLazyGetDocBase<State, InitialState = State>(
   assertRule([
     { key: "path", fn: validation.isString },
     {
-      key: "option",
+      key: "options",
       optional: true,
       fn: validation.matches(validation.callbackRule.concat(validation.acceptOutdatedRule)),
     },
-  ])({ path, option }, "Argument");
+  ])({ path, options }, "Argument");
 
   const [error, setError] = useState(null);
   const [doc, setDoc] = useState<State | InitialState>(initialValue);
@@ -61,7 +61,7 @@ function useLazyGetDocBase<State, InitialState = State>(
         setDoc(data);
         setError(null);
         setLoading(false);
-        if (option?.callback !== undefined) option.callback(data);
+        if (options?.callback !== undefined) options.callback(data);
       },
       err => {
         setError(err);
@@ -82,7 +82,7 @@ export function useSubscribeDocBase<State, InitialState = State>(
     onError: (err: any) => void,
     onListen?: () => void,
   ) => () => void,
-  option?: {
+  options?: {
     callback?: (snapshot: State) => void;
   },
 ): [State | InitialState, boolean, any, () => void] {
@@ -90,11 +90,11 @@ export function useSubscribeDocBase<State, InitialState = State>(
   assertRule([
     { key: "path", fn: validation.isString },
     {
-      key: "option",
+      key: "options",
       optional: true,
       fn: matches(validation.callbackRule),
     },
-  ])({ path, option }, "Argument");
+  ])({ path, options }, "Argument");
 
   const [hooksId] = useState(generateHooksId());
   const [error, setError] = useState(null);
@@ -112,7 +112,7 @@ export function useSubscribeDocBase<State, InitialState = State>(
         setDoc(data);
         setError(null);
         setLoading(false);
-        if (option?.callback !== undefined) option.callback(data);
+        if (options?.callback !== undefined) options.callback(data);
       },
       err => {
         setError(err);
@@ -136,10 +136,10 @@ export function useLazyGetCollectionBase<State, InitialState = State>(
     path: string,
     onGet: (data: State) => void,
     onError: (err: any) => void,
-    option?: QueryOptions,
+    options?: QueryOptions,
     acceptOutdated?: boolean,
   ) => void,
-  option?: {
+  options?: {
     callback?: (data: State) => void;
     acceptOutdated?: boolean;
   } & QueryOptions,
@@ -148,12 +148,12 @@ export function useLazyGetCollectionBase<State, InitialState = State>(
   assertRule([
     { key: "path", fn: validation.isString },
     {
-      key: "option",
+      key: "options",
       fn: matches(
         validation.queryOptionRule.concat(validation.callbackRule, validation.acceptOutdatedRule),
       ),
     },
-  ])({ path, option }, "Argument");
+  ])({ path, options }, "Argument");
 
   const [error, setError] = useState(null);
   const [collection, setCollection] = useState<State | InitialState>(initialValue);
@@ -166,14 +166,14 @@ export function useLazyGetCollectionBase<State, InitialState = State>(
         setCollection(data);
         setError(null);
         setLoading(false);
-        if (option?.callback !== undefined) option.callback(data);
+        if (options?.callback !== undefined) options.callback(data);
       },
       err => {
         setError(err);
         setLoading(false);
       },
-      option,
-      option?.acceptOutdated,
+      options,
+      options?.acceptOutdated,
     );
   };
   return [collection, loading, error, loadCollection];
@@ -188,19 +188,19 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
     onChange: (doc: State) => void,
     onError: (err: any) => void,
     onListen?: () => void,
-    option?: QueryOptions,
+    options?: QueryOptions,
   ) => () => void,
-  option?: {
+  options?: {
     callback?: (data: State) => void;
   } & QueryOptions,
 ): [State | InitialState, boolean, any, () => void] {
   assertRule([
     { key: "path", fn: validation.isString },
     {
-      key: "option",
+      key: "options",
       fn: matches(validation.queryOptionRule.concat(validation.acceptOutdatedRule)),
     },
-  ])({ path, option }, "Argument");
+  ])({ path, options }, "Argument");
 
   const [hooksId] = useState(generateHooksId());
   const [error, setError] = useState(null);
@@ -218,17 +218,17 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
         setCollection(snapshot);
         setError(null);
         setLoading(false);
-        if (option?.callback !== undefined) option.callback(snapshot);
+        if (options?.callback !== undefined) options.callback(snapshot);
       },
       err => {
         setError(err);
         setLoading(false);
       },
       () => setLoading(true),
-      option,
+      options,
     );
     setUnsubscribe({ fn: unsub });
-  }, [path, getHashCode(option)]);
+  }, [path, getHashCode(options)]);
   return [collection, loading, error, unsubscribe.fn];
 }
 
@@ -238,33 +238,33 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
 
 export function useLazyGetDocSnapshot(
   path: string,
-  option?: {
+  options?: {
     callback?: (snapshot: firestore.DocumentSnapshot) => void;
     acceptOutdated?: boolean;
   },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
-  return useLazyGetDocBase<firestore.DocumentSnapshot, null>(path, null, getDocSnapshot, option);
+  return useLazyGetDocBase<firestore.DocumentSnapshot, null>(path, null, getDocSnapshot, options);
 }
 
 export function useGetDocSnapshot(
   path: string,
-  option?: {
+  options?: {
     callback?: (snapshot: firestore.DocumentSnapshot) => void;
     acceptOutdated?: boolean;
   },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
-  const [doc, loading, error, reloadDoc] = useLazyGetDocSnapshot(path, option);
-  useEffect(() => reloadDoc(), [path, getHashCode(option)]);
+  const [doc, loading, error, reloadDoc] = useLazyGetDocSnapshot(path, options);
+  useEffect(() => reloadDoc(), [path, getHashCode(options)]);
   return [doc, loading, error, reloadDoc];
 }
 
 export function useSubscribeDocSnapshot(
   path: string,
-  option?: {
+  options?: {
     callback?: (snapshot: firestore.DocumentSnapshot) => void;
   },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
-  return useSubscribeDocBase(path, null, subscribeDocSnapshot, option);
+  return useSubscribeDocBase(path, null, subscribeDocSnapshot, options);
 }
 
 // ------------------------------------------
@@ -273,7 +273,7 @@ export function useSubscribeDocSnapshot(
 
 export function useLazyGetCollectionSnapshot(
   path: string,
-  option?: {
+  options?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
     acceptOutdated?: boolean;
   } & QueryOptions,
@@ -282,29 +282,32 @@ export function useLazyGetCollectionSnapshot(
     path,
     null,
     getCollectionSnapshot,
-    option,
+    options,
   );
 }
 
 export function useGetCollectionSnapshot(
   path: string,
-  option?: {
+  options?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
     acceptOutdated?: boolean;
   } & QueryOptions,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
-  const [collection, loading, error, reloadCollection] = useLazyGetCollectionSnapshot(path, option);
-  useEffect(() => reloadCollection(), [path, getHashCode(option)]);
+  const [collection, loading, error, reloadCollection] = useLazyGetCollectionSnapshot(
+    path,
+    options,
+  );
+  useEffect(() => reloadCollection(), [path, getHashCode(options)]);
   return [collection, loading, error, reloadCollection];
 }
 
 export function useSubscribeCollectionSnapshot(
   path: string,
-  option?: {
+  options?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
   } & QueryOptions,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
-  return useSubscribeCollectionBase(path, [], subscribeCollectionSnapshot, option);
+  return useSubscribeCollectionBase(path, [], subscribeCollectionSnapshot, options);
 }
 
 // ------------------------------------------
@@ -319,34 +322,34 @@ export const initialCollectionData: CollectionData = [];
 
 export function useLazyGetDoc(
   path: string,
-  option?: {
+  options?: {
     callback?: (data: DocData) => void;
     acceptOutdated?: boolean;
   },
 ): [DocData, boolean, any, () => void] {
-  return useLazyGetDocBase(path, initialDocData, getDoc, option);
+  return useLazyGetDocBase(path, initialDocData, getDoc, options);
 }
 
 export function useGetDoc(
   path: string,
-  option?: {
+  options?: {
     callback?: () => void;
     acceptOutdated?: boolean;
   },
 ): [DocData, boolean, any, () => void] {
-  const [doc, loading, error, reloadDoc] = useLazyGetDoc(path, option);
-  useEffect(() => reloadDoc(), [path, getHashCode(option)]);
+  const [doc, loading, error, reloadDoc] = useLazyGetDoc(path, options);
+  useEffect(() => reloadDoc(), [path, getHashCode(options)]);
   return [doc, loading, error, reloadDoc];
 }
 
 export function useSubscribeDoc(
   path: string,
-  option?: {
+  options?: {
     callback?: (data: DocData) => void;
     acceptOutdated?: boolean;
   },
 ): [DocData, boolean, any, () => void] {
-  return useSubscribeDocBase(path, initialDocData, subscribeDoc, option);
+  return useSubscribeDocBase(path, initialDocData, subscribeDoc, options);
 }
 
 // ------------------------------------------
@@ -355,31 +358,31 @@ export function useSubscribeDoc(
 
 export function useLazyGetCollection(
   path: string,
-  option?: {
+  options?: {
     callback?: (collection: CollectionData) => void;
     acceptOutdated?: boolean;
   } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
-  return useLazyGetCollectionBase(path, initialCollectionData, getCollection, option);
+  return useLazyGetCollectionBase(path, initialCollectionData, getCollection, options);
 }
 
 export function useGetCollection(
   path: string,
-  option?: {
+  options?: {
     callback?: (collection: CollectionData) => void;
     acceptOutdated?: boolean;
   } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
-  const [collection, loading, error, reloadCollection] = useLazyGetCollection(path, option);
-  useEffect(() => reloadCollection(), [path, getHashCode(option)]);
+  const [collection, loading, error, reloadCollection] = useLazyGetCollection(path, options);
+  useEffect(() => reloadCollection(), [path, getHashCode(options)]);
   return [collection, loading, error, reloadCollection];
 }
 
 export function useSubscribeCollection(
   path: string,
-  option?: {
+  options?: {
     callback?: (collection: CollectionData) => void;
   } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
-  return useSubscribeCollectionBase(path, initialCollectionData, subscribeCollection, option);
+  return useSubscribeCollectionBase(path, initialCollectionData, subscribeCollection, options);
 }

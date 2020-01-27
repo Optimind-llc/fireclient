@@ -39,10 +39,10 @@ export function getHashCode(obj: any): number {
   }
 }
 
-export function getQueryId(path: string, option: QueryOptions): CollectionId {
+export function getQueryId(path: string, options: QueryOptions): CollectionId {
   return getHashCode({
     path: pathlib.resolve(path),
-    option,
+    options,
   });
 }
 
@@ -94,7 +94,7 @@ export function saveDoc(dispatch: React.Dispatch<Actions>, docPath: string, doc:
 export function saveCollection(
   dispatch: React.Dispatch<Actions>,
   path: string,
-  option: QueryOptions,
+  options: QueryOptions,
   collection: CollectionData,
 ) {
   collection.forEach(doc => {
@@ -103,7 +103,7 @@ export function saveCollection(
     }
     saveDoc(dispatch, pathlib.resolve(path, doc.id), doc);
   });
-  const collectionId = getQueryId(path, option);
+  const collectionId = getQueryId(path, options);
   const docIds = List(
     collection.filter(doc => doc.id !== null).map(doc => pathlib.resolve(path, doc.id as string)),
   );
@@ -258,7 +258,7 @@ export function withOption(
   { where, limit, order, cursor }: QueryOptions,
 ): firestore.Query {
   const optionFn: {
-    fn: (ref: firestore.Query, option: any) => firestore.Query;
+    fn: (ref: firestore.Query, options: any) => firestore.Query;
     param: Where | Where[] | Limit | Order | Order[] | Cursor | undefined;
   }[] = [
     { fn: withWhere, param: where },

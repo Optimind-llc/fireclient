@@ -154,17 +154,60 @@ export type Query = {
 /**
  * @example
  * {
- *    connects: true,
- *    queries: {
- *      foo: {
- *        location: 'doc/path/in/firestore',
- *        connects: false
- *      },
- *      bar: {
- *        location: 'collection/path/in/firestore',
- *        where: { ... }
- *      }
+ *    foo: {
+ *      location: 'doc/path/in/firestore',
+ *      limit: 15,
+ *      connects: true
+ *    },
+ *    bar: {
+ *      location: 'collection/path/in/firestore',
+ *      where: { ... },
+ *      order: { ... },
  *    }
+ * }
+ * @property {string} location  - Where doc or collection is in firestore.
+ * @property {string?} connects - Whether doc or collection is to be subscribed.
+ * @property {Where?}  where    - Filters collection by doc's field.
+ * @property {Limit?}  limit    - Limits the number of fetching docs.
+ * @property {Order?}  order    - Defines the order of docs.
+ * @property {Cursor?} cursor   - Defines the start and end point.
+ */
+export type ObjectQuery = {
+  [field: string]: {
+    location: string;
+    connects?: boolean;
+  } & QueryOptions;
+};
+/**
+ * @example
+ * [
+ *    {
+ *      location: 'doc/path/in/firestore',
+ *      limit: 15,
+ *      connects: true
+ *    },
+ *    {
+ *      location: 'collection/path/in/firestore',
+ *      where: { ... },
+ *      order: { ... },
+ *    }
+ * ]
+ * @property {string} location  - Where doc or collection is in firestore.
+ * @property {string?} connects - Whether doc or collection is to be subscribed.
+ * @property {Where?}  where    - Filters collection by doc's field.
+ * @property {Limit?}  limit    - Limits the number of fetching docs.
+ * @property {Order?}  order    - Defines the order of docs.
+ * @property {Cursor?} cursor   - Defines the start and end point.
+ */
+export type ArrayQuery = ({
+  location: string;
+  connects?: boolean;
+} & QueryOptions)[];
+/**
+ * @example
+ * {
+ *    connects: true,
+ *    queries:
  * }
  *
  * @property {string?} connects               - Whether doc or collection is to be subscribed.
@@ -173,41 +216,12 @@ export type Query = {
  * @property {boolean}  acceptOutdated        - Whether if non-subscribed cache is used.
  * @property {()=>void} callback              - This is excecuted after fetching from Firestore or getting cache.
  */
-export type QuerySchema = {
+export type QuerySchema<QueryType> = {
   connects?: boolean;
-  queries: { [field: string]: Query };
+  queries: QueryType;
   acceptOutdated?: boolean;
   callback?: () => void;
 };
-/**
- * @example
- * {
- *    connects: true,
- *    queries: [
- *      {
- *        location: 'doc/path/in/firestore',
- *        connects: false
- *      },
- *      {
- *        location: 'collection/path/in/firestore',
- *        where: { ... }
- *      }
- *    ]
- * }
- *
- * @property {string?}  connects        - Whether doc or collection is to be subscribed.
- *                                        This is applied to all queries unless query has `connects` property.
- * @property {Query[]}  queries         - Query array.
- * @property {boolean}  acceptOutdated  - Whether if non-subscribed cache is used.
- * @property {()=>void} callback        - This is excecuted after fetching from Firestore or getting cache.
- */
-export type ArrayQuerySchema = {
-  connects?: boolean;
-  queries: Query[];
-  acceptOutdated?: boolean;
-  callback?: () => void;
-};
-
 export type SetDocSchemaObject = {
   id?: string;
   fields?: {

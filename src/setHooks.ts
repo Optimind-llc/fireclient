@@ -22,13 +22,13 @@ function useSetBase<SetQueryObject>(
     query: SetQueryObject,
     onWrite: () => void,
     onError: (error: any) => void,
-    option?: {
+    options?: {
       merge?: boolean;
       mergeFields?: string[];
       callback?: () => void;
     },
   ) => void,
-  option?: {
+  options?: {
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
@@ -38,11 +38,11 @@ function useSetBase<SetQueryObject>(
   assertRule([
     { key: "path", fn: validation.isString },
     {
-      key: "option",
+      key: "options",
       optional: true,
       fn: matches(validation.mergeRule.concat(validation.callbackRule)),
     },
-  ])({ path, option }, "Argument");
+  ])({ path, options }, "Argument");
   validation.assertSetDocSchema(query);
 
   const [writing, setWriting] = useState(false);
@@ -63,13 +63,13 @@ function useSetBase<SetQueryObject>(
       () => {
         setError(null);
         setWriting(false);
-        if (option?.callback !== undefined) option.callback();
+        if (options?.callback !== undefined) options.callback();
       },
       err => {
         setError(err);
         setWriting(false);
       },
-      option,
+      options,
     );
   };
   return [writeFn, writing, called, error];
@@ -82,13 +82,13 @@ function useSetDocsBase(
     query: SetDocSchemaObject,
     onWrite: () => void,
     onError: (error: any) => void,
-    option?: {
+    options?: {
       merge?: boolean;
       mergeFields?: string[];
       callback?: () => void;
     },
   ) => void,
-  option?: {
+  options?: {
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
@@ -97,11 +97,11 @@ function useSetDocsBase(
   // Arg validation
   assertRule([
     {
-      key: "option",
+      key: "options",
       optional: true,
       fn: matches(validation.mergeRule.concat(validation.callbackRule)),
     },
-  ])({ option }, "Argument");
+  ])({ options }, "Argument");
   validation.assertSetDocsQuery(queries);
 
   const [writing, setWriting] = useState(false);
@@ -121,14 +121,14 @@ function useSetDocsBase(
             const queryGenerator = query instanceof Function ? query : () => query;
             const queryObject = queryGenerator(...args);
             assertSetDocSchemaObject(queryObject);
-            setFunction(path, queryObject, resolve, reject, option);
+            setFunction(path, queryObject, resolve, reject, options);
           }),
       ),
     )
       .then(() => {
         setError(null);
         setWriting(false);
-        if (option?.callback !== undefined) option.callback();
+        if (options?.callback !== undefined) options.callback();
       })
       .catch(err => {
         setError(err);
@@ -146,13 +146,13 @@ function useSetDocBase(
     query: SetDocSchemaObject,
     onWrite: () => void,
     onError: (error: any) => void,
-    option?: {
+    options?: {
       merge?: boolean;
       mergeFields?: string[];
       callback?: () => void;
     },
   ) => void,
-  option?: {
+  options?: {
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
@@ -163,11 +163,11 @@ function useSetDocBase(
   matches([
     { key: "path", fn: validation.isString },
     {
-      key: "option",
+      key: "options",
       fn: matches(validation.queryOptionRule.concat(validation.acceptOutdatedRule)),
     },
-  ])({ path, option }, "Argument");
-  return useSetBase(path, query, setFunction, option);
+  ])({ path, options }, "Argument");
+  return useSetBase(path, query, setFunction, options);
 }
 
 function useSetCollectionBase(
@@ -178,12 +178,12 @@ function useSetCollectionBase(
     queries: SetCollectionSchemaObject,
     onWrite: () => void,
     onError: (error: any) => void,
-    option?: {
+    options?: {
       merge?: boolean;
       mergeFields?: string[];
     },
   ) => void,
-  option?: {
+  options?: {
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
@@ -194,11 +194,11 @@ function useSetCollectionBase(
   matches([
     { key: "path", fn: validation.isString },
     {
-      key: "option",
+      key: "options",
       fn: matches(validation.queryOptionRule.concat(validation.acceptOutdatedRule)),
     },
-  ])({ path, option }, "Argument");
-  return useSetBase(path, queries, setFunction, option);
+  ])({ path, options }, "Argument");
+  return useSetBase(path, queries, setFunction, options);
 }
 
 // ------------------------------------------
@@ -208,31 +208,31 @@ function useSetCollectionBase(
 export function useSetDoc(
   docPath: string,
   query: SetDocSchema,
-  option?: {
+  options?: {
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
   },
 ) {
-  return useSetDocBase(docPath, query, setDoc, option);
+  return useSetDocBase(docPath, query, setDoc, options);
 }
 export function useAddDoc(
   collectionPath: string,
   query: SetDocSchema,
-  option?: {
+  options?: {
     callback?: () => void;
   },
 ) {
-  return useSetDocBase(collectionPath, query, addDoc, option);
+  return useSetDocBase(collectionPath, query, addDoc, options);
 }
 export function useUpdateDoc(
   docPath: string,
   query: SetDocSchema,
-  option?: {
+  options?: {
     callback?: () => void;
   },
 ) {
-  return useSetDocBase(docPath, query, updateDoc, option);
+  return useSetDocBase(docPath, query, updateDoc, options);
 }
 
 // ------------------------------------------
@@ -241,29 +241,29 @@ export function useUpdateDoc(
 
 export function useAddDocs(
   queries: { [key: string]: SetDocSchema },
-  option?: {
+  options?: {
     callback?: () => void;
   },
 ) {
-  return useSetDocsBase(queries, addDoc, option);
+  return useSetDocsBase(queries, addDoc, options);
 }
 export function useSetDocs(
   queries: { [key: string]: SetDocSchema },
-  option?: {
+  options?: {
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
   },
 ) {
-  return useSetDocsBase(queries, setDoc, option);
+  return useSetDocsBase(queries, setDoc, options);
 }
 export function useUpdateDocs(
   queries: { [key: string]: SetDocSchema },
-  option?: {
+  options?: {
     callback?: () => void;
   },
 ) {
-  return useSetDocsBase(queries, updateDoc, option);
+  return useSetDocsBase(queries, updateDoc, options);
 }
 
 // ------------------------------------------
@@ -273,11 +273,11 @@ export function useUpdateDocs(
 export function useSetCollection(
   collectionPath: string,
   query: SetCollectionSchema,
-  option?: {
+  options?: {
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
   },
 ) {
-  return useSetCollectionBase(collectionPath, query, setCollection, option);
+  return useSetCollectionBase(collectionPath, query, setCollection, options);
 }

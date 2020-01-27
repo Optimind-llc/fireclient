@@ -115,7 +115,7 @@ export function setDoc(
   query: SetDocSchemaObject,
   onSet: () => void,
   onError: (error: any) => void,
-  option?: {
+  options?: {
     merge?: boolean;
     mergeFields?: string[];
   },
@@ -127,8 +127,8 @@ export function setDoc(
 
   try {
     const promise =
-      option !== undefined
-        ? firestoreDB.doc(docPath).set(fields, option)
+      options !== undefined
+        ? firestoreDB.doc(docPath).set(fields, options)
         : firestoreDB.doc(docPath).set(fields);
     promise
       .then(() => {
@@ -186,7 +186,7 @@ export function setCollection(
   queries: SetCollectionSchemaObject,
   onSet: () => void,
   onError: (error: any) => void,
-  option?: {
+  options?: {
     merge?: boolean;
     mergeFields?: string[];
   },
@@ -198,7 +198,7 @@ export function setCollection(
           const { id } = query;
           if (id !== undefined) {
             const docPath = pathlib.resolve(collectionPath, id);
-            setDoc(docPath, query, resolve, reject, option);
+            setDoc(docPath, query, resolve, reject, options);
           } else {
             addDoc(collectionPath, query, resolve, reject);
           }

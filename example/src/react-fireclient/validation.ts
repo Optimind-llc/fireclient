@@ -85,7 +85,7 @@ export const matches = (rule: Rule) => (obj: any, target: string) => {
     const value = obj[key];
     if (value !== undefined) {
       const matchesRule = fn(value, `"${key}"`);
-      console.log("result", target, obj, matchesRule);
+
       if (!matchesRule.valid) {
         return matchesRule;
       }
