@@ -169,7 +169,7 @@ export function updateDoc(
 }
 /**
  * ```js
- * queries: [
+ * [
  *  {
  *    id: ...,
  *    fields: { ... },
