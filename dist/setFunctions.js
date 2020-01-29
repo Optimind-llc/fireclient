@@ -130,7 +130,7 @@ function updateDoc(docPath, query, onUpdate, onError) {
 exports.updateDoc = updateDoc;
 /**
  * ```js
- * queries: [
+ * [
  *  {
  *    id: ...,
  *    fields: { ... },

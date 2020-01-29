@@ -1,13 +1,13 @@
-import { SetCollectionSchemaObject, SetDocSchemaObject } from ".";
-export declare function addDoc(path: string, query: SetDocSchemaObject, onSet: () => void, onError: (error: any) => void): void;
-export declare function setDoc(docPath: string, query: SetDocSchemaObject, onSet: () => void, onError: (error: any) => void, options?: {
+import { SetCollectionSchemaObject, StaticSetFql } from ".";
+export declare function addDoc(path: string, query: StaticSetFql, onSet: () => void, onError: (error: any) => void): void;
+export declare function setDoc(docPath: string, query: StaticSetFql, onSet: () => void, onError: (error: any) => void, options?: {
     merge?: boolean;
     mergeFields?: string[];
 }): void;
-export declare function updateDoc(docPath: string, query: SetDocSchemaObject, onUpdate: () => void, onError: (error: any) => void): void;
+export declare function updateDoc(docPath: string, query: StaticSetFql, onUpdate: () => void, onError: (error: any) => void): void;
 /**
  * ```js
- * queries: [
+ * [
  *  {
  *    id: ...,
  *    fields: { ... },

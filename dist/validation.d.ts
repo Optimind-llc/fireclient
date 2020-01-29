@@ -49,8 +49,8 @@ export declare const queryRule: Rule;
 export declare const acceptOutdatedRule: Rule;
 export declare const callbackRule: Rule;
 export declare const mergeRule: Rule;
-export declare const arrayQuerySchemaRule: Rule;
-export declare const querySchemaRule: Rule;
+export declare const arrayGetFqlRule: Rule;
+export declare const getFqlRule: Rule;
 export declare const subCollectionOptionRule: {
     key: string;
     fn: (obj: any, target: string) => {
@@ -69,8 +69,8 @@ export declare const assert: (isValid: boolean, errorMessage: string) => void;
 export declare const assertObject: (obj: any, target: string) => void;
 export declare const assertArray: (obj: any, target: string) => void;
 export declare const assertRule: (rule: Rule) => (obj: any, target: string) => void;
-export declare const assertSetDocSchemaObject: (obj: any, target?: string) => void;
-export declare const assertSetDocSchema: (obj: any, target?: string) => void;
+export declare const assertStaticSetFql: (obj: any, target?: string) => void;
+export declare const assertSetFql: (obj: any, target?: string) => void;
 export declare const assertSetCollectionSchema: (obj: any, target?: string) => void;
 export declare const assertSubCollectionQuery: (obj: any, target?: string) => void;
 export declare const assertSetDocsQuery: (obj: any, target?: string) => void;

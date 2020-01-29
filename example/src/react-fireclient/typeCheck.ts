@@ -247,7 +247,7 @@ export const mergeRule: Rule = [
     fn: isArrayOf(isString),
   },
 ];
-export const arrayQuerySchemaRule: Rule = [
+export const arrayGetFqlRule: Rule = [
   {
     key: "connects",
     fn: isBoolean,
@@ -259,7 +259,7 @@ export const arrayQuerySchemaRule: Rule = [
   },
 ].concat(acceptOutdatedRule as any, callbackRule as any);
 
-export const querySchemaRule: Rule = [
+export const getFqlRule: Rule = [
   {
     key: "connects",
     fn: isBoolean,
@@ -309,7 +309,7 @@ export const assertRule = (rule: Rule) => (obj: any, target: string) => {
   assert(matchesRule.valid, matchesRule.message);
 };
 
-export const assertSetDocSchemaObject = (obj: any, target: string = "SetDocSchema") => {
+export const assertStaticSetFql = (obj: any, target: string = "SetFql") => {
   assertObject(obj, target);
   assertRule([
     {
@@ -327,14 +327,14 @@ export const assertSetDocSchemaObject = (obj: any, target: string = "SetDocSchem
     assertSubCollectionQuery(obj.subCollection, '"subCollection"');
   }
 };
-export const assertSetDocSchema = (obj: any, target: string = "SetDocSchema") => {
+export const assertSetFql = (obj: any, target: string = "SetFql") => {
   if (!(obj instanceof Function)) {
-    assertSetDocSchemaObject(obj, target);
+    assertStaticSetFql(obj, target);
   }
 };
 export const assertSetCollectionSchemaObject = (obj: any, target: string) => {
   assertArray(obj, target);
-  (obj as any[]).forEach(ele => assertSetDocSchema(ele));
+  (obj as any[]).forEach(ele => assertSetFql(ele));
 };
 export const assertSetCollectionSchema = (obj: any, target: string = "SetCollectionSchema") => {
   if (!(obj instanceof Function)) {
@@ -347,11 +347,11 @@ export const assertSubCollectionQuery = (obj: any, target: string = "SubCollecti
   const values = Object.values(obj);
   values.forEach(value => {
     assert(Array.isArray(value), `Value of ${target} should be array.`);
-    (value as any[]).forEach((ele: any) => assertSetDocSchemaObject(ele, "Element"));
+    (value as any[]).forEach((ele: any) => assertStaticSetFql(ele, "Element"));
   });
 };
-export const assertSetDocsSchema = (obj: any, target: string = "SetDocSchema") => {
+export const assertSetDocsSchema = (obj: any, target: string = "SetFql") => {
   assertObject(obj, target);
   const entries = Object.entries(obj);
-  entries.forEach(([key, value]) => assertSetDocSchema(value, `"${key}"`));
+  entries.forEach(([key, value]) => assertSetFql(value, `"${key}"`));
 };

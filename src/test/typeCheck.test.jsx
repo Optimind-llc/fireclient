@@ -4,7 +4,7 @@ const fn = (rule, obj) => () => typeCheck.assertRule(rule)(obj, "test");
 describe("Query schema", () => {
   it("Object schema", () => {
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -15,7 +15,7 @@ describe("Query schema", () => {
       }),
     ).not.toThrow();
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -31,7 +31,7 @@ describe("Query schema", () => {
       }),
     ).not.toThrow();
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -47,7 +47,7 @@ describe("Query schema", () => {
     ).toThrow();
 
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -58,7 +58,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -69,7 +69,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -80,7 +80,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -91,7 +91,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -103,7 +103,7 @@ describe("Query schema", () => {
     ).toThrow();
 
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -114,7 +114,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -125,7 +125,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -136,7 +136,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -147,7 +147,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -158,7 +158,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -169,7 +169,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -180,7 +180,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.querySchemaRule, {
+      fn(typeCheck.getFqlRule, {
         connects: true,
         queries: [
           {
@@ -191,11 +191,11 @@ describe("Query schema", () => {
       }),
     ).toThrow();
 
-    expect(fn(typeCheck.querySchemaRule, { connects: true })).toThrow();
+    expect(fn(typeCheck.getFqlRule, { connects: true })).toThrow();
   });
   it("Array schema", () => {
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -206,7 +206,7 @@ describe("Query schema", () => {
       }),
     ).not.toThrow();
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -222,7 +222,7 @@ describe("Query schema", () => {
       }),
     ).not.toThrow();
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -238,7 +238,7 @@ describe("Query schema", () => {
     ).toThrow();
 
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -249,7 +249,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -260,7 +260,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -271,7 +271,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -282,7 +282,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -294,7 +294,7 @@ describe("Query schema", () => {
     ).toThrow();
 
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -305,7 +305,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -316,7 +316,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -327,7 +327,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -338,7 +338,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -349,7 +349,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -360,7 +360,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: [
           {
@@ -371,7 +371,7 @@ describe("Query schema", () => {
       }),
     ).toThrow();
     expect(
-      fn(typeCheck.arrayQuerySchemaRule, {
+      fn(typeCheck.arrayGetFqlRule, {
         connects: true,
         queries: {
           foo: {
@@ -382,16 +382,16 @@ describe("Query schema", () => {
       }),
     ).toThrow();
 
-    expect(fn(typeCheck.arrayQuerySchemaRule, { connects: true })).toThrow();
+    expect(fn(typeCheck.arrayGetFqlRule, { connects: true })).toThrow();
   });
 });
 
 const fn2 = (assertFn, obj) => () => assertFn(obj, "test");
 
 describe("SetSchema", () => {
-  it("SetDocSchema", () => {
+  it("SetFql", () => {
     expect(
-      fn2(typeCheck.assertSetDocSchema, () => ({
+      fn2(typeCheck.assertSetFql, () => ({
         id: "foo",
         fields: {
           foo: "bar",
@@ -406,7 +406,7 @@ describe("SetSchema", () => {
       })),
     ).not.toThrow;
     expect(
-      fn2(typeCheck.assertSetDocSchemaObject, {
+      fn2(typeCheck.assertStaticSetFql, {
         id: "foo",
         fields: {
           foo: "bar",
@@ -421,7 +421,7 @@ describe("SetSchema", () => {
       }),
     ).not.toThrow();
     expect(
-      fn2(typeCheck.assertSetDocSchemaObject, {
+      fn2(typeCheck.assertStaticSetFql, {
         id: "foo",
         fields: {
           foo: "bar",
@@ -434,7 +434,7 @@ describe("SetSchema", () => {
       }),
     ).toThrow();
     expect(
-      fn2(typeCheck.assertSetDocSchemaObject, {
+      fn2(typeCheck.assertStaticSetFql, {
         id: 123,
         fields: {
           foo: "bar",
@@ -449,7 +449,7 @@ describe("SetSchema", () => {
       }),
     ).toThrow();
     expect(
-      fn2(typeCheck.assertSetDocSchemaObject, {
+      fn2(typeCheck.assertStaticSetFql, {
         id: null,
         fields: {
           foo: "bar",
@@ -464,7 +464,7 @@ describe("SetSchema", () => {
       }),
     ).toThrow();
     expect(
-      fn2(typeCheck.assertSetDocSchemaObject, {
+      fn2(typeCheck.assertStaticSetFql, {
         id: "asdf",
         fields: {
           foo: "bar",
@@ -479,7 +479,7 @@ describe("SetSchema", () => {
       }),
     ).toThrow();
     expect(
-      fn2(typeCheck.assertSetDocSchemaObject, {
+      fn2(typeCheck.assertStaticSetFql, {
         id: "asdf",
         fields: {
           foo: "bar",

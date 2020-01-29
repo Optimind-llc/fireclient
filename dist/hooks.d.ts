@@ -1,6 +1,6 @@
 import { firestore } from "firebase";
 import "firebase/firestore";
-import { CollectionData, DocData, HooksId, QueryOptions, SetDocSchema } from ".";
+import { CollectionData, DocData, HooksId, QueryOptions, SetFql } from ".";
 export declare function generateHooksId(): HooksId;
 export declare function useSubscribeDocBase<State, InitialState = State>(
   path: string,
@@ -131,16 +131,16 @@ export declare function useSubscribeCollection(
 ): [CollectionData, boolean, any, () => void];
 export declare function useSetDoc(
   path: string,
-  query: SetDocSchema,
+  query: SetFql,
   option: any,
 ): (boolean | ((...args: any) => void) | null)[];
 export declare function useAddDoc(
   path: string,
-  query: SetDocSchema,
+  query: SetFql,
   option: any,
 ): (boolean | ((...args: any) => void) | null)[];
 export declare function useUpdateDoc(
   path: string,
-  query: SetDocSchema,
+  query: SetFql,
   option: any,
 ): (boolean | ((...args: any) => void) | null)[];

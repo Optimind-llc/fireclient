@@ -231,7 +231,7 @@ exports.mergeRule = [
         fn: exports.isArrayOf(exports.isString),
     },
 ];
-exports.arrayQuerySchemaRule = [
+exports.arrayGetFqlRule = [
     {
         key: "connects",
         fn: exports.isBoolean,
@@ -242,7 +242,7 @@ exports.arrayQuerySchemaRule = [
         fn: exports.matchesArrayOf(exports.queryRule),
     },
 ].concat(exports.acceptOutdatedRule, exports.callbackRule);
-exports.querySchemaRule = [
+exports.getFqlRule = [
     {
         key: "connects",
         fn: exports.isBoolean,
@@ -291,8 +291,8 @@ exports.assertRule = function (rule) { return function (obj, target) {
     var matchesRule = exports.matches(rule)(obj, target);
     exports.assert(matchesRule.valid, matchesRule.message);
 }; };
-exports.assertSetDocSchemaObject = function (obj, target) {
-    if (target === void 0) { target = "SetDocSchema"; }
+exports.assertStaticSetFql = function (obj, target) {
+    if (target === void 0) { target = "SetFql"; }
     exports.assertObject(obj, target);
     exports.assertRule([
         {
@@ -310,15 +310,15 @@ exports.assertSetDocSchemaObject = function (obj, target) {
         exports.assertSubCollectionQuery(obj.subCollection, '"subCollection"');
     }
 };
-exports.assertSetDocSchema = function (obj, target) {
-    if (target === void 0) { target = "SetDocSchema"; }
+exports.assertSetFql = function (obj, target) {
+    if (target === void 0) { target = "SetFql"; }
     if (!(obj instanceof Function)) {
-        exports.assertSetDocSchemaObject(obj, target);
+        exports.assertStaticSetFql(obj, target);
     }
 };
 exports.assertSetCollectionSchemaObject = function (obj, target) {
     exports.assertArray(obj, target);
-    obj.forEach(function (ele) { return exports.assertSetDocSchema(ele); });
+    obj.forEach(function (ele) { return exports.assertSetFql(ele); });
 };
 exports.assertSetCollectionSchema = function (obj, target) {
     if (target === void 0) { target = "SetCollectionSchema"; }
@@ -332,15 +332,15 @@ exports.assertSubCollectionQuery = function (obj, target) {
     var values = Object.values(obj);
     values.forEach(function (value) {
         exports.assert(Array.isArray(value), "Value of " + target + " should be array.");
-        value.forEach(function (ele) { return exports.assertSetDocSchemaObject(ele, "Element"); });
+        value.forEach(function (ele) { return exports.assertStaticSetFql(ele, "Element"); });
     });
 };
 exports.assertSetDocsSchema = function (obj, target) {
-    if (target === void 0) { target = "SetDocSchema"; }
+    if (target === void 0) { target = "SetFql"; }
     exports.assertObject(obj, target);
     var entries = Object.entries(obj);
     entries.forEach(function (_a) {
         var key = _a[0], value = _a[1];
-        return exports.assertSetDocSchema(value, "\"" + key + "\"");
+        return exports.assertSetFql(value, "\"" + key + "\"");
     });
 };

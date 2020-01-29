@@ -31,10 +31,10 @@ var typeCheck_1 = require("./typeCheck");
 // TODO:
 // https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
 // トランザクションを使用する
-function useArrayQuery(querySchema) {
-    typeCheck_1.assertRule(typeCheck.arrayQuerySchemaRule)(querySchema, "querySchema");
-    var queries = querySchema.queries, callback = querySchema.callback, acceptOutdated = querySchema.acceptOutdated;
-    var connects = querySchema.connects ? querySchema.connects : false;
+function useArrayQuery(getFql) {
+    typeCheck_1.assertRule(typeCheck.arrayGetFqlRule)(getFql, "getFql");
+    var queries = getFql.queries, callback = getFql.callback, acceptOutdated = getFql.acceptOutdated;
+    var connects = getFql.connects ? getFql.connects : false;
     var initialQueryData = queries.map(function (query) {
         return utils_1.isDocPath(query.location) ? getHooks_1.initialDocData : getHooks_1.initialCollectionData;
     });
@@ -105,16 +105,16 @@ function useArrayQuery(querySchema) {
     };
     react_1.useEffect(function () {
         loadQuery();
-    }, [immutable_1.fromJS(querySchema).hashCode()]);
+    }, [immutable_1.fromJS(getFql).hashCode()]);
     return [queryData, loading, error, unsubscribe];
 }
 exports.useArrayQuery = useArrayQuery;
-function useQuery(querySchema) {
-    typeCheck_1.assertRule(typeCheck.querySchemaRule)(querySchema, "querySchema");
-    var queries = querySchema.queries;
+function useQuery(getFql) {
+    typeCheck_1.assertRule(typeCheck.getFqlRule)(getFql, "getFql");
+    var queries = getFql.queries;
     var idxToKey = Object.keys(queries).reduce(function (acc, key, i) { return acc.set(i, key); }, immutable_1.Map());
     var arrayQueries = Object.values(queries);
-    var schema = __assign(__assign({}, querySchema), { queries: arrayQueries });
+    var schema = __assign(__assign({}, getFql), { queries: arrayQueries });
     var _a = useArrayQuery(schema), queryData = _a[0], loading = _a[1], error = _a[2], unsubscribe = _a[3];
     return [
         queryData.reduce(function (acc, queryDat, i) { return acc.set(idxToKey.get(i), queryDat); }, immutable_1.Map()).toJS(),

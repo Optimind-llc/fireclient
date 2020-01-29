@@ -14,7 +14,7 @@ import {
   OrderDirection,
   Query,
   QueryOptions,
-  QuerySchema,
+  GetFql,
 } from ".";
 import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "./getFunctions";
 import {
@@ -34,11 +34,11 @@ type ArrayQueryData = (DocData | CollectionData)[];
 // https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
 // トランザクションを使用する
 export function useArrayQuery(
-  querySchema: QuerySchema<ArrayQuery>,
+  getFql: GetFql<ArrayQuery>,
 ): [ArrayQueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
-  assertRule(typeCheck.arrayQuerySchemaRule)(querySchema, "querySchema");
-  const { queries, callback, acceptOutdated } = querySchema;
-  const connects = querySchema.connects ? querySchema.connects : false;
+  assertRule(typeCheck.arrayGetFqlRule)(getFql, "getFql");
+  const { queries, callback, acceptOutdated } = getFql;
+  const connects = getFql.connects ? getFql.connects : false;
   const initialQueryData: ArrayQueryData = queries.map(query =>
     isDocPath(query.location) ? initialDocData : initialCollectionData,
   );
@@ -126,7 +126,7 @@ export function useArrayQuery(
 
   useEffect(() => {
     loadQuery();
-  }, [fromJS(querySchema).hashCode()]);
+  }, [fromJS(getFql).hashCode()]);
 
   return [queryData, loading, error, unsubscribe];
 }
@@ -134,10 +134,10 @@ export function useArrayQuery(
 type QueryData = Map<string, DocData | CollectionData | {}>;
 
 export function useQuery(
-  querySchema: QuerySchema<ObjectQuery>,
+  getFql: GetFql<ObjectQuery>,
 ): [QueryData, boolean, any, { unsubscribeFn: () => void; reloadFn: () => void }] {
-  assertRule(typeCheck.querySchemaRule)(querySchema, "querySchema");
-  const { queries } = querySchema;
+  assertRule(typeCheck.getFqlRule)(getFql, "getFql");
+  const { queries } = getFql;
 
   const idxToKey = Object.keys(queries).reduce(
     (acc: any, key, i: number) => acc.set(i, key),
@@ -145,7 +145,7 @@ export function useQuery(
   );
   const arrayQueries = Object.values(queries);
   const schema = {
-    ...querySchema,
+    ...getFql,
     queries: arrayQueries,
   };
   const [queryData, loading, error, unsubscribe] = useArrayQuery(schema);

@@ -3,20 +3,29 @@ import { useAddDocs, useUpdateDocs, useSetDocs } from "../react-fireclient";
 
 function View(props) {
   const [setFn, writing, called, error] = useSetDocs({
-    "cities/nagoya": n => ({
+    "cities/nagoya": (n, userName) => ({
       fields: {
-        common: 3 * n,
+        asdf: 3 * n,
+      },
+      subCollection: {
+        users: [
+          {
+            id: "hoge",
+            fields: {
+              bbb: "asdf",
+            },
+          },
+        ],
       },
     }),
     "cities/chikusa": n => ({
       fields: {
-        common: n,
+        fgh: n,
       },
     }),
   });
   const handleClick = () => {
-    console.log("fooo");
-    setFn(123);
+    setFn(123, "taro");
   };
   return (
     <>

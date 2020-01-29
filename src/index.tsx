@@ -216,13 +216,13 @@ export type ArrayQuery = ({
  * @property {boolean}  acceptOutdated        - Whether if non-subscribed cache is used.
  * @property {()=>void} callback              - This is excecuted after fetching from Firestore or getting cache.
  */
-export type QuerySchema<QueryType> = {
+export type GetFql<QueryType> = {
   connects?: boolean;
   queries: QueryType;
   acceptOutdated?: boolean;
   callback?: () => void;
 };
-export type SetDocSchemaObject = {
+export type StaticSetFql = {
   id?: string;
   fields?: {
     [field: string]: any;
@@ -231,10 +231,10 @@ export type SetDocSchemaObject = {
     [name: string]: SetCollectionSchemaObject;
   };
 };
-export type SetDocSchemaGenerator = (...args: any) => SetDocSchemaObject;
-export type SetDocSchema = SetDocSchemaObject | SetDocSchemaGenerator;
+export type DynamicSetFql = (...args: any) => StaticSetFql;
+export type SetFql = StaticSetFql | DynamicSetFql;
 
-export type SetCollectionSchemaObject = SetDocSchemaObject[];
+export type SetCollectionSchemaObject = StaticSetFql[];
 export type SetCollectionSchemaGenerator = (...args: any) => SetCollectionSchemaObject;
 export type SetCollectionSchema = SetCollectionSchemaObject | SetCollectionSchemaGenerator;
 

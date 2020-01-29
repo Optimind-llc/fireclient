@@ -1,30 +1,30 @@
 import "firebase/firestore";
-import { SetCollectionSchema, SetDocSchema } from ".";
-export declare function useSetDoc(docPath: string, query: SetDocSchema, options?: {
+import { SetCollectionSchema, SetFql } from ".";
+export declare function useSetDoc(docPath: string, query: SetFql, options?: {
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
 }): (boolean | ((...args: any) => void) | null)[];
-export declare function useAddDoc(collectionPath: string, query: SetDocSchema, options?: {
+export declare function useAddDoc(collectionPath: string, query: SetFql, options?: {
     callback?: () => void;
 }): (boolean | ((...args: any) => void) | null)[];
-export declare function useUpdateDoc(docPath: string, query: SetDocSchema, options?: {
+export declare function useUpdateDoc(docPath: string, query: SetFql, options?: {
     callback?: () => void;
 }): (boolean | ((...args: any) => void) | null)[];
 export declare function useAddDocs(queries: {
-    [key: string]: SetDocSchema;
+    [key: string]: SetFql;
 }, options?: {
     callback?: () => void;
 }): (boolean | ((...args: any) => void) | null)[];
 export declare function useSetDocs(queries: {
-    [key: string]: SetDocSchema;
+    [key: string]: SetFql;
 }, options?: {
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
 }): (boolean | ((...args: any) => void) | null)[];
 export declare function useUpdateDocs(queries: {
-    [key: string]: SetDocSchema;
+    [key: string]: SetFql;
 }, options?: {
     callback?: () => void;
 }): (boolean | ((...args: any) => void) | null)[];

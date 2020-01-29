@@ -25,7 +25,7 @@ function useSetBase(path, query, setFunction, options) {
             fn: typeCheck_1.matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
         },
     ])({ path: path, options: options }, "Argument");
-    typeCheck.assertSetDocSchema(query);
+    typeCheck.assertSetFql(query);
     var _a = react_1.useState(false), writing = _a[0], setWriting = _a[1];
     var _b = react_1.useState(false), called = _b[0], setCalled = _b[1];
     var _c = react_1.useState(null), error = _c[0], setError = _c[1];
@@ -37,7 +37,7 @@ function useSetBase(path, query, setFunction, options) {
             args[_i] = arguments[_i];
         }
         var queryObject = queryGenerator.apply(void 0, args);
-        typeCheck_1.assertSetDocSchemaObject(queryObject);
+        typeCheck_1.assertStaticSetFql(queryObject);
         setWriting(true);
         setCalled(true);
         setFunction(path, queryGenerator.apply(void 0, args), function () {
@@ -79,7 +79,7 @@ function useSetDocsBase(queries, setFunction, options) {
             return new Promise(function (resolve, reject) {
                 var queryGenerator = query instanceof Function ? query : function () { return query; };
                 var queryObject = queryGenerator.apply(void 0, args);
-                typeCheck_1.assertSetDocSchemaObject(queryObject);
+                typeCheck_1.assertStaticSetFql(queryObject);
                 setFunction(path, queryObject, resolve, reject, options);
             });
         }))
@@ -99,7 +99,7 @@ function useSetDocsBase(queries, setFunction, options) {
 }
 function useSetDocBase(path, query, setFunction, options) {
     // Arg typeCheck
-    typeCheck.assertSetDocSchema(query);
+    typeCheck.assertSetFql(query);
     typeCheck_1.matches([
         { key: "path", fn: typeCheck.isString },
         {

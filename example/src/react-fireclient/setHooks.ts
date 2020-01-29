@@ -3,12 +3,12 @@ import { useState } from "react";
 import {
   SetCollectionSchema,
   SetCollectionSchemaObject,
-  SetDocSchema,
-  SetDocSchemaObject,
+  SetFql,
+  StaticSetFql,
 } from ".";
 import { addDoc, setCollection, setDoc, updateDoc } from "./setFunctions";
 import * as typeCheck from "./typeCheck";
-import { assertRule, matches, assertSetDocSchemaObject } from "./typeCheck";
+import { assertRule, matches, assertStaticSetFql } from "./typeCheck";
 
 // ------------------------------------------
 //  Set Hooks Base
@@ -43,7 +43,7 @@ function useSetBase<SetQueryObject>(
       fn: matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
     },
   ])({ path, options }, "Argument");
-  typeCheck.assertSetDocSchema(query);
+  typeCheck.assertSetFql(query);
 
   const [writing, setWriting] = useState(false);
   const [called, setCalled] = useState(false);
@@ -54,7 +54,7 @@ function useSetBase<SetQueryObject>(
 
   const writeFn = (...args: any) => {
     const queryObject = queryGenerator(...args);
-    assertSetDocSchemaObject(queryObject);
+    assertStaticSetFql(queryObject);
     setWriting(true);
     setCalled(true);
     setFunction(
@@ -76,10 +76,10 @@ function useSetBase<SetQueryObject>(
 }
 
 function useSetDocsBase(
-  queries: { [key: string]: SetDocSchema },
+  queries: { [key: string]: SetFql },
   setFunction: (
     path: string,
-    query: SetDocSchemaObject,
+    query: StaticSetFql,
     onWrite: () => void,
     onError: (error: any) => void,
     options?: {
@@ -120,7 +120,7 @@ function useSetDocsBase(
           new Promise((resolve, reject) => {
             const queryGenerator = query instanceof Function ? query : () => query;
             const queryObject = queryGenerator(...args);
-            assertSetDocSchemaObject(queryObject);
+            assertStaticSetFql(queryObject);
             setFunction(path, queryObject, resolve, reject, options);
           }),
       ),
@@ -140,10 +140,10 @@ function useSetDocsBase(
 
 function useSetDocBase(
   path: string,
-  query: SetDocSchema,
+  query: SetFql,
   setFunction: (
     path: string,
-    query: SetDocSchemaObject,
+    query: StaticSetFql,
     onWrite: () => void,
     onError: (error: any) => void,
     options?: {
@@ -159,7 +159,7 @@ function useSetDocBase(
   },
 ) {
   // Arg typeCheck
-  typeCheck.assertSetDocSchema(query);
+  typeCheck.assertSetFql(query);
   matches([
     { key: "path", fn: typeCheck.isString },
     {
@@ -207,7 +207,7 @@ function useSetCollectionBase(
 
 export function useSetDoc(
   docPath: string,
-  query: SetDocSchema,
+  query: SetFql,
   options?: {
     merge?: boolean;
     mergeFields?: string[];
@@ -218,7 +218,7 @@ export function useSetDoc(
 }
 export function useAddDoc(
   collectionPath: string,
-  query: SetDocSchema,
+  query: SetFql,
   options?: {
     callback?: () => void;
   },
@@ -227,7 +227,7 @@ export function useAddDoc(
 }
 export function useUpdateDoc(
   docPath: string,
-  query: SetDocSchema,
+  query: SetFql,
   options?: {
     callback?: () => void;
   },
@@ -240,7 +240,7 @@ export function useUpdateDoc(
 // ------------------------------------------
 
 export function useAddDocs(
-  queries: { [key: string]: SetDocSchema },
+  queries: { [key: string]: SetFql },
   options?: {
     callback?: () => void;
   },
@@ -248,7 +248,7 @@ export function useAddDocs(
   return useSetDocsBase(queries, addDoc, options);
 }
 export function useSetDocs(
-  queries: { [key: string]: SetDocSchema },
+  queries: { [key: string]: SetFql },
   options?: {
     merge?: boolean;
     mergeFields?: string[];
@@ -258,7 +258,7 @@ export function useSetDocs(
   return useSetDocsBase(queries, setDoc, options);
 }
 export function useUpdateDocs(
-  queries: { [key: string]: SetDocSchema },
+  queries: { [key: string]: SetFql },
   options?: {
     callback?: () => void;
   },

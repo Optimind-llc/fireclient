@@ -1,5 +1,5 @@
 import * as pathlib from "path";
-import { SetCollectionSchemaObject, SetDocSchemaObject } from ".";
+import { SetCollectionSchemaObject, StaticSetFql } from ".";
 import { getContext } from "./provider";
 import { Actions } from "./reducer";
 import { createData, isDocPath, saveDoc } from "./utils";
@@ -52,7 +52,7 @@ const setDocCallback = (
 
 export function addDoc(
   path: string,
-  query: SetDocSchemaObject,
+  query: StaticSetFql,
   onSet: () => void,
   onError: (error: any) => void,
 ) {
@@ -112,7 +112,7 @@ export function addDoc(
 
 export function setDoc(
   docPath: string,
-  query: SetDocSchemaObject,
+  query: StaticSetFql,
   onSet: () => void,
   onError: (error: any) => void,
   options?: {
@@ -145,7 +145,7 @@ export function setDoc(
 // subCollectionを扱わない
 export function updateDoc(
   docPath: string,
-  query: SetDocSchemaObject,
+  query: StaticSetFql,
   onUpdate: () => void,
   onError: (error: any) => void,
 ) {

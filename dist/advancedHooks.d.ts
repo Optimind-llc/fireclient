@@ -1,13 +1,13 @@
 import "firebase/firestore";
 import { Map } from "immutable";
-import { ObjectQuery, ArrayQuery, CollectionData, DocData, QueryOptions, QuerySchema } from ".";
+import { ObjectQuery, ArrayQuery, CollectionData, DocData, QueryOptions, GetFql } from ".";
 declare type ArrayQueryData = (DocData | CollectionData)[];
-export declare function useArrayQuery(querySchema: QuerySchema<ArrayQuery>): [ArrayQueryData, boolean, any, {
+export declare function useArrayQuery(getFql: GetFql<ArrayQuery>): [ArrayQueryData, boolean, any, {
     unsubscribeFn: () => void;
     reloadFn: () => void;
 }];
 declare type QueryData = Map<string, DocData | CollectionData | {}>;
-export declare function useQuery(querySchema: QuerySchema<ObjectQuery>): [QueryData, boolean, any, {
+export declare function useQuery(getFql: GetFql<ObjectQuery>): [QueryData, boolean, any, {
     unsubscribeFn: () => void;
     reloadFn: () => void;
 }];
