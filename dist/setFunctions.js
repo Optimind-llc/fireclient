@@ -37,12 +37,13 @@ var setDocCallback = function (dispatch, onSet, onError, docPath, fields, subCol
     }
 };
 function addDoc(path, query, onSet, onError) {
-    var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch;
+    var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch, onAccess = _a.onAccess;
     var id = query.id, subCollection = query.subCollection;
     var fields = query.fields !== undefined ? query.fields : {};
     var isDoc = utils_1.isDocPath(path);
     var idExists = id !== undefined;
     try {
+        onAccess();
         if (isDoc) {
             // doc path が渡された時
             var ref = firestoreDB.doc(path);
@@ -86,10 +87,11 @@ function addDoc(path, query, onSet, onError) {
 }
 exports.addDoc = addDoc;
 function setDoc(docPath, query, onSet, onError, options) {
-    var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch;
+    var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch, onAccess = _a.onAccess;
     var subCollection = query.subCollection;
     var fields = query.fields !== undefined ? query.fields : {};
     try {
+        onAccess();
         var promise = options !== undefined
             ? firestoreDB.doc(docPath).set(fields, options)
             : firestoreDB.doc(docPath).set(fields);
@@ -109,9 +111,10 @@ function setDoc(docPath, query, onSet, onError, options) {
 exports.setDoc = setDoc;
 // subCollectionを扱わない
 function updateDoc(docPath, query, onUpdate, onError) {
-    var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch;
+    var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch, onAccess = _a.onAccess;
     var fields = query.fields !== undefined ? query.fields : {};
     try {
+        onAccess();
         var ref = firestoreDB.doc(docPath);
         ref
             .update(fields)
@@ -143,7 +146,6 @@ exports.updateDoc = updateDoc;
  * ```
  */
 function setCollection(collectionPath, queries, onSet, onError, options) {
-    console.log("setCollection", options);
     Promise.all(queries.map(function (query) {
         return new Promise(function (resolve, reject) {
             var id = query.id;

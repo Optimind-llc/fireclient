@@ -79,7 +79,9 @@ function useSubscribeDocBase(path, initialValue, subscribeFunction, options) {
             setLoading(false);
         }, function () { return setLoading(true); });
         setUnsubscribe({ fn: unsub });
-    }, [path]);
+        // subscribeFunctionを除去
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [path, hooksId, utils_1.getHashCode(options)]);
     return [doc, loading, error, unsubscribe.fn];
 }
 exports.useSubscribeDocBase = useSubscribeDocBase;
@@ -143,7 +145,9 @@ function useSubscribeCollectionBase(path, initialValue, subscribeFunction, optio
             setLoading(false);
         }, function () { return setLoading(true); }, options);
         setUnsubscribe({ fn: unsub });
-    }, [path, utils_1.getHashCode(options)]);
+        // subscribeFunctionを除去
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [path, hooksId, utils_1.getHashCode(options)]);
     return [collection, loading, error, unsubscribe.fn];
 }
 exports.useSubscribeCollectionBase = useSubscribeCollectionBase;
@@ -156,6 +160,8 @@ function useLazyGetDocSnapshot(path, options) {
 exports.useLazyGetDocSnapshot = useLazyGetDocSnapshot;
 function useGetDocSnapshot(path, options) {
     var _a = useLazyGetDocSnapshot(path, options), doc = _a[0], loading = _a[1], error = _a[2], reloadDoc = _a[3];
+    // reloadDocを除去
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     react_1.useEffect(function () { return reloadDoc(); }, [path, utils_1.getHashCode(options)]);
     return [doc, loading, error, reloadDoc];
 }
@@ -173,6 +179,8 @@ function useLazyGetCollectionSnapshot(path, options) {
 exports.useLazyGetCollectionSnapshot = useLazyGetCollectionSnapshot;
 function useGetCollectionSnapshot(path, options) {
     var _a = useLazyGetCollectionSnapshot(path, options), collection = _a[0], loading = _a[1], error = _a[2], reloadCollection = _a[3];
+    // reloadCollectionを除去
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     react_1.useEffect(function () { return reloadCollection(); }, [path, utils_1.getHashCode(options)]);
     return [collection, loading, error, reloadCollection];
 }
@@ -195,6 +203,8 @@ function useLazyGetDoc(path, options) {
 exports.useLazyGetDoc = useLazyGetDoc;
 function useGetDoc(path, options) {
     var _a = useLazyGetDoc(path, options), doc = _a[0], loading = _a[1], error = _a[2], reloadDoc = _a[3];
+    // reloadDocを除去
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     react_1.useEffect(function () { return reloadDoc(); }, [path, utils_1.getHashCode(options)]);
     return [doc, loading, error, reloadDoc];
 }
@@ -212,6 +222,8 @@ function useLazyGetCollection(path, options) {
 exports.useLazyGetCollection = useLazyGetCollection;
 function useGetCollection(path, options) {
     var _a = useLazyGetCollection(path, options), collection = _a[0], loading = _a[1], error = _a[2], reloadCollection = _a[3];
+    // reloadCollectionを除去
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     react_1.useEffect(function () { return reloadCollection(); }, [path, utils_1.getHashCode(options)]);
     return [collection, loading, error, reloadCollection];
 }

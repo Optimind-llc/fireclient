@@ -14,17 +14,18 @@ exports.providerContext = {
     state: null,
     dispatch: null,
     firestoreDB: null,
+    onAccess: function () { },
 };
 var initialState = immutable_1.Map({
     doc: immutable_1.Map(),
     collection: immutable_1.Map(),
 });
 function getContext() {
-    var state = exports.providerContext.state, dispatch = exports.providerContext.dispatch, firestoreDB = exports.providerContext.firestoreDB;
+    var state = exports.providerContext.state, dispatch = exports.providerContext.dispatch, firestoreDB = exports.providerContext.firestoreDB, onAccess = exports.providerContext.onAccess;
     if (state === null || dispatch === null || firestoreDB === null) {
         throw Error("state, dispatch, db is null.\n    You should use <Provider> in parent component.");
     }
-    return { state: state, dispatch: dispatch, firestoreDB: firestoreDB };
+    return { state: state, dispatch: dispatch, firestoreDB: firestoreDB, onAccess: onAccess };
 }
 exports.getContext = getContext;
 /**
@@ -42,14 +43,17 @@ function convertStateToJson(state) {
 }
 exports.convertStateToJson = convertStateToJson;
 function Provider(_a) {
-    var children = _a.children, firestoreDB = _a.firestoreDB, _b = _a.onAccess, onAccess = _b === void 0 ? function () { } : _b;
+    var children = _a.children, firestoreDB = _a.firestoreDB, onAccess = _a.onAccess;
     typeCheck_1.assert(firestoreDB !== undefined, "firestoreDB props of Provider is undefined");
     typeCheck_1.assert(firestoreDB !== null, "firestoreDB props of Provider is null");
-    var _c = react_1.default.useReducer(reducer_1.default, initialState), state = _c[0], dispatch = _c[1];
+    var _b = react_1.default.useReducer(reducer_1.default, initialState), state = _b[0], dispatch = _b[1];
     // Provider呼び出し時にライブラリ共有 Contextをセットする
     exports.providerContext.state = state;
     exports.providerContext.dispatch = dispatch;
     exports.providerContext.firestoreDB = firestoreDB;
+    if (onAccess !== undefined) {
+        exports.providerContext.onAccess = onAccess;
+    }
     return (react_1.default.createElement(exports.Context.Provider, { value: {
             state: state,
             dispatch: dispatch,

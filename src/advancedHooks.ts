@@ -146,11 +146,11 @@ export function useQuery(
     Map(),
   );
   const arrayQueries = Object.values(queries);
-  const schema = {
+  const arrayGetFql = {
     ...getFql,
     queries: arrayQueries,
   };
-  const [queryData, loading, error, unsubscribe] = useArrayQuery(schema);
+  const [queryData, loading, error, unsubscribe] = useArrayQuery(arrayGetFql);
 
   return [
     queryData.reduce((acc: any, queryDat, i) => acc.set(idxToKey.get(i), queryDat), Map()).toJS(),

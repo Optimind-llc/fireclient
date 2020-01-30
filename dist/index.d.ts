@@ -234,6 +234,7 @@ export declare type ProviderContext = {
     state: FireclientState | null;
     dispatch: React.Dispatch<reducer.Actions> | null;
     firestoreDB: firestore.Firestore | null;
+    onAccess: () => void;
 };
 export declare const deleteField: firestore.FieldValue;
 export declare const convertStateToJson: typeof provider.convertStateToJson;

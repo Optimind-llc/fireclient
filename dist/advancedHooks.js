@@ -105,6 +105,8 @@ function useArrayQuery(getFql) {
     };
     react_1.useEffect(function () {
         loadQuery();
+        // loadQueryをexhaustive-depsから除外
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [immutable_1.fromJS(getFql).hashCode()]);
     return [queryData, loading, error, unsubscribe];
 }
@@ -114,8 +116,8 @@ function useQuery(getFql) {
     var queries = getFql.queries;
     var idxToKey = Object.keys(queries).reduce(function (acc, key, i) { return acc.set(i, key); }, immutable_1.Map());
     var arrayQueries = Object.values(queries);
-    var schema = __assign(__assign({}, getFql), { queries: arrayQueries });
-    var _a = useArrayQuery(schema), queryData = _a[0], loading = _a[1], error = _a[2], unsubscribe = _a[3];
+    var arrayGetFql = __assign(__assign({}, getFql), { queries: arrayQueries });
+    var _a = useArrayQuery(arrayGetFql), queryData = _a[0], loading = _a[1], error = _a[2], unsubscribe = _a[3];
     return [
         queryData.reduce(function (acc, queryDat, i) { return acc.set(idxToKey.get(i), queryDat); }, immutable_1.Map()).toJS(),
         loading,
@@ -212,11 +214,15 @@ function usePaginateCollection(path, options) {
     };
     var _g = getHooks_1.useGetCollectionSnapshot(path, optionsWithCursor), collection = _g[0], loading = _g[1], error = _g[2];
     var nextFirst = collection !== null && collection.length > 0 ? collection[0] : null;
+    var nextFirstId = nextFirst !== null ? nextFirst.id : null;
     var nextLast = collection !== null && collection.length > 0 ? collection[collection.length - 1] : null;
+    var nextLastId = nextLast !== null ? nextLast.id : null;
     react_1.useEffect(function () {
         setFirst(!queryReversed ? nextFirst : nextLast);
         setLast(!queryReversed ? nextLast : nextFirst);
-    }, [nextFirst !== null ? nextFirst.id : null, nextLast !== null ? nextLast.id : null]);
+        // [nextFirst, nextLast]の代わりに[nextFirstId, nextLastId]を使用
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [nextFirstId, nextLastId]);
     var collectionData = collection !== null ? _1.createDataFromCollection(collection) : [];
     return [
         !dataReversed ? collectionData : collectionData.slice().reverse(),
@@ -255,7 +261,9 @@ function useGetSubCollection(path, options) {
     var _b = useArrayQuery({
         acceptOutdated: acceptOutdated,
         queries: queries,
-    }), docDataArray = _b[0], loading = _b[1], error = _b[2];
-    return [docDataArray, docLoading || loading, error, reloadDoc];
+    }), queryData = _b[0], queryLoading = _b[1], queryError = _b[2];
+    var loading = docLoading || queryLoading;
+    var error = docError !== null ? docError : queryError;
+    return [queryData, loading, error, reloadDoc];
 }
 exports.useGetSubCollection = useGetSubCollection;

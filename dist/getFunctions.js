@@ -11,14 +11,12 @@ var immutable_1 = require("immutable");
 var pathlib = __importStar(require("path"));
 var provider_1 = require("./provider");
 var utils_1 = require("./utils");
-var onAccess = function () { return console.log("fireclient accessed"); };
-function getDocSnapshot(path, onGet, onError, acceptOutdated) {
-    if (acceptOutdated === void 0) { acceptOutdated = false; }
+function getDocSnapshot(path, onGet, onError) {
     var docId = pathlib.resolve(path);
-    var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB;
+    var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB, onAccess = _a.onAccess;
     try {
-        var ref = firestoreDB.doc(path);
         onAccess();
+        var ref = firestoreDB.doc(path);
         ref
             .get()
             .then(function (doc) {
@@ -39,7 +37,7 @@ function getDoc(path, onGet, onError, acceptOutdated) {
     if (acceptOutdated === void 0) { acceptOutdated = false; }
     var _a, _b;
     var docId = pathlib.resolve(path);
-    var _c = provider_1.getContext(), state = _c.state, dispatch = _c.dispatch, firestoreDB = _c.firestoreDB;
+    var state = provider_1.getContext().state;
     // state内でsubscribeされているかチェック
     var cache = state.get("doc").get(docId);
     if (cache !== undefined && (acceptOutdated || ((_b = (_a = cache) === null || _a === void 0 ? void 0 : _a.get("connectedFrom")) === null || _b === void 0 ? void 0 : _b.size) > 0)) {
@@ -53,10 +51,10 @@ exports.getDoc = getDoc;
 function subscribeDocSnapshot(uuid, path, onChange, onError, onListen) {
     if (onListen === void 0) { onListen = function () { }; }
     var docId = pathlib.resolve(path);
-    var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB;
+    var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB, onAccess = _a.onAccess;
     try {
-        var ref = firestoreDB.doc(path);
         onAccess();
+        var ref = firestoreDB.doc(path);
         var unsubscribe_1 = ref.onSnapshot(function (doc) {
             onListen();
             utils_1.saveDoc(dispatch, docId, utils_1.createDataFromDoc(doc));
@@ -82,10 +80,10 @@ exports.subscribeDoc = subscribeDoc;
 function getCollectionSnapshot(path, onGet, onError, options, acceptOutdated) {
     if (options === void 0) { options = {}; }
     if (acceptOutdated === void 0) { acceptOutdated = false; }
-    var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB;
+    var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB, onAccess = _a.onAccess;
     try {
-        var ref = utils_1.withOption(firestoreDB.collection(path), options);
         onAccess();
+        var ref = utils_1.withOption(firestoreDB.collection(path), options);
         ref
             .get()
             .then(function (collection) {
@@ -107,7 +105,7 @@ function getCollection(path, onGet, onError, options, acceptOutdated) {
     if (acceptOutdated === void 0) { acceptOutdated = false; }
     var _a, _b;
     var collectionId = utils_1.getQueryId(path, options);
-    var _c = provider_1.getContext(), state = _c.state, dispatch = _c.dispatch, firestoreDB = _c.firestoreDB;
+    var state = provider_1.getContext().state;
     // state内でsubscribeされているかチェック
     var cache = state.get("collection").get(collectionId);
     if (cache !== undefined && (acceptOutdated || ((_b = (_a = cache) === null || _a === void 0 ? void 0 : _a.get("connectedFrom")) === null || _b === void 0 ? void 0 : _b.size) > 0)) {
@@ -130,11 +128,11 @@ function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, op
     if (onListen === void 0) { onListen = function () { }; }
     if (options === void 0) { options = {}; }
     var collectionId = utils_1.getQueryId(path, options);
-    var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB;
+    var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB, onAccess = _a.onAccess;
     var docIds = immutable_1.List();
     try {
-        var ref = utils_1.withOption(firestoreDB.collection(path), options);
         onAccess();
+        var ref = utils_1.withOption(firestoreDB.collection(path), options);
         var unsubscribe_2 = ref.onSnapshot(function (collection) {
             onListen();
             // docIdsを更新

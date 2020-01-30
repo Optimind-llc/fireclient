@@ -94,28 +94,10 @@ const pagesTemplate = (docPath, collectionPath, query) => [
         <h2>Doc path and query is required.</h2>
       ),
   },
-  {
-    title: "setCollection",
-    component:
-      collectionPath.length > 0 ? (
-        <SetCollection collectionPath={collectionPath} />
-      ) : (
-        <h2>Collection path is required.</h2>
-      ),
-  },
-  {
-    title: "addDocWithSubCollection",
-    component:
-      collectionPath.length > 0 ? (
-        <AddDocWithSubCollection collectionPath={collectionPath} />
-      ) : (
-        <h2>Collection path is required.</h2>
-      ),
-  },
-  {
-    title: "playground",
-    component: <Playground />,
-  },
+  // {
+  //   title: "Playground",
+  //   component: <Playground />,
+  // },
 ];
 
 const App = () => {

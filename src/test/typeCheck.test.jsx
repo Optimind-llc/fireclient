@@ -1,8 +1,8 @@
 import * as typeCheck from "../../dist/typeCheck";
 
 const fn = (rule, obj) => () => typeCheck.assertRule(rule)(obj, "test");
-describe("Query schema", () => {
-  it("Object schema", () => {
+describe("Get Fql", () => {
+  it("Object Fql", () => {
     expect(
       fn(typeCheck.getFqlRule, {
         connects: true,
@@ -193,7 +193,7 @@ describe("Query schema", () => {
 
     expect(fn(typeCheck.getFqlRule, { connects: true })).toThrow();
   });
-  it("Array schema", () => {
+  it("Array Fql", () => {
     expect(
       fn(typeCheck.arrayGetFqlRule, {
         connects: true,
