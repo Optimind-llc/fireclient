@@ -167,7 +167,7 @@ function usePaginateCollection(path, options) {
         },
         {
             key: "options",
-            fn: typeCheck_1.matches(typeCheck.paginateOptionRule.concat(typeCheck.callbackRule, typeCheck.acceptOutdatedRule)),
+            fn: typeCheck_1.matches(typeCheck.paginateOptionRule),
         },
     ])({ path: path, options: options }, "Argument");
     var order = options.order;
@@ -195,7 +195,7 @@ function usePaginateCollection(path, options) {
             } });
     // first,minは同じCollectionに含まれる
     var remainsPrev = first !== null && min !== null && first.id !== min.id;
-    var handlePrev = {
+    var prevHandler = {
         fn: remainsPrev
             ? function () {
                 setOrigin(first);
@@ -207,7 +207,7 @@ function usePaginateCollection(path, options) {
     };
     // last,maxは同じCollectionに含まれる
     var remainsNext = last !== null && max !== null && last.id !== max.id;
-    var handleNext = {
+    var nextHandler = {
         fn: remainsNext
             ? function () {
                 setOrigin(last);
@@ -233,28 +233,36 @@ function usePaginateCollection(path, options) {
         !dataReversed ? collectionData : collectionData.slice().reverse(),
         loading,
         error,
-        handlePrev,
-        handleNext,
+        prevHandler,
+        nextHandler,
     ];
 }
 exports.usePaginateCollection = usePaginateCollection;
-function useGetSubCollection(path, option) {
-    // assertPath(path);
-    // assertSubCollectionOption(option);
-    var subCollectionName = option.subCollectionName, acceptOutdated = option.acceptOutdated;
-    var _a = getHooks_1.useGetCollection(path, {
-        acceptOutdated: acceptOutdated,
-    }), collection = _a[0], collLoading = _a[1], collError = _a[2], collReloadFn = _a[3];
+function useGetSubCollection(path, subCollectionName, options) {
+    var _a;
+    // Arg typeCheck
+    typeCheck_1.assertRule([
+        { key: "path", fn: typeCheck.isString },
+        { key: "subCollectionName", fn: typeCheck.isString },
+        {
+            key: "options",
+            fn: typeCheck.matches(typeCheck.subCollectionOptionRule),
+        },
+    ])({ path: path, subCollectionName: subCollectionName, options: options }, "Argument");
+    var _b = getHooks_1.useGetCollection(path, options), collection = _b[0], collLoading = _b[1], collError = _b[2], collReloadFn = _b[3];
     var docIds = collection.filter(function (doc) { return doc.id !== null; }).map(function (doc) { return doc.id; });
     var fql = {
+        callback: (_a = options) === null || _a === void 0 ? void 0 : _a.callback,
         queries: docIds.map(function (docId) { return ({ location: pathlib.resolve(path, docId, subCollectionName) }); }),
     };
-    var _b = useArrayQuery(fql), subCollection = _b[0], subCollLoading = _b[1], subCollError = _b[2], subCollReloadFn = _b[3];
+    var _c = useArrayQuery(fql), subCollection = _c[0], subCollLoading = _c[1], subCollError = _c[2], subCollReloadFn = _c[3];
     var flatten = Array.prototype.concat.apply([], subCollection);
+    var loading = collLoading || subCollLoading;
+    var error = collError !== null ? collError : subCollError;
     return [
         flatten,
-        collLoading || subCollLoading,
-        [collError, subCollError],
+        loading,
+        error,
         function () {
             collReloadFn();
             subCollReloadFn.reload();

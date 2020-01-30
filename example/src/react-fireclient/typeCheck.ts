@@ -271,16 +271,7 @@ export const getFqlRule: Rule = [
     fn: matchesObjectOf(queryRule),
   },
 ].concat(acceptOutdatedRule as any, callbackRule as any);
-export const subCollectionOptionRule = [
-  {
-    key: "field",
-    fn: isString,
-  },
-  {
-    key: "collectionPath",
-    fn: isString,
-  },
-];
+export const subCollectionOptionRule = [].concat(acceptOutdatedRule as any, callbackRule as any);
 export const paginateOptionRule = [
   {
     key: "limit",
@@ -290,7 +281,7 @@ export const paginateOptionRule = [
     key: "order",
     fn: condition((obj: any) => !Array.isArray(obj), matches(orderRule), matchesArrayOf(orderRule)),
   },
-].concat(queryOptionRule);
+].concat(queryOptionRule, callbackRule, acceptOutdatedRule);
 
 export const assert = (isValid: boolean, errorMessage: string) => {
   if (!isValid) throw Error(errorMessage);

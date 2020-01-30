@@ -11,12 +11,16 @@ export declare function useQuery(getFql: GetFql<ObjectQuery>): [QueryData, boole
     unsubscribe: () => void;
     reload: () => void;
 }];
+declare type PageHandler = {
+    fn: () => void;
+    enabled: boolean;
+};
 export declare function usePaginateCollection(path: string, options: {
     callback?: () => void;
     acceptOutdated?: boolean;
-} & QueryOptions): any[];
-export declare function useGetSubCollection(path: string, option: {
-    subCollectionName: string;
+} & QueryOptions): [CollectionData, boolean, any, PageHandler, PageHandler];
+export declare function useGetSubCollection(path: string, subCollectionName: string, options?: {
     acceptOutdated?: boolean;
-}): (boolean | any[] | (() => void))[];
+    callback?: () => void;
+}): [CollectionData, boolean, any, () => void];
 export {};

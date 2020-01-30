@@ -252,16 +252,7 @@ exports.getFqlRule = [
         fn: exports.matchesObjectOf(exports.queryRule),
     },
 ].concat(exports.acceptOutdatedRule, exports.callbackRule);
-exports.subCollectionOptionRule = [
-    {
-        key: "field",
-        fn: exports.isString,
-    },
-    {
-        key: "collectionPath",
-        fn: exports.isString,
-    },
-];
+exports.subCollectionOptionRule = [].concat(exports.acceptOutdatedRule, exports.callbackRule);
 exports.paginateOptionRule = [
     {
         key: "limit",
@@ -271,7 +262,7 @@ exports.paginateOptionRule = [
         key: "order",
         fn: exports.condition(function (obj) { return !Array.isArray(obj); }, exports.matches(orderRule), exports.matchesArrayOf(orderRule)),
     },
-].concat(exports.queryOptionRule);
+].concat(exports.queryOptionRule, exports.callbackRule, exports.acceptOutdatedRule);
 exports.assert = function (isValid, errorMessage) {
     if (!isValid)
         throw Error(errorMessage);

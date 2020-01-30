@@ -1,6 +1,6 @@
 import { firestore } from "firebase";
 import "firebase/firestore";
-import { Map } from "immutable";
+import { Map, Collection } from "immutable";
 import * as pathlib from "path";
 import { useEffect, useState } from "react";
 import {
@@ -210,14 +210,17 @@ function reverseOrder(reverse: boolean, order: Order | Order[]): Order | Order[]
     ? order.map(o => ({ ...o, direction: reverseDirection(reverse, o.direction) }))
     : { ...order, direction: reverseDirection(reverse, order.direction) };
 }
-
+type PageHandler = {
+  fn: () => void;
+  enabled: boolean;
+};
 export function usePaginateCollection(
   path: string,
   options: {
     callback?: () => void;
     acceptOutdated?: boolean;
   } & QueryOptions,
-) {
+): [CollectionData, boolean, any, PageHandler, PageHandler] {
   assertRule([
     {
       key: "path",
@@ -225,9 +228,7 @@ export function usePaginateCollection(
     },
     {
       key: "options",
-      fn: matches(
-        typeCheck.paginateOptionRule.concat(typeCheck.callbackRule, typeCheck.acceptOutdatedRule),
-      ),
+      fn: matches(typeCheck.paginateOptionRule),
     },
   ])({ path, options }, "Argument");
   const order = options.order as Order;
@@ -260,7 +261,7 @@ export function usePaginateCollection(
         };
   // first,minは同じCollectionに含まれる
   const remainsPrev = first !== null && min !== null && first.id !== min.id;
-  const handlePrev = {
+  const prevHandler = {
     fn: remainsPrev
       ? () => {
           setOrigin(first);
@@ -272,7 +273,7 @@ export function usePaginateCollection(
   };
   // last,maxは同じCollectionに含まれる
   const remainsNext = last !== null && max !== null && last.id !== max.id;
-  const handleNext = {
+  const nextHandler = {
     fn: remainsNext
       ? () => {
           setOrigin(last);
@@ -283,7 +284,7 @@ export function usePaginateCollection(
     enabled: remainsNext,
   };
 
-  const [collection, loading, error]: any[] = useGetCollectionSnapshot(path, optionsWithCursor);
+  const [collection, loading, error] = useGetCollectionSnapshot(path, optionsWithCursor);
   const nextFirst = collection !== null && collection.length > 0 ? collection[0] : null;
   const nextFirstId = nextFirst !== null ? nextFirst.id : null;
   const nextLast =
@@ -298,36 +299,46 @@ export function usePaginateCollection(
   }, [nextFirstId, nextLastId]);
 
   const collectionData = collection !== null ? createDataFromCollection(collection) : [];
-
   return [
     !dataReversed ? collectionData : collectionData.slice().reverse(),
     loading,
     error,
-    handlePrev,
-    handleNext,
+    prevHandler,
+    nextHandler,
   ];
 }
 
 export function useGetSubCollection(
   path: string,
-  option: { subCollectionName: string; acceptOutdated?: boolean },
-) {
-  // assertPath(path);
-  // assertSubCollectionOption(option);
-  const { subCollectionName, acceptOutdated } = option;
-  const [collection, collLoading, collError, collReloadFn] = useGetCollection(path, {
-    acceptOutdated,
-  });
+  subCollectionName: string,
+  options?: { acceptOutdated?: boolean; callback?: () => void },
+): [CollectionData, boolean, any, () => void] {
+  // Arg typeCheck
+  assertRule([
+    { key: "path", fn: typeCheck.isString },
+    { key: "subCollectionName", fn: typeCheck.isString },
+    {
+      key: "options",
+      fn: typeCheck.matches(typeCheck.subCollectionOptionRule),
+    },
+  ])({ path, subCollectionName, options }, "Argument");
+
+  const [collection, collLoading, collError, collReloadFn] = useGetCollection(path, options);
   const docIds = collection.filter(doc => doc.id !== null).map(doc => doc.id) as string[];
   const fql = {
+    callback: options?.callback,
     queries: docIds.map(docId => ({ location: pathlib.resolve(path, docId, subCollectionName) })),
   };
+
   const [subCollection, subCollLoading, subCollError, subCollReloadFn] = useArrayQuery(fql);
+
   const flatten = Array.prototype.concat.apply([], subCollection);
+  const loading = collLoading || subCollLoading;
+  const error = collError !== null ? collError : subCollError;
   return [
     flatten,
-    collLoading || subCollLoading,
-    [collError, subCollError],
+    loading,
+    error,
     () => {
       collReloadFn();
       subCollReloadFn.reload();

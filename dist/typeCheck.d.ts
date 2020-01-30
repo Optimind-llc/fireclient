@@ -51,13 +51,7 @@ export declare const queryRule: Rule;
 export declare const mergeRule: Rule;
 export declare const arrayGetFqlRule: Rule;
 export declare const getFqlRule: Rule;
-export declare const subCollectionOptionRule: {
-    key: string;
-    fn: (obj: any, target: string) => {
-        valid: boolean;
-        message: string;
-    };
-}[];
+export declare const subCollectionOptionRule: never[];
 export declare const paginateOptionRule: {
     key: string;
     fn: (obj: any, target: string) => {
