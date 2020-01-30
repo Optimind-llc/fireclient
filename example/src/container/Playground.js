@@ -1,45 +1,24 @@
 import React from "react";
-import { useAddDocs, useUpdateDocs, useSetDocs } from "../react-fireclient";
+import { useQuery } from "../react-fireclient";
 
 function View(props) {
-  const [setFn, writing, called, error] = useSetDocs(
-    {
-      "cities/nagoya": (n, userName) => ({
-        fields: {
-          asdf: 3 * n,
-        },
-        subCollection: {
-          users: [
-            {
-              id: "hoge",
-              fields: {
-                aaa: 123,
-              },
-            },
-          ],
-        },
-      }),
-      "cities/chikusa": n => ({
-        fields: {
-          fgh: n,
-        },
-      }),
+  const [foo, , , fn] = useQuery({
+    acceptOutdated: true,
+    callback: () => console.log("parent callback"),
+    queries: {
+      fll: {
+        location: "teams/A",
+        acceptOutdated: false,
+        callback: () => console.log("child callback"),
+      },
     },
-    { merge: true },
-  );
-  const handleClick = () => {
-    setFn(123, "taro");
-  };
+  });
   return (
     <>
-      <button onClick={handleClick}>setFn</button>
+      <button onClick={fn.reload}>reload</button>
       <h2>Response</h2>
       <h3>writing</h3>
-      <pre>{JSON.stringify(writing)}</pre>
-      <h3>called</h3>
-      <pre>{JSON.stringify(called)}</pre>
-      <h3>error</h3>
-      <pre>{JSON.stringify(error)}</pre>
+      <pre>{JSON.stringify(foo, null, 4)}</pre>
     </>
   );
 }

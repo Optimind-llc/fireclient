@@ -44,10 +44,10 @@ export declare const condition: (condition: (obj: any) => boolean, fn1: Validate
 export declare const matches: (rule: Rule) => (obj: any, target: string) => ValidateResult;
 export declare const matchesArrayOf: (rule: Rule) => (obj: any, target: string) => ValidateResult;
 export declare const matchesObjectOf: (rule: Rule) => (obj: any, target: string) => ValidateResult;
-export declare const queryOptionRule: Rule;
-export declare const queryRule: Rule;
 export declare const acceptOutdatedRule: Rule;
 export declare const callbackRule: Rule;
+export declare const queryOptionRule: Rule;
+export declare const queryRule: Rule;
 export declare const mergeRule: Rule;
 export declare const arrayGetFqlRule: Rule;
 export declare const getFqlRule: Rule;

@@ -14,6 +14,8 @@ function sortedFromJS(object) {
     }
     // callbackなど、FunctionをOptionに渡すことがある
     if (object instanceof Function) {
+        console.log(object.toString());
+        return null;
         return object.toString();
     }
     if (typeof object !== "object" || object === null) {

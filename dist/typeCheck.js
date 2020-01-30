@@ -131,6 +131,20 @@ exports.matchesObjectOf = function (rule) { return function (obj, target) {
         message: "",
     };
 }; };
+exports.acceptOutdatedRule = [
+    {
+        key: "acceptOutdated",
+        optional: true,
+        fn: exports.isBoolean,
+    },
+];
+exports.callbackRule = [
+    {
+        key: "callback",
+        optional: true,
+        fn: exports.isFunction,
+    },
+];
 var whereRule = [
     {
         key: "field",
@@ -203,21 +217,7 @@ exports.queryRule = [
         optional: true,
         fn: exports.isBoolean,
     },
-].concat(exports.queryOptionRule);
-exports.acceptOutdatedRule = [
-    {
-        key: "acceptOutdated",
-        optional: true,
-        fn: exports.isBoolean,
-    },
-];
-exports.callbackRule = [
-    {
-        key: "callback",
-        optional: true,
-        fn: exports.isFunction,
-    },
-];
+].concat(exports.queryOptionRule, exports.acceptOutdatedRule);
 exports.mergeRule = [
     {
         key: "merge",
@@ -251,7 +251,7 @@ exports.getFqlRule = [
         key: "queries",
         fn: exports.matchesObjectOf(exports.queryRule),
     },
-];
+].concat(exports.acceptOutdatedRule, exports.callbackRule);
 exports.subCollectionOptionRule = [
     {
         key: "field",

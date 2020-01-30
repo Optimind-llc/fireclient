@@ -145,6 +145,22 @@ export const matchesObjectOf = (rule: Rule) => (obj: any, target: string) => {
     message: "",
   };
 };
+
+export const acceptOutdatedRule: Rule = [
+  {
+    key: "acceptOutdated",
+    optional: true,
+    fn: isBoolean,
+  },
+];
+export const callbackRule: Rule = [
+  {
+    key: "callback",
+    optional: true,
+    fn: isFunction,
+  },
+];
+
 const whereRule: Rule = [
   {
     key: "field",
@@ -218,22 +234,8 @@ export const queryRule: Rule = [
     optional: true,
     fn: isBoolean,
   },
-].concat(queryOptionRule as any[]);
+].concat(queryOptionRule as any, acceptOutdatedRule as any);
 
-export const acceptOutdatedRule: Rule = [
-  {
-    key: "acceptOutdated",
-    optional: true,
-    fn: isBoolean,
-  },
-];
-export const callbackRule: Rule = [
-  {
-    key: "callback",
-    optional: true,
-    fn: isFunction,
-  },
-];
 export const mergeRule: Rule = [
   {
     key: "merge",
@@ -268,7 +270,7 @@ export const getFqlRule: Rule = [
     key: "queries",
     fn: matchesObjectOf(queryRule),
   },
-];
+].concat(acceptOutdatedRule as any, callbackRule as any);
 export const subCollectionOptionRule = [
   {
     key: "field",
@@ -333,7 +335,7 @@ export const assertSetFql = (obj: any, target: string = "SetFql") => {
 };
 export const assertSetCollectionSchemaObject = (obj: any, target: string) => {
   assertArray(obj, target);
-  (obj as any[]).forEach(ele => assertSetFql(ele));
+  (obj as any).forEach((ele: any) => assertSetFql(ele));
 };
 export const assertSetCollectionSchema = (obj: any, target: string = "SetCollectionSchema") => {
   if (!(obj instanceof Function)) {
@@ -346,7 +348,7 @@ export const assertSubCollectionQuery = (obj: any, target: string = "SubCollecti
   const values = Object.values(obj);
   values.forEach(value => {
     assert(Array.isArray(value), `Value of ${target} should be array.`);
-    (value as any[]).forEach((ele: any) => assertStaticSetFql(ele, "Element"));
+    (value as any).forEach((ele: any) => assertStaticSetFql(ele, "Element"));
   });
 };
 export const assertSetDocsSchema = (obj: any, target: string = "SetFql") => {
