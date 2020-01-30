@@ -21,6 +21,10 @@
       "hooks-useLazyGetCollection",
       "hooks-usePaginateCollection"
     ],
+    "カスタムHooks": [
+      "custom-hooks",
+      "custom-hooks-subcollection"
+    ],
     "クエリオプション": [
       "option-overview",
       "option-useGetCollection",

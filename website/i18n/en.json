@@ -8,9 +8,6 @@
       "concept": {
         "title": "3原則"
       },
-      "custom-hooks-paginate": {
-        "title": "作成例：ページ切り替え"
-      },
       "custom-hooks-subcollection": {
         "title": "作成例：サブコレクションの参照"
       },
@@ -71,6 +68,7 @@
       "イントロダクション": "イントロダクション",
       "基本的なHooks": "基本的なHooks",
       "高度なHooks": "高度なHooks",
+      "カスタムHooks": "カスタムHooks",
       "クエリオプション": "クエリオプション"
     }
   },

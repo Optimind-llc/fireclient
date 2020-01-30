@@ -5,7 +5,7 @@ title: コレクションの取得での使用
 
 クエリオプションを `useGetCollection` で試してみましょう。
 
-条件などを `option` として定義します。次の例では Collection を `population` 順で並べて上から 2 つを取得する、ということを表しています。
+条件などを `option` として定義します。次の例ではコレクションを `population` 順で並べて上から 2 つを取得する、ということを表しています。
 
 ```js
 const option = {

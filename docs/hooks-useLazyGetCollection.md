@@ -6,36 +6,36 @@ title: useLazyGetCollection（コレクションの遅延取得）
 `useGetCollection` に近い Hooks ですが、大きな違いとして `useLazyGetCollection` は関数を実行して初めてデータの取得を行います。
 
 ```js
-[collectionData, loading, error, loadFn] = useLazyGetCollection(path, option);
+const [collectionData, loading, error, loadFn] = useLazyGetCollection(path, option);
 ```
 
 | Hooks          | 説明                                                                                                   |
 | -------------- | ------------------------------------------------------------------------------------------------------ |
-| collectionData | Firestore から取得した Doc の内容であり、<br>初期値には `[]` が代入されています。                      |
+| collectionData | Firestore から取得したドキュメントの内容であり、<br>初期値には `[]` が代入されています。               |
 | loading        | データを取得しているかどうかを表します。                                                               |
 | error          | データ取得の際にエラーが発生した場合エラー内容が入力されます。<br>初期値には`null`が代入されています。 |
 | loadFn         | データを取得するための関数です。                                                                       |
 
-| option | 説明                                                                                                             |
-| ------ | ---------------------------------------------------------------------------------------------------------------- |
-| where  | 条件を付けて Collection を取得することができます。                                                               |
-| limit  | 取得する Collection の数を制限することができます。                                                               |
-| order  | Collection をソートした状態で取得します。<br>`limit` と組み合わせることで、上位 n 個を取得ということができます。 |
-| cursor | 取得する Collection の開始地点・終了地点を指定します。                                                           |
+| option | 説明                                                                                                              |
+| ------ | ----------------------------------------------------------------------------------------------------------------- |
+| where  | 条件を付けてコレクションを取得することができます。                                                                |
+| limit  | 取得するコレクションの数を制限することができます。                                                                |
+| order  | コレクションをソートした状態で取得します。<br>`limit` と組み合わせることで、上位 n 個を取得ということができます。 |
+| cursor | 取得するコレクションの開始地点・終了地点を指定します。                                                            |
 
-| option         | 説明                                                                                                                          |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| callback       | データを取得する際に実行される関数を指定することができます。                                                                  |
-| acceptOutdated | Fireclient では Subscribe 済み Doc を取得する際にキャッシュを利用しますが、<br>その機能を Get 済み Doc の取得にも適応します。 |
+| option         | 説明                                                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| callback       | データを取得する際に実行される関数を指定することができます。                                                                                |
+| acceptOutdated | Fireclient では Subscribe 済みドキュメントを取得する際にキャッシュを利用しますが、<br>その機能を Get 済みドキュメントの取得にも適応します。 |
 
 注意：Firestore 上のパスは `/Collection/Doc/Collection/Doc/...` となっていることに注意してください。
 
-もし Doc を取得する場合は、代わりに `useLazyGetDoc` を使用してください。
+もしドキュメントを取得する場合は、代わりに `useLazyGetDoc` を使用してください。
 
 # Example
 
 ```js
-[citiesData, loading, error, loadFn] = useLazyGetCollection("/cities");
+const [citiesData, loading, error, loadFn] = useLazyGetCollection("/cities");
 ```
 
 次を実行することで初めてデータが取得されます。

@@ -37,23 +37,19 @@ var firebaseConfig = {
 最終的に次のようなデータ構造になります。
 
 ```
-"cities": {
-    "Tokyo": {
-      "name": "Tokyo",
-      "population": 35676000,
-      "country": "Japan"
-    },
-    "NewYork": {
-      "name": "New York",
-      "population": 19354922,
-      "country": "United States"
-    },
-    "MexicoCity": {
-      "name": "Mexico City",
-      "population": 19028000,
-      "country": "Mexico"
-    },
-}
+─── cities
+    ├── MexicoCity
+    │   ├── country: "Mexico"
+    │   ├── name: "Mexico City"
+    │   └── population: 19028000
+    ├── NewYork
+    │   ├── country: "United States"
+    │   ├── name: "New York"
+    │   └── population: 19354922
+    └── Tokyo
+        ├── country: "Japan"
+        ├── name: "Tokyo"
+        └── population: 35676000
 ```
 
 ![](assets/firestore-init.png)
@@ -115,7 +111,7 @@ ReactDOM.render(
 # Hooks を使う
 
 `useGetDoc`を使って、先程登録した Firestore 上のデータを読み取って見ましょう。
-`useGetDoc`に、対象の Doc のパスを渡します。
+`useGetDoc`に、対象のドキュメントのパスを渡します。
 
 注意：Firestore のパスは`/Collection/Doc/Collection/Doc/...`となっていることに注意してください。
 Collection のデータを取得したい場合、代わりに`useGetCollection`を使用します。
@@ -135,8 +131,11 @@ export default App;
 ```
 
 アプリを実行すると次のように表示されます。
-先ほど登録した内容が React 上で取得できていることが分かります。
+先ほど Firestore に登録した内容が React 上で取得できていることが分かります。
 
 ```
-{"country":"Japan","name":"Tokyo","population":35676000}
+{
+  data: {"country":"Japan","name":"Tokyo","population":35676000},
+  id: "Tokyo"
+}
 ```

@@ -4,7 +4,7 @@ title: useQueryでの使用
 ---
 
 クエリオプションを `useQuery` で試してみましょう。
-`useQuery` では取得する Doc や Collection をクエリスキーマに定義していました。
+`useQuery` では取得するドキュメントやコレクションをクエリスキーマに定義していました。
 
 ```js
 const querySchema = {

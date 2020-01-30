@@ -6,15 +6,15 @@ title: useQuery（クエリオプションを用いたドキュメント・コ�
 Firestore 上の複数の箇所からデータを取得する必要がある場合、取得を一括に行うことができます。
 
 ```js
-[queryData, loading, error, fn] = useQuery(querySchema));
+const [queryData, loading, error, fn] = useQuery(querySchema));
 ```
 
-| Hooks     | 説明                                                                                                                                        |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| queryData | Firestore から取得した Doc / Collection の内容です。                                                                                        |
-| loading   | データを取得しているかどうかを表します。                                                                                                    |
-| error     | データ取得の際にエラーが発生した場合エラー内容が入力されます。<br>初期値には`null`が代入されています。                                      |
-| fn        | `fn.reload` で Get で取得した Doc / Collection を再読込、<br>`fn.unsubscribe` で リッスンしている Doc / Collection のリッスンを中断します。 |
+| Hooks     | 説明                                                                                                                                                      |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| queryData | Firestore から取得したドキュメント/コレクションの内容です。                                                                                               |
+| loading   | データを取得しているかどうかを表します。                                                                                                                  |
+| error     | データ取得の際にエラーが発生した場合エラー内容が入力されます。<br>初期値には`null`が代入されています。                                                    |
+| fn        | `fn.reload` で Get で取得したドキュメント/コレクションを再読込、<br>`fn.unsubscribe` で リッスンしているドキュメント/コレクションのリッスンを中断します。 |
 
 # Example
 
@@ -30,7 +30,7 @@ const querySchema = {
   },
 };
 
-[queryData, loading, error, queryData] = useQuery(querySchema);
+const [queryData, loading, error, queryData] = useQuery(querySchema);
 ```
 
 `queryData` には次のような内容が代入されます。

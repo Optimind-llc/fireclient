@@ -3,7 +3,7 @@ id: tutorial
 title: チュートリアル
 ---
 
-# Doc を取得する
+#ドキュメントを取得する
 
 Doc を取得するには `useGetDoc` を使用します。
 `useGetDoc`については[クイックスタート](quick-start.md)でも用いられているので、合わせてご覧ください。
@@ -14,11 +14,16 @@ const [tokyo, loading, error] = useGetDoc("/cities/Tokyo");
 
 取得が完了すると、`tokyo`には次のようなオブジェクトが入っています。
 
-```json
+```js
 {
-  "country": "Japan",
-  "name": "Tokyo",
-  "population": 35676000
+  data: {
+    {
+      "country": "Japan",
+      "name": "Tokyo",
+      "population": 35676000
+    }
+  },
+  id: "tokyo"
 }
 ```
 
@@ -41,7 +46,7 @@ return <>東京の人口：{loading ? "読み込み中..." : data.population}</>
 東京の人口：35676000
 ```
 
-# Collection を取得する
+#コレクションを取得する
 
 Collection を取得するには `useGetCollection` を使用します。
 
@@ -51,34 +56,49 @@ const [cities, loading, error] = useGetCollection("/cities");
 
 `useGetDoc`とは異なり、Collection の取得結果は配列になっています。
 
-```json
+```js
 [
   {
-    "country": "Mexico",
-    "name": "Mexico City",
-    "population": 19028000
+    data: {
+      country: "Mexico",
+      name: "Mexico City",
+      population: 19028000,
+    },
+    id: "MexicoCity",
   },
   {
-    "country": "India",
-    "name": "Mumbai",
-    "population": 18978000
+    data: {
+      country: "India",
+      name: "Mumbai",
+      population: 18978000,
+    },
+    id: "Mumbai",
   },
   {
-    "country": "United States",
-    "name": "New York",
-    "population": 19354922
+    data: {
+      country: "United States",
+      name: "New York",
+      population: 19354922,
+    },
+    id: "NewYork",
   },
   {
-    "country": "Brazil",
-    "name": "São Paulo",
-    "population": 18845000
+    data: {
+      country: "Brazil",
+      name: "São Paulo",
+      population: 18845000,
+    },
+    id: "SaoPaulo",
   },
   {
-    "country": "Japan",
-    "name": "Tokyo",
-    "population": 35676000
-  }
-]
+    data: {
+      country: "Japan",
+      name: "Tokyo",
+      population: 35676000,
+    },
+    id: "Tokyo",
+  },
+];
 ```
 
 コンポーネントに描写してみましょう。
@@ -90,7 +110,7 @@ return (
       ? "読み込み中..."
       : cities.map(city => (
           <div>
-            {city.name}：{city.population}
+            {city.data.name}：{city.data.population}
           </div>
         ))}
   </>
@@ -113,65 +133,7 @@ São Paulo：18845000
 Tokyo：35676000
 ```
 
-## Collection を ID 付きで取得する
-
-`useGetCollection`にオプションを渡すことで、Doc を ID と共に取得できます。
-
-```js
-const option = {
-  acceptOutdated: true;
-};
-const [cities, loading, error] = useGetCollection("/cities", option);
-```
-
-取得が完了すると、`cities`には次のようなオブジェクトが入っています。
-
-```json
-[
-  {
-    "data": {
-      "country": "Mexico",
-      "name": "Mexico City",
-      "population": 19028000
-    },
-    "id": "MexicoCity"
-  },
-  {
-    "data": {
-      "country": "India",
-      "name": "Mumbai",
-      "population": 18978000
-    },
-    "id": "Mumbai"
-  },
-  {
-    "data": {
-      "country": "United States",
-      "name": "New York",
-      "population": 19354922
-    },
-    "id": "NewYork"
-  },
-  {
-    "data": {
-      "country": "Brazil",
-      "name": "São Paulo",
-      "population": 18845000
-    },
-    "id": "SaoPaulo"
-  },
-  {
-    "data": {
-      "country": "Japan",
-      "name": "Tokyo",
-      "population": 35676000
-    },
-    "id": "Tokyo"
-  }
-]
-```
-
-## Collection を条件付きで取得する
+##コレクションを条件付きで取得する
 
 `useGetCollection`には`where`や`order`などの条件を付けることができます。
 
@@ -188,24 +150,33 @@ const [cities, loading, error] = useGetCollection("/cities", option);
 
 取得が完了すると、`cities`には次のようなオブジェクトが入っています。
 
-```json
+```js
 [
   {
-    "country": "Mexico",
-    "name": "Mexico City",
-    "population": 19028000
+    data: {
+      country: "Mexico",
+      name: "Mexico City",
+      population: 19028000,
+    },
+    id: "MexicoCity",
   },
   {
-    "country": "United States",
-    "name": "New York",
-    "population": 19354922
+    data: {
+      country: "United States",
+      name: "New York",
+      population: 19354922,
+    },
+    id: "NewYork",
   },
   {
-    "country": "Japan",
-    "name": "Tokyo",
-    "population": 35676000
-  }
-]
+    data: {
+      country: "Japan",
+      name: "Tokyo",
+      population: 35676000,
+    },
+    id: "Tokyo",
+  },
+];
 ```
 
 また、条件は複数付けることもできます。
@@ -230,35 +201,41 @@ const [cities, loading, error] = useGetCollection("/cities", option);
 
 取得が完了すると、`cities`には次のようなオブジェクトが入っています。
 
-```json
+```js
 [
   {
-    "country": "Mexico",
-    "name": "Mexico City",
-    "population": 19028000
+    data: {
+      country: "Mexico",
+      name: "Mexico City",
+      population: 19028000,
+    },
+    id: "MexicoCity",
   },
   {
-    "country": "United States",
-    "name": "New York",
-    "population": 19354922
-  }
-]
+    data: {
+      country: "United States",
+      name: "New York",
+      population: 19354922,
+    },
+    id: "NewYork",
+  },
+];
 ```
 
 その他のオプションについては[こちら](option-overview.md)にて紹介しています。
 
-# Doc のリアルタイムアップデートを取得する
+#ドキュメントのリアルタイムアップデートを取得する
 
 `useSubscribeDoc`を使用することで、Doc の変化を検出して、自動で値を取得することができます。
 
 ```js
-const [tokyo, loading, error, unsubscribeFn] = useSubscribeDoc("/citie/tokyo");
+const [tokyo, loading, error, unsubscribeFn] = useSubscribeDoc("/citie/Tokyo");
 ```
 
 リッスンする必要がなくなったら、
 `unsubscribeFn()`を実行することで、リッスンを中断することができます。
 
-# Collection のリアルタイムアップデートを取得する
+#コレクションのリアルタイムアップデートを取得する
 
 Doc の場合と同様に、
 `useSubscribeCollection`を使用することで自動で値を取得することができます。
@@ -275,7 +252,7 @@ const [cities, loading, error, unsubscribeFn] = useSubscribeCollection("/cities"
 ひとつのページで、Firestore 上の複数箇所からデータを取ってくる必要があることがあります。
 そのような場合、`useQuery`を使用することを推奨します。
 
-`useQuery`では、どの Doc や Collection をどのような条件で取得するのかをスキーマに定義します。
+`useQuery`では、どのドキュメントやコレクションをどのような条件で取得するのかをスキーマに定義します。
 
 下記の例では `users`, `projects`, `tokyo` をそれぞれ別の箇所から取得しています。
 
@@ -299,7 +276,7 @@ const querySchema = {
       },
     },
     tokyo: {
-      location: "/cities/tokyo",
+      location: "/cities/Tokyo",
     },
   },
 };
@@ -312,48 +289,73 @@ const { users, projects, tokyo } = queryData;
 
 取得した`users`, `projects`, `tokyo`は次のようになります。
 
+#### users
+
+```js
+[
+  {
+    data: {
+      age: 25,
+      gender: "male",
+      name: "John Clark",
+      region: "CA",
+    },
+    id: "Clark",
+  },
+  {
+    data: {
+      age: 19,
+      gender: "female",
+      name: "Mary Baker",
+      region: "UK",
+    },
+    id: "Baker",
+  },
+  {
+    data: {
+      age: 22,
+      gender: "man",
+      name: "James Adams ",
+      region: "US",
+    },
+    id: "Adams",
+  },
+  {
+    data: {
+      age: 28,
+      gender: "female",
+      name: "Patricia Davis",
+      region: "US",
+    },
+    id: "Davis",
+  },
+];
 ```
-// users
+
+#### projects
+
+```js
 [
   {
-    "age": 25,
-    "gender": "male",
-    "name": "John Clark",
-    "region": "CA"
+    data: {
+      calculated: true,
+      createdAt: { seconds: 1577425800, nanoseconds: 0 },
+      updatedAt: { seconds: 1577599500, nanoseconds: 0 },
+    },
+    id: "w1QC83wgtwTLZBJjzLbX",
   },
-  {
-    "age": 19,
-    "gender": "female",
-    "name": "Mary Baker",
-    "region": "UK"
-  },
-  {
-    "age": 22,
-    "gender": "man",
-    "name": "James Adams ",
-    "region": "US"
-  },
-  {
-    "age": 28,
-    "gender": "female",
-    "name": "Patricia Davis",
-    "region": "US"
-  }
-]
+];
+```
 
-// projects
-[
-  {
-    "calculated": true,
-    "createdAt": { "seconds": 1577425800, "nanoseconds": 0 },
-    "updatedAt": { "seconds": 1577599500, "nanoseconds": 0 }
-  }
-]
+#### tokyo
 
-// tokyo
+```js
 {
-  "country": "Japan",
-  "name": "Tokyo",
-  "population": 35676000
+  data: {
+    "country": "Japan",
+    "name": "Tokyo",
+    "population": 35676000
+  },
+  id: "Tokyo",
 }
 ```
