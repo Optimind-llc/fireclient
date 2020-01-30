@@ -92,6 +92,7 @@ describe("useGetCollection", () => {
     let app;
     const callback = () => {
       const obj = JSON.parse(app.find(".obj").text());
+      console.log(obj);
       const { collection, loading, error } = obj;
       expect(collection.length).toBe(Object.keys(cities).length);
       collection.forEach(coll => {

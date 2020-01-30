@@ -11,7 +11,7 @@ var pathlib = __importStar(require("path"));
 var provider_1 = require("./provider");
 var utils_1 = require("./utils");
 // 書き込み完了時のCallback
-var setDocCallback = function (dispatch, onSet, onError, docPath, fields, subCollection) {
+var setDocCallback = function (dispatch, onSet, onError, docPath, fields, subCollection, options) {
     // 書き込んだ内容をStateに保存する
     var docId = pathlib.basename(docPath);
     var data = utils_1.createData(docId, fields);
@@ -26,7 +26,7 @@ var setDocCallback = function (dispatch, onSet, onError, docPath, fields, subCol
         Promise.all(subCollectionQueries.map(function (_a) {
             var subCollectionId = _a[0], collectionQuery = _a[1];
             return new Promise(function (resolve, reject) {
-                setCollection(pathlib.resolve(docPath, subCollectionId), collectionQuery, resolve, reject);
+                setCollection(pathlib.resolve(docPath, subCollectionId), collectionQuery, resolve, reject, options);
             });
         }))
             .then(onSet)
@@ -95,7 +95,7 @@ function setDoc(docPath, query, onSet, onError, options) {
             : firestoreDB.doc(docPath).set(fields);
         promise
             .then(function () {
-            setDocCallback(dispatch, onSet, onError, docPath, fields, subCollection);
+            setDocCallback(dispatch, onSet, onError, docPath, fields, subCollection, options);
         })
             .catch(function (err) {
             console.error(err);
@@ -143,6 +143,7 @@ exports.updateDoc = updateDoc;
  * ```
  */
 function setCollection(collectionPath, queries, onSet, onError, options) {
+    console.log("setCollection", options);
     Promise.all(queries.map(function (query) {
         return new Promise(function (resolve, reject) {
             var id = query.id;

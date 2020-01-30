@@ -12,6 +12,7 @@ export const providerContext: ProviderContext = {
   state: null,
   dispatch: null,
   firestoreDB: null,
+  onAccess: () => {},
 };
 const initialState: FireclientState = Map({
   doc: Map(),
@@ -22,13 +23,14 @@ export function getContext(): {
   state: FireclientState;
   dispatch: React.Dispatch<Actions>;
   firestoreDB: firestore.Firestore;
+  onAccess: () => void;
 } {
-  const { state, dispatch, firestoreDB } = providerContext;
+  const { state, dispatch, firestoreDB, onAccess } = providerContext;
   if (state === null || dispatch === null || firestoreDB === null) {
     throw Error(`state, dispatch, db is null.
     You should use <Provider> in parent component.`);
   }
-  return { state, dispatch, firestoreDB };
+  return { state, dispatch, firestoreDB, onAccess };
 }
 /**
  *
@@ -47,11 +49,11 @@ export function convertStateToJson(state: FireclientState) {
 function Provider({
   children,
   firestoreDB,
-  onAccess = () => {},
+  onAccess,
 }: {
   children: any;
   firestoreDB: firestore.Firestore;
-  onAccess: () => void;
+  onAccess?: () => void;
 }) {
   assert(firestoreDB !== undefined, "firestoreDB props of Provider is undefined");
   assert(firestoreDB !== null, "firestoreDB props of Provider is null");
@@ -60,6 +62,9 @@ function Provider({
   providerContext.state = state;
   providerContext.dispatch = dispatch;
   providerContext.firestoreDB = firestoreDB;
+  if (onAccess !== undefined) {
+    providerContext.onAccess = onAccess;
+  }
 
   return (
     <Context.Provider

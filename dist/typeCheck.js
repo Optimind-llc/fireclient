@@ -63,7 +63,6 @@ exports.condition = function (condition, fn1, fn2) { return function (obj, targe
     return condition(obj) ? fn1(obj, target) : fn2(obj, target);
 }; };
 exports.matches = function (rule) { return function (obj, target) {
-    console.log("matches", target, obj, typeof obj !== "object");
     if (typeof obj !== "object") {
         return exports.isObject(obj, target);
     }

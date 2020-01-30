@@ -121,7 +121,9 @@ export function useSubscribeDocBase<State, InitialState = State>(
       () => setLoading(true),
     );
     setUnsubscribe({ fn: unsub });
-  }, [path]);
+    // subscribeFunctionを除去
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [path, hooksId, getHashCode(options)]);
   return [doc, loading, error, unsubscribe.fn];
 }
 
@@ -229,7 +231,9 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
       options,
     );
     setUnsubscribe({ fn: unsub });
-  }, [path, getHashCode(options)]);
+    // subscribeFunctionを除去
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [path, hooksId, getHashCode(options)]);
   return [collection, loading, error, unsubscribe.fn];
 }
 
@@ -255,6 +259,8 @@ export function useGetDocSnapshot(
   },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
   const [doc, loading, error, reloadDoc] = useLazyGetDocSnapshot(path, options);
+  // reloadDocを除去
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => reloadDoc(), [path, getHashCode(options)]);
   return [doc, loading, error, reloadDoc];
 }
@@ -298,6 +304,8 @@ export function useGetCollectionSnapshot(
     path,
     options,
   );
+  // reloadCollectionを除去
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => reloadCollection(), [path, getHashCode(options)]);
   return [collection, loading, error, reloadCollection];
 }
@@ -339,6 +347,8 @@ export function useGetDoc(
   },
 ): [DocData, boolean, any, () => void] {
   const [doc, loading, error, reloadDoc] = useLazyGetDoc(path, options);
+  // reloadDocを除去
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => reloadDoc(), [path, getHashCode(options)]);
   return [doc, loading, error, reloadDoc];
 }
@@ -375,6 +385,8 @@ export function useGetCollection(
   } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
   const [collection, loading, error, reloadCollection] = useLazyGetCollection(path, options);
+  // reloadCollectionを除去
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => reloadCollection(), [path, getHashCode(options)]);
   return [collection, loading, error, reloadCollection];
 }

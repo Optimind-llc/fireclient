@@ -17,6 +17,10 @@ const setDocCallback = (
   docPath: string,
   fields: Fields,
   subCollection?: SubCollection,
+  options?: {
+    merge?: boolean;
+    mergeFields?: string[];
+  },
 ) => {
   // 書き込んだ内容をStateに保存する
   const docId = pathlib.basename(docPath);
@@ -38,6 +42,7 @@ const setDocCallback = (
               collectionQuery,
               resolve,
               reject,
+              options,
             );
           }),
       ),
@@ -56,7 +61,7 @@ export function addDoc(
   onSet: () => void,
   onError: (error: any) => void,
 ) {
-  const { firestoreDB, dispatch } = getContext();
+  const { firestoreDB, dispatch, onAccess } = getContext();
   const { id, subCollection } = query;
   const fields = query.fields !== undefined ? query.fields : {};
 
@@ -64,6 +69,7 @@ export function addDoc(
   const idExists = id !== undefined;
 
   try {
+    onAccess();
     if (isDoc) {
       // doc path が渡された時
       const ref = firestoreDB.doc(path);
@@ -120,19 +126,20 @@ export function setDoc(
     mergeFields?: string[];
   },
 ) {
-  const { firestoreDB, dispatch } = getContext();
+  const { firestoreDB, dispatch, onAccess } = getContext();
   const { subCollection } = query;
 
   const fields = query.fields !== undefined ? query.fields : {};
 
   try {
+    onAccess();
     const promise =
       options !== undefined
         ? firestoreDB.doc(docPath).set(fields, options)
         : firestoreDB.doc(docPath).set(fields);
     promise
       .then(() => {
-        setDocCallback(dispatch, onSet, onError, docPath, fields, subCollection);
+        setDocCallback(dispatch, onSet, onError, docPath, fields, subCollection, options);
       })
       .catch(err => {
         console.error(err);
@@ -149,10 +156,11 @@ export function updateDoc(
   onUpdate: () => void,
   onError: (error: any) => void,
 ) {
-  const { firestoreDB, dispatch } = getContext();
+  const { firestoreDB, dispatch, onAccess } = getContext();
   const fields = query.fields !== undefined ? query.fields : {};
 
   try {
+    onAccess();
     const ref = firestoreDB.doc(docPath);
     ref
       .update(fields)
@@ -169,7 +177,7 @@ export function updateDoc(
 }
 /**
  * ```js
- * queries: [
+ * [
  *  {
  *    id: ...,
  *    fields: { ... },

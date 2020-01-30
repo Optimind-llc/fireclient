@@ -77,7 +77,6 @@ export const condition = (
 };
 
 export const matches = (rule: Rule) => (obj: any, target: string) => {
-  console.log("matches", target, obj, typeof obj !== "object");
   if (typeof obj !== "object") {
     return isObject(obj, target);
   }

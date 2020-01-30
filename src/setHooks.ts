@@ -1,11 +1,6 @@
 import "firebase/firestore";
 import { useState } from "react";
-import {
-  SetCollectionSchema,
-  SetCollectionSchemaObject,
-  SetFql,
-  StaticSetFql,
-} from ".";
+import { SetCollectionSchema, SetCollectionSchemaObject, SetFql, StaticSetFql } from ".";
 import { addDoc, setCollection, setDoc, updateDoc } from "./setFunctions";
 import * as typeCheck from "./typeCheck";
 import { assertRule, matches, assertStaticSetFql } from "./typeCheck";

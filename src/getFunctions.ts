@@ -16,20 +16,17 @@ import {
   withOption,
 } from "./utils";
 
-const onAccess = () => console.log("fireclient accessed");
-
 export function getDocSnapshot(
   path: string,
   onGet: (doc: firestore.DocumentSnapshot) => void,
   onError: (err: any) => void,
-  acceptOutdated = false,
 ) {
   const docId = pathlib.resolve(path);
-  const { dispatch, firestoreDB } = getContext();
+  const { dispatch, firestoreDB, onAccess } = getContext();
 
   try {
-    const ref = firestoreDB.doc(path);
     onAccess();
+    const ref = firestoreDB.doc(path);
     ref
       .get()
       .then(doc => {
@@ -52,7 +49,7 @@ export function getDoc(
   acceptOutdated = false,
 ) {
   const docId = pathlib.resolve(path);
-  const { state, dispatch, firestoreDB } = getContext();
+  const { state } = getContext();
 
   // state内でsubscribeされているかチェック
   const cache = state.get("doc").get(docId);
@@ -73,11 +70,11 @@ export function subscribeDocSnapshot(
   onListen: () => void = () => {},
 ): () => void {
   const docId = pathlib.resolve(path);
-  const { dispatch, firestoreDB } = getContext();
+  const { dispatch, firestoreDB, onAccess } = getContext();
 
   try {
-    const ref = firestoreDB.doc(path);
     onAccess();
+    const ref = firestoreDB.doc(path);
     const unsubscribe = ref.onSnapshot(doc => {
       onListen();
       saveDoc(dispatch, docId, createDataFromDoc(doc));
@@ -117,11 +114,11 @@ export function getCollectionSnapshot(
   options: QueryOptions = {},
   acceptOutdated = false,
 ): void {
-  const { dispatch, firestoreDB } = getContext();
+  const { dispatch, firestoreDB, onAccess } = getContext();
 
   try {
-    const ref = withOption(firestoreDB.collection(path), options);
     onAccess();
+    const ref = withOption(firestoreDB.collection(path), options);
     ref
       .get()
       .then(collection => {
@@ -145,7 +142,7 @@ export function getCollection(
   acceptOutdated = false,
 ): void {
   const collectionId = getQueryId(path, options);
-  const { state, dispatch, firestoreDB } = getContext();
+  const { state } = getContext();
 
   // state内でsubscribeされているかチェック
   const cache = state.get("collection").get(collectionId);
@@ -180,12 +177,12 @@ export function subscribeCollectionSnapshot(
   options: QueryOptions = {},
 ): () => void {
   const collectionId = getQueryId(path, options);
-  const { dispatch, firestoreDB } = getContext();
+  const { dispatch, firestoreDB, onAccess } = getContext();
   let docIds = List<string>();
 
   try {
-    const ref = withOption(firestoreDB.collection(path), options);
     onAccess();
+    const ref = withOption(firestoreDB.collection(path), options);
     const unsubscribe = ref.onSnapshot(collection => {
       onListen();
       // docIdsを更新

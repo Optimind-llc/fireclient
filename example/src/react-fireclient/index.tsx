@@ -242,6 +242,7 @@ export type ProviderContext = {
   state: FireclientState | null;
   dispatch: React.Dispatch<reducer.Actions> | null;
   firestoreDB: firestore.Firestore | null;
+  onAccess: () => void;
 };
 
 export const deleteField = firestore.FieldValue.delete();

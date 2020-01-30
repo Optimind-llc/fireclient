@@ -10,7 +10,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 ReactDOM.render(
-  <Provider firestoreDB={db}>
+  <Provider firestoreDB={db} onAccess={() => console.log("trying to access firestore")}>
     <App />
   </Provider>,
   document.getElementById("root"),

@@ -126,6 +126,8 @@ export function useArrayQuery(
 
   useEffect(() => {
     loadQuery();
+    // loadQueryをexhaustive-depsから除外
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromJS(getFql).hashCode()]);
 
   return [queryData, loading, error, unsubscribe];
@@ -279,13 +281,17 @@ export function usePaginateCollection(
 
   const [collection, loading, error]: any[] = useGetCollectionSnapshot(path, optionsWithCursor);
   const nextFirst = collection !== null && collection.length > 0 ? collection[0] : null;
+  const nextFirstId = nextFirst !== null ? nextFirst.id : null;
   const nextLast =
     collection !== null && collection.length > 0 ? collection[collection.length - 1] : null;
+  const nextLastId = nextLast !== null ? nextLast.id : null;
 
   useEffect(() => {
     setFirst(!queryReversed ? nextFirst : nextLast);
     setLast(!queryReversed ? nextLast : nextFirst);
-  }, [nextFirst !== null ? nextFirst.id : null, nextLast !== null ? nextLast.id : null]);
+    // [nextFirst, nextLast]の代わりに[nextFirstId, nextLastId]を使用
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextFirstId, nextLastId]);
 
   const collectionData = collection !== null ? createDataFromCollection(collection) : [];
 
@@ -330,9 +336,11 @@ export function useGetSubCollection(
       : docIds.map((docId: string) => ({
           location: pathlib.resolve(collectionPath, docId),
         }));
-  const [docDataArray, loading, error] = useArrayQuery({
+  const [queryData, queryLoading, queryError] = useArrayQuery({
     acceptOutdated,
     queries,
   });
-  return [docDataArray, docLoading || loading, error, reloadDoc];
+  const loading = docLoading || queryLoading;
+  const error = docError !== null ? docError : queryError;
+  return [queryData, loading, error, reloadDoc];
 }
