@@ -3,7 +3,7 @@ id: tutorial
 title: チュートリアル
 ---
 
-#ドキュメントを取得する
+# ドキュメントを取得する
 
 Doc を取得するには `useGetDoc` を使用します。
 `useGetDoc`については[クイックスタート](quick-start.md)でも用いられているので、合わせてご覧ください。
@@ -46,7 +46,7 @@ return <>東京の人口：{loading ? "読み込み中..." : data.population}</>
 東京の人口：35676000
 ```
 
-#コレクションを取得する
+# コレクションを取得する
 
 Collection を取得するには `useGetCollection` を使用します。
 
@@ -133,7 +133,7 @@ São Paulo：18845000
 Tokyo：35676000
 ```
 
-##コレクションを条件付きで取得する
+## コレクションを条件付きで取得する
 
 `useGetCollection`には`where`や`order`などの条件を付けることができます。
 
@@ -224,7 +224,7 @@ const [cities, loading, error] = useGetCollection("/cities", options);
 
 その他のオプションについては[こちら](options-overview.md)にて紹介しています。
 
-#ドキュメントのリアルタイムアップデートを取得する
+# ドキュメントのリアルタイムアップデートを取得する
 
 `useSubscribeDoc`を使用することで、Doc の変化を検出して、自動で値を取得することができます。
 
@@ -235,7 +235,7 @@ const [tokyo, loading, error, unsubscribeFn] = useSubscribeDoc("/citie/Tokyo");
 リッスンする必要がなくなったら、
 `unsubscribeFn()`を実行することで、リッスンを中断することができます。
 
-#コレクションのリアルタイムアップデートを取得する
+# コレクションのリアルタイムアップデートを取得する
 
 Doc の場合と同様に、
 `useSubscribeCollection`を使用することで自動で値を取得することができます。

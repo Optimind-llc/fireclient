@@ -33,7 +33,7 @@
         "title": "useQuery（クエリオプションを用いたドキュメント・コレクションの取得・監視）"
       },
       "hooks-useSetCollection": {
-        "title": "useSetCollection\\n（コレクションの書き込み）"
+        "title": "useSetCollection（コレクションの書き込み）"
       },
       "hooks-useSetDoc": {
         "title": "useSetDoc（ドキュメントの書き込み）"
