@@ -25,9 +25,9 @@ var react_1 = require("react");
 var _1 = require(".");
 var getFunctions_1 = require("./getFunctions");
 var getHooks_1 = require("./getHooks");
-var utils_1 = require("./utils");
 var typeCheck = __importStar(require("./typeCheck"));
 var typeCheck_1 = require("./typeCheck");
+var utils_1 = require("./utils");
 // TODO:
 // https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
 // トランザクションを使用する

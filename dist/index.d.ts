@@ -3,9 +3,9 @@ import { firestore } from "firebase";
 import { List, Map, Set } from "immutable";
 import * as advancedHooks from "./advancedHooks";
 import * as getHooks from "./getHooks";
-import * as setHooks from "./setHooks";
 import * as provider from "./provider";
 import * as reducer from "./reducer";
+import * as setHooks from "./setHooks";
 import * as utils from "./utils";
 export declare type HooksId = string;
 export declare type DocId = string;
@@ -228,8 +228,7 @@ export declare type StaticSetFql = {
 export declare type DynamicSetFql = (...args: any[]) => StaticSetFql;
 export declare type SetFql = StaticSetFql | DynamicSetFql;
 export declare type StaticSetCollectionFql = StaticSetFql[];
-export declare type DynamicSetCollectionFql = (...args: any[]) => StaticSetCollectionFql;
-export declare type SetCollectionFql = StaticSetCollectionFql | DynamicSetCollectionFql;
+export declare type SetCollectionFql = SetFql[];
 export declare type ProviderContext = {
     state: FireclientState | null;
     dispatch: React.Dispatch<reducer.Actions> | null;

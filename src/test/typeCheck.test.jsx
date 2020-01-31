@@ -508,6 +508,17 @@ describe("SetSchema", () => {
     ).not.toThrow();
     expect(
       fn2(typeCheck.assertStaticSetCollectionFql, [
+        () => ({
+          id: "asdf",
+          fields: { foo: "bar" },
+          subCollection: {
+            users: [{ id: "asdf" }],
+          },
+        }),
+      ]),
+    ).not.toThrow();
+    expect(
+      fn2(typeCheck.assertStaticSetCollectionFql, [
         {
           id: 123,
           fields: { foo: "bar" },
@@ -566,21 +577,21 @@ describe("SetSchema", () => {
 describe("SetDocsSchema", () => {
   it("main", () => {
     expect(
-      fn2(typeCheck.assertSetDocsSchema, {
+      fn2(typeCheck.assertSetDocsFql, {
         "foo/asdf": () => ({
           id: "asdf",
         }),
       }),
     ).not.toThrow();
     expect(
-      fn2(typeCheck.assertSetDocsSchema, {
+      fn2(typeCheck.assertSetDocsFql, {
         "foo/asdf": {
           id: "asdf",
         },
       }),
     ).not.toThrow();
     expect(
-      fn2(typeCheck.assertSetDocsSchema, {
+      fn2(typeCheck.assertSetDocsFql, {
         "foo/asdf": {
           fields: {
             foo: "bar",
@@ -589,7 +600,7 @@ describe("SetDocsSchema", () => {
       }),
     ).not.toThrow();
     expect(
-      fn2(typeCheck.assertSetDocsSchema, {
+      fn2(typeCheck.assertSetDocsFql, {
         "foo/asdf": {
           subCollection: {
             users: [
@@ -602,7 +613,7 @@ describe("SetDocsSchema", () => {
       }),
     ).not.toThrow();
     expect(
-      fn2(typeCheck.assertSetDocsSchema, {
+      fn2(typeCheck.assertSetDocsFql, {
         "foo/asdf": {
           subCollection: {
             users: [
@@ -615,21 +626,21 @@ describe("SetDocsSchema", () => {
       }),
     ).toThrow();
     expect(
-      fn2(typeCheck.assertSetDocsSchema, {
+      fn2(typeCheck.assertSetDocsFql, {
         "foo/asdf": {
           id: 123,
         },
       }),
     ).toThrow();
     expect(
-      fn2(typeCheck.assertSetDocsSchema, {
+      fn2(typeCheck.assertSetDocsFql, {
         "foo/asdf": {
           id: null,
         },
       }),
     ).toThrow();
     expect(
-      fn2(typeCheck.assertSetDocsSchema, {
+      fn2(typeCheck.assertSetDocsFql, {
         "foo/asdf": {
           fields: {
             asdf: null,
@@ -638,7 +649,7 @@ describe("SetDocsSchema", () => {
       }),
     ).not.toThrow();
     expect(
-      fn2(typeCheck.assertSetDocsSchema, {
+      fn2(typeCheck.assertSetDocsFql, {
         "foo/asdf": {
           fields: {
             asdf: [1, 2, 3],

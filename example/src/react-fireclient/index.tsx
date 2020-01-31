@@ -235,8 +235,7 @@ export type DynamicSetFql = (...args: any[]) => StaticSetFql;
 export type SetFql = StaticSetFql | DynamicSetFql;
 
 export type StaticSetCollectionFql = StaticSetFql[];
-export type DynamicSetCollectionFql = (...args: any[]) => StaticSetCollectionFql;
-export type SetCollectionFql = StaticSetCollectionFql | DynamicSetCollectionFql;
+export type SetCollectionFql = SetFql[];
 
 export type ProviderContext = {
   state: FireclientState | null;

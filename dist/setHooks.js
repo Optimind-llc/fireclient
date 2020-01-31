@@ -15,8 +15,9 @@ var typeCheck_1 = require("./typeCheck");
 // ------------------------------------------
 //  Set Hooks Base
 // ------------------------------------------
-function useSetBase(path, query, setFunction, options) {
+function useSetDocBase(path, query, setFunction, options) {
     // Arg typeCheck
+    typeCheck.assertSetFql(query);
     typeCheck_1.assertRule([
         { key: "path", fn: typeCheck.isString },
         {
@@ -25,7 +26,6 @@ function useSetBase(path, query, setFunction, options) {
             fn: typeCheck_1.matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
         },
     ])({ path: path, options: options }, "Argument");
-    typeCheck.assertSetFql(query);
     var _a = react_1.useState(false), writing = _a[0], setWriting = _a[1];
     var _b = react_1.useState(false), called = _b[0], setCalled = _b[1];
     var _c = react_1.useState(null), error = _c[0], setError = _c[1];
@@ -40,7 +40,7 @@ function useSetBase(path, query, setFunction, options) {
         typeCheck_1.assertStaticSetFql(queryObject);
         setWriting(true);
         setCalled(true);
-        setFunction(path, queryGenerator.apply(void 0, args), function () {
+        setFunction(path, queryObject, function () {
             var _a;
             setError(null);
             setWriting(false);
@@ -62,7 +62,7 @@ function useSetDocsBase(queries, setFunction, options) {
             fn: typeCheck_1.matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
         },
     ])({ options: options }, "Argument");
-    typeCheck.assertSetDocsSchema(queries);
+    typeCheck.assertSetDocsFql(queries);
     var _a = react_1.useState(false), writing = _a[0], setWriting = _a[1];
     var _b = react_1.useState(false), called = _b[0], setCalled = _b[1];
     var _c = react_1.useState(null), error = _c[0], setError = _c[1];
@@ -97,18 +97,6 @@ function useSetDocsBase(queries, setFunction, options) {
     };
     return [writeFn, writing, called, error];
 }
-function useSetDocBase(path, query, setFunction, options) {
-    // Arg typeCheck
-    typeCheck.assertSetFql(query);
-    typeCheck_1.matches([
-        { key: "path", fn: typeCheck.isString },
-        {
-            key: "options",
-            fn: typeCheck_1.matches(typeCheck.queryOptionRule.concat(typeCheck.acceptOutdatedRule)),
-        },
-    ])({ path: path, options: options }, "Argument");
-    return useSetBase(path, query, setFunction, options);
-}
 function useSetCollectionBase(path, queries, setFunction, options) {
     // Arg typeCheck
     typeCheck.assertSetCollectionFql(queries);
@@ -116,10 +104,36 @@ function useSetCollectionBase(path, queries, setFunction, options) {
         { key: "path", fn: typeCheck.isString },
         {
             key: "options",
-            fn: typeCheck_1.matches(typeCheck.queryOptionRule.concat(typeCheck.acceptOutdatedRule)),
+            optional: true,
+            fn: typeCheck_1.matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
         },
     ])({ path: path, options: options }, "Argument");
-    return useSetBase(path, queries, setFunction, options);
+    var _a = react_1.useState(false), writing = _a[0], setWriting = _a[1];
+    var _b = react_1.useState(false), called = _b[0], setCalled = _b[1];
+    var _c = react_1.useState(null), error = _c[0], setError = _c[1];
+    // ObjectでQueryを指定していた場合Functionに変換する
+    var queryGenerators = queries.map(function (query) { return (query instanceof Function ? query : function () { return query; }); });
+    var writeFn = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        var queryObject = queryGenerators.map(function (queryGenerator) { return queryGenerator.apply(void 0, args); });
+        typeCheck_1.assertStaticSetFql(queryObject);
+        setWriting(true);
+        setCalled(true);
+        setFunction(path, queryObject, function () {
+            var _a;
+            setError(null);
+            setWriting(false);
+            if (((_a = options) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
+                options.callback();
+        }, function (err) {
+            setError(err);
+            setWriting(false);
+        }, options);
+    };
+    return [writeFn, writing, called, error];
 }
 // ------------------------------------------
 //  Set Doc Hooks

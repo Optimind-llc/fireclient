@@ -68,5 +68,5 @@ export declare const assertSetFql: (obj: any, target?: string) => void;
 export declare const assertStaticSetCollectionFql: (obj: any, target: string) => void;
 export declare const assertSetCollectionFql: (obj: any, target?: string) => void;
 export declare const assertSubCollectionQuery: (obj: any, target?: string) => void;
-export declare const assertSetDocsSchema: (obj: any, target?: string) => void;
+export declare const assertSetDocsFql: (obj: any, target?: string) => void;
 export {};

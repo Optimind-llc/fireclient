@@ -1,15 +1,28 @@
 import React from "react";
-import { useSetDoc } from "../react-fireclient";
+import { useSetCollection } from "../react-fireclient";
 
 function View(props) {
-  const [setFn, writing, called, error] = useSetDoc("teams/Tokyo", {
-    fields: {
-      foo: "bar",
+  const [setFn, writing, called, error] = useSetCollection("teams", [
+    {
+      fields: {
+        foo: "bar",
+      },
     },
-  });
+    {
+      fields: {
+        foo: "bar",
+      },
+    },
+    foo => ({
+      fields: {
+        foo: foo,
+      },
+    }),
+  ]);
+  const handleClick = () => setFn("foo");
   return (
     <>
-      <button onClick={setFn}>asdf</button>
+      <button onClick={handleClick}>asdf</button>
       {!called && <div>(It seems no action was called.)</div>}
       {writing && <div>Setting...</div>}
       {error !== null && <div>Error</div>}

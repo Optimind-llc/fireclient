@@ -312,9 +312,8 @@ exports.assertStaticSetCollectionFql = function (obj, target) {
 };
 exports.assertSetCollectionFql = function (obj, target) {
     if (target === void 0) { target = "SetCollectionFql"; }
-    if (!(obj instanceof Function)) {
-        exports.assertStaticSetCollectionFql(obj, target);
-    }
+    exports.assert(Array.isArray(obj), target + " should be array.\"");
+    obj.forEach(function (ele) { return exports.assertSetFql(ele); });
 };
 exports.assertSubCollectionQuery = function (obj, target) {
     if (target === void 0) { target = "SubCollectionQuery"; }
@@ -325,7 +324,7 @@ exports.assertSubCollectionQuery = function (obj, target) {
         value.forEach(function (ele) { return exports.assertStaticSetFql(ele, "Element"); });
     });
 };
-exports.assertSetDocsSchema = function (obj, target) {
+exports.assertSetDocsFql = function (obj, target) {
     if (target === void 0) { target = "SetFql"; }
     exports.assertObject(obj, target);
     var entries = Object.entries(obj);

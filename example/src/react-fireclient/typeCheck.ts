@@ -329,9 +329,8 @@ export const assertStaticSetCollectionFql = (obj: any, target: string) => {
   (obj as any).forEach((ele: any) => assertSetFql(ele));
 };
 export const assertSetCollectionFql = (obj: any, target: string = "SetCollectionFql") => {
-  if (!(obj instanceof Function)) {
-    assertStaticSetCollectionFql(obj, target);
-  }
+  assert(Array.isArray(obj), `${target} should be array."`);
+  obj.forEach((ele: any) => assertSetFql(ele));
 };
 
 export const assertSubCollectionQuery = (obj: any, target: string = "SubCollectionQuery") => {
@@ -342,7 +341,7 @@ export const assertSubCollectionQuery = (obj: any, target: string = "SubCollecti
     (value as any).forEach((ele: any) => assertStaticSetFql(ele, "Element"));
   });
 };
-export const assertSetDocsSchema = (obj: any, target: string = "SetFql") => {
+export const assertSetDocsFql = (obj: any, target: string = "SetFql") => {
   assertObject(obj, target);
   const entries = Object.entries(obj);
   entries.forEach(([key, value]) => assertSetFql(value, `"${key}"`));

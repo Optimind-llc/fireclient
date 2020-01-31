@@ -1,6 +1,6 @@
 import "firebase/firestore";
 import { Map } from "immutable";
-import { ObjectQuery, ArrayQuery, CollectionData, DocData, QueryOptions, GetFql } from ".";
+import { ArrayQuery, CollectionData, DocData, GetFql, ObjectQuery, QueryOptions } from ".";
 declare type ArrayQueryData = (DocData | CollectionData)[];
 export declare function useArrayQuery(getFql: GetFql<ArrayQuery>): [ArrayQueryData, boolean, any, {
     unsubscribe: () => void;

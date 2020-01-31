@@ -1,6 +1,6 @@
 import "firebase/firestore";
 import { useState } from "react";
-import { SetCollectionFql, StaticSetCollectionFql, SetFql, StaticSetFql } from ".";
+import { SetCollectionFql, SetFql, StaticSetFql, StaticSetCollectionFql } from ".";
 import { setCollection, setDoc, updateDoc } from "./setFunctions";
 import * as typeCheck from "./typeCheck";
 import { assertRule, matches, assertStaticSetFql } from "./typeCheck";
@@ -9,12 +9,12 @@ import { assertRule, matches, assertStaticSetFql } from "./typeCheck";
 //  Set Hooks Base
 // ------------------------------------------
 
-function useSetBase<SetQueryObject>(
+function useSetDocBase(
   path: string,
-  query: SetQueryObject | ((...args: any[]) => SetQueryObject),
+  query: SetFql,
   setFunction: (
     path: string,
-    query: SetQueryObject,
+    query: StaticSetFql,
     onWrite: () => void,
     onError: (error: any) => void,
     options?: {
@@ -30,6 +30,7 @@ function useSetBase<SetQueryObject>(
   },
 ) {
   // Arg typeCheck
+  typeCheck.assertSetFql(query);
   assertRule([
     { key: "path", fn: typeCheck.isString },
     {
@@ -38,8 +39,6 @@ function useSetBase<SetQueryObject>(
       fn: matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
     },
   ])({ path, options }, "Argument");
-  typeCheck.assertSetFql(query);
-
   const [writing, setWriting] = useState(false);
   const [called, setCalled] = useState(false);
   const [error, setError] = useState(null);
@@ -54,7 +53,7 @@ function useSetBase<SetQueryObject>(
     setCalled(true);
     setFunction(
       path,
-      queryGenerator(...args),
+      queryObject,
       () => {
         setError(null);
         setWriting(false);
@@ -97,7 +96,7 @@ function useSetDocsBase(
       fn: matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
     },
   ])({ options }, "Argument");
-  typeCheck.assertSetDocsSchema(queries);
+  typeCheck.assertSetDocsFql(queries);
 
   const [writing, setWriting] = useState(false);
   const [called, setCalled] = useState(false);
@@ -133,38 +132,6 @@ function useSetDocsBase(
   return [writeFn, writing, called, error];
 }
 
-function useSetDocBase(
-  path: string,
-  query: SetFql,
-  setFunction: (
-    path: string,
-    query: StaticSetFql,
-    onWrite: () => void,
-    onError: (error: any) => void,
-    options?: {
-      merge?: boolean;
-      mergeFields?: string[];
-      callback?: () => void;
-    },
-  ) => void,
-  options?: {
-    merge?: boolean;
-    mergeFields?: string[];
-    callback?: () => void;
-  },
-) {
-  // Arg typeCheck
-  typeCheck.assertSetFql(query);
-  matches([
-    { key: "path", fn: typeCheck.isString },
-    {
-      key: "options",
-      fn: matches(typeCheck.queryOptionRule.concat(typeCheck.acceptOutdatedRule)),
-    },
-  ])({ path, options }, "Argument");
-  return useSetBase(path, query, setFunction, options);
-}
-
 function useSetCollectionBase(
   path: string,
   queries: SetCollectionFql,
@@ -190,10 +157,39 @@ function useSetCollectionBase(
     { key: "path", fn: typeCheck.isString },
     {
       key: "options",
-      fn: matches(typeCheck.queryOptionRule.concat(typeCheck.acceptOutdatedRule)),
+      optional: true,
+      fn: matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
     },
   ])({ path, options }, "Argument");
-  return useSetBase(path, queries, setFunction, options);
+
+  const [writing, setWriting] = useState(false);
+  const [called, setCalled] = useState(false);
+  const [error, setError] = useState(null);
+
+  // ObjectでQueryを指定していた場合Functionに変換する
+  const queryGenerators = queries.map(query => (query instanceof Function ? query : () => query));
+
+  const writeFn = (...args: any[]) => {
+    const queryObject = queryGenerators.map(queryGenerator => queryGenerator(...args));
+    assertStaticSetFql(queryObject);
+    setWriting(true);
+    setCalled(true);
+    setFunction(
+      path,
+      queryObject,
+      () => {
+        setError(null);
+        setWriting(false);
+        if (options?.callback !== undefined) options.callback();
+      },
+      err => {
+        setError(err);
+        setWriting(false);
+      },
+      options,
+    );
+  };
+  return [writeFn, writing, called, error];
 }
 
 // ------------------------------------------
