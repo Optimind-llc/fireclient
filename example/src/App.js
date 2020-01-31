@@ -7,10 +7,7 @@ import GetCollection from "./container/GetCollection";
 import SubscribeDoc from "./container/SubscribeDoc";
 import LazyGetDoc from "./container/LazyGetDoc";
 import SetDoc from "./container/SetDoc";
-import AddDoc from "./container/AddDoc";
 import UpdateDoc from "./container/UpdateDoc";
-import SetCollection from "./container/SetCollection";
-import AddDocWithSubCollection from "./container/AddDocWithSubCollection";
 
 import Playground from "./container/Playground";
 
@@ -77,15 +74,6 @@ const pagesTemplate = (docPath, collectionPath, query) => [
       ),
   },
   {
-    title: "useAddDoc",
-    component:
-      collectionPath.length > 0 && query !== null ? (
-        <AddDoc collectionPath={collectionPath} query={query} />
-      ) : (
-        <h2>Collection path and query is required.</h2>
-      ),
-  },
-  {
     title: "useUpdateDoc",
     component:
       docPath.length > 0 && query !== null ? (
@@ -94,10 +82,10 @@ const pagesTemplate = (docPath, collectionPath, query) => [
         <h2>Doc path and query is required.</h2>
       ),
   },
-  // {
-  //   title: "Playground",
-  //   component: <Playground />,
-  // },
+  {
+    title: "Playground",
+    component: <Playground />,
+  },
 ];
 
 const App = () => {

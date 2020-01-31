@@ -36,7 +36,8 @@ var setDocCallback = function (dispatch, onSet, onError, docPath, fields, subCol
         });
     }
 };
-function addDoc(path, query, onSet, onError) {
+function setDoc(path, query, onSet, onError, options) {
+    if (options === void 0) { options = {}; }
     var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch, onAccess = _a.onAccess;
     var id = query.id, subCollection = query.subCollection;
     var fields = query.fields !== undefined ? query.fields : {};
@@ -48,7 +49,7 @@ function addDoc(path, query, onSet, onError) {
             // doc path が渡された時
             var ref = firestoreDB.doc(path);
             ref
-                .set(fields)
+                .set(fields, options)
                 .then(function () { return setDocCallback(dispatch, onSet, onError, path, fields, subCollection); })
                 .catch(function (err) {
                 console.error(err);
@@ -60,7 +61,7 @@ function addDoc(path, query, onSet, onError) {
             var docPath = pathlib.resolve(path, id);
             var ref = firestoreDB.doc(docPath);
             ref
-                .set(fields)
+                .set(fields, options)
                 .then(function () { return setDocCallback(dispatch, onSet, onError, path, fields, subCollection); })
                 .catch(function (err) {
                 console.error(err);
@@ -80,29 +81,6 @@ function addDoc(path, query, onSet, onError) {
                 onError(err);
             });
         }
-    }
-    catch (err) {
-        onError(err);
-    }
-}
-exports.addDoc = addDoc;
-function setDoc(docPath, query, onSet, onError, options) {
-    var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch, onAccess = _a.onAccess;
-    var subCollection = query.subCollection;
-    var fields = query.fields !== undefined ? query.fields : {};
-    try {
-        onAccess();
-        var promise = options !== undefined
-            ? firestoreDB.doc(docPath).set(fields, options)
-            : firestoreDB.doc(docPath).set(fields);
-        promise
-            .then(function () {
-            setDocCallback(dispatch, onSet, onError, docPath, fields, subCollection, options);
-        })
-            .catch(function (err) {
-            console.error(err);
-            onError(err);
-        });
     }
     catch (err) {
         onError(err);
@@ -149,13 +127,8 @@ function setCollection(collectionPath, queries, onSet, onError, options) {
     Promise.all(queries.map(function (query) {
         return new Promise(function (resolve, reject) {
             var id = query.id;
-            if (id !== undefined) {
-                var docPath = pathlib.resolve(collectionPath, id);
-                setDoc(docPath, query, resolve, reject, options);
-            }
-            else {
-                addDoc(collectionPath, query, resolve, reject);
-            }
+            var path = id !== undefined ? pathlib.resolve(collectionPath, id) : collectionPath;
+            setDoc(path, query, resolve, reject, options);
         });
     }))
         .then(onSet)

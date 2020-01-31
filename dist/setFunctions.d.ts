@@ -1,6 +1,5 @@
 import { StaticSetCollectionFql, StaticSetFql } from ".";
-export declare function addDoc(path: string, query: StaticSetFql, onSet: () => void, onError: (error: any) => void): void;
-export declare function setDoc(docPath: string, query: StaticSetFql, onSet: () => void, onError: (error: any) => void, options?: {
+export declare function setDoc(path: string, query: StaticSetFql, onSet: () => void, onError: (error: any) => void, options?: {
     merge?: boolean;
     mergeFields?: string[];
 }): void;

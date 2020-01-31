@@ -1,21 +1,19 @@
 import React from "react";
-import { useUpdateDoc } from "../react-fireclient";
+import { useSetDoc } from "../react-fireclient";
 
 function View(props) {
-  const [foo] = useUpdateDoc(
-    "cities/Tokyo",
-    {
-      fields: {
-        "foo.a": 4,
-      },
+  const [setFn, writing, called, error] = useSetDoc("teams/Tokyo", {
+    fields: {
+      foo: "bar",
     },
-    { merge: true },
-  );
+  });
   return (
     <>
-      <h2>Response</h2>
-      <h3>writing</h3>
-      <button onClick={foo}>asdf</button>
+      <button onClick={setFn}>asdf</button>
+      {!called && <div>(It seems no action was called.)</div>}
+      {writing && <div>Setting...</div>}
+      {error !== null && <div>Error</div>}
+      {!writing && called && error === null && <div>Completed</div>}
     </>
   );
 }

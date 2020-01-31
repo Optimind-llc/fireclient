@@ -128,10 +128,6 @@ function useSetDoc(docPath, query, options) {
     return useSetDocBase(docPath, query, setFunctions_1.setDoc, options);
 }
 exports.useSetDoc = useSetDoc;
-function useAddDoc(collectionPath, query, options) {
-    return useSetDocBase(collectionPath, query, setFunctions_1.addDoc, options);
-}
-exports.useAddDoc = useAddDoc;
 function useUpdateDoc(docPath, query, options) {
     return useSetDocBase(docPath, query, setFunctions_1.updateDoc, options);
 }
@@ -139,10 +135,6 @@ exports.useUpdateDoc = useUpdateDoc;
 // ------------------------------------------
 //  Set Docs Hooks
 // ------------------------------------------
-function useAddDocs(queries, options) {
-    return useSetDocsBase(queries, setFunctions_1.addDoc, options);
-}
-exports.useAddDocs = useAddDocs;
 function useSetDocs(queries, options) {
     return useSetDocsBase(queries, setFunctions_1.setDoc, options);
 }

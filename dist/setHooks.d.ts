@@ -5,15 +5,7 @@ export declare function useSetDoc(docPath: string, query: SetFql, options?: {
     mergeFields?: string[];
     callback?: () => void;
 }): (boolean | ((...args: any[]) => void) | null)[];
-export declare function useAddDoc(collectionPath: string, query: SetFql, options?: {
-    callback?: () => void;
-}): (boolean | ((...args: any[]) => void) | null)[];
 export declare function useUpdateDoc(docPath: string, query: SetFql, options?: {
-    callback?: () => void;
-}): (boolean | ((...args: any[]) => void) | null)[];
-export declare function useAddDocs(queries: {
-    [key: string]: SetFql;
-}, options?: {
     callback?: () => void;
 }): (boolean | ((...args: any[]) => void) | null)[];
 export declare function useSetDocs(queries: {

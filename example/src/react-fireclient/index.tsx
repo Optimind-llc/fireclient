@@ -271,10 +271,8 @@ export const useGetCollection = getHooks.useGetCollection;
 export const useSubscribeCollection = getHooks.useSubscribeCollection;
 
 export const useSetDoc = setHooks.useSetDoc;
-export const useAddDoc = setHooks.useAddDoc;
 export const useUpdateDoc = setHooks.useUpdateDoc;
 export const useSetDocs = setHooks.useSetDocs;
-export const useAddDocs = setHooks.useAddDocs;
 export const useUpdateDocs = setHooks.useUpdateDocs;
 export const useSetCollection = setHooks.useSetCollection;
 

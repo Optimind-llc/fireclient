@@ -55,14 +55,19 @@ const setDocCallback = (
   }
 };
 
-export function addDoc(
+export function setDoc(
   path: string,
   query: StaticSetFql,
   onSet: () => void,
   onError: (error: any) => void,
+  options: {
+    merge?: boolean;
+    mergeFields?: string[];
+  } = {},
 ) {
   const { firestoreDB, dispatch, onAccess } = getContext();
   const { id, subCollection } = query;
+
   const fields = query.fields !== undefined ? query.fields : {};
 
   const isDoc = isDocPath(path);
@@ -74,7 +79,7 @@ export function addDoc(
       // doc path が渡された時
       const ref = firestoreDB.doc(path);
       ref
-        .set(fields)
+        .set(fields, options)
         .then(() => setDocCallback(dispatch, onSet, onError, path, fields, subCollection))
         .catch(err => {
           console.error(err);
@@ -85,7 +90,7 @@ export function addDoc(
       const docPath = pathlib.resolve(path, id!);
       const ref = firestoreDB.doc(docPath);
       ref
-        .set(fields)
+        .set(fields, options)
         .then(() => setDocCallback(dispatch, onSet, onError, path, fields, subCollection))
         .catch(err => {
           console.error(err);
@@ -111,40 +116,6 @@ export function addDoc(
           onError(err);
         });
     }
-  } catch (err) {
-    onError(err);
-  }
-}
-
-export function setDoc(
-  docPath: string,
-  query: StaticSetFql,
-  onSet: () => void,
-  onError: (error: any) => void,
-  options?: {
-    merge?: boolean;
-    mergeFields?: string[];
-  },
-) {
-  const { firestoreDB, dispatch, onAccess } = getContext();
-  const { subCollection } = query;
-
-  const fields = query.fields !== undefined ? query.fields : {};
-
-  try {
-    onAccess();
-    const promise =
-      options !== undefined
-        ? firestoreDB.doc(docPath).set(fields, options)
-        : firestoreDB.doc(docPath).set(fields);
-    promise
-      .then(() => {
-        setDocCallback(dispatch, onSet, onError, docPath, fields, subCollection, options);
-      })
-      .catch(err => {
-        console.error(err);
-        onError(err);
-      });
   } catch (err) {
     onError(err);
   }
@@ -204,12 +175,8 @@ export function setCollection(
       query =>
         new Promise((resolve, reject) => {
           const { id } = query;
-          if (id !== undefined) {
-            const docPath = pathlib.resolve(collectionPath, id);
-            setDoc(docPath, query, resolve, reject, options);
-          } else {
-            addDoc(collectionPath, query, resolve, reject);
-          }
+          const path = id !== undefined ? pathlib.resolve(collectionPath, id) : collectionPath;
+          setDoc(path, query, resolve, reject, options);
         }),
     ),
   )

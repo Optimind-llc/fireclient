@@ -1,7 +1,7 @@
 import "firebase/firestore";
 import { useState } from "react";
 import { SetCollectionFql, StaticSetCollectionFql, SetFql, StaticSetFql } from ".";
-import { addDoc, setCollection, setDoc, updateDoc } from "./setFunctions";
+import { setCollection, setDoc, updateDoc } from "./setFunctions";
 import * as typeCheck from "./typeCheck";
 import { assertRule, matches, assertStaticSetFql } from "./typeCheck";
 
@@ -211,15 +211,6 @@ export function useSetDoc(
 ) {
   return useSetDocBase(docPath, query, setDoc, options);
 }
-export function useAddDoc(
-  collectionPath: string,
-  query: SetFql,
-  options?: {
-    callback?: () => void;
-  },
-) {
-  return useSetDocBase(collectionPath, query, addDoc, options);
-}
 export function useUpdateDoc(
   docPath: string,
   query: SetFql,
@@ -234,14 +225,6 @@ export function useUpdateDoc(
 //  Set Docs Hooks
 // ------------------------------------------
 
-export function useAddDocs(
-  queries: { [key: string]: SetFql },
-  options?: {
-    callback?: () => void;
-  },
-) {
-  return useSetDocsBase(queries, addDoc, options);
-}
 export function useSetDocs(
   queries: { [key: string]: SetFql },
   options?: {
