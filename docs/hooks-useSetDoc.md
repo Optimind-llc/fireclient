@@ -6,7 +6,7 @@ title: useSetDoc（ドキュメントの書き込み）
 Firestore 上のドキュメントにデータを書き込むのに用います。
 
 ```js
-const [setFn, writing, called, error] = useSetDoc(path, query, options);
+const [setFn, writing, called, error] = useSetDoc(path, fql, options);
 ```
 
 ### Hooks の戻り値
@@ -33,7 +33,7 @@ const [setFn, writing, called, error] = useSetDoc(path, query, options);
 
   書き込み対象のドキュメントの Firestore 上のパスです。
 
-- **query**: [`SetFql`](misc-type.md#setfql)
+- **fql**: [`SetFql`](misc-type.md#setfql)
 
   ドキュメントに書き込む内容を宣言的に示すオブジェクトです。
   書き込む内容を Hooks を使う時点で確定させる[`StaticSetFql`](misc-type.md#staticsetfql)を用いたり、
@@ -58,6 +58,64 @@ const [setFn, writing, called, error] = useSetDoc(path, query, options);
   データを書き込む際に実行される関数を指定することができます。
 
 # Example
+
+### ドキュメントのパスを渡す場合
+
+```js
+const fql = {
+  fields: {
+    country: "Japan",
+    name: "Tokyo",
+    population: 35676000,
+  },
+};
+const [setTokyo, writing, called, error] = useSetDoc("/cities/Tokyo", fql);
+```
+
+次を実行することでデータが追加されます。
+
+```js
+setTokyo();
+```
+
+書き込み結果は次のようになります。
+
+```
+─── cities
+    └── Tokyo
+        ├── country: "Japan"
+        ├── name: "Tokyo"
+        └── population: 35676000
+```
+
+### コレクションのパスを渡す場合
+
+```js
+const fql = {
+  fields: {
+    country: "Japan",
+    name: "Tokyo",
+    population: 35676000,
+  },
+};
+const [setTokyo, writing, called, error] = useSetDoc("/cities", fql);
+```
+
+次を実行することでデータが追加されます。
+
+```js
+setTokyo();
+```
+
+書き込み結果は次のようになります。
+
+```
+─── cities
+    └── kmgPSVMTCbDBUUm4efB1
+        ├── country: "Japan"
+        ├── name: "Tokyo"
+        └── population: 35676000
+```
 
 ### [`StaticSetFql`](misc-type.md#staticsetfql)を用いる場合
 
@@ -108,8 +166,10 @@ setTokyo("Japan", 35676000);
 ```js
 return (
   <>
-  {}
-  {!writing && called && error === null && }
+    {!called && <div>Before call setFn</div>}
+    {writing && <div>Setting...</div>}
+    {error !== null && <div>Error</div>}
+    {!writing && called && error === null && <div>Completed</div>}
   </>
-)
+);
 ```

@@ -12,10 +12,7 @@
         "title": "作成例：サブコレクションの参照"
       },
       "custom-hooks": {
-        "title": "イントロダクション"
-      },
-      "hooks-useAddDoc": {
-        "title": "useAddDoc（ドキュメントの追加）"
+        "title": "概要"
       },
       "hooks-useGetCollection": {
         "title": "useGetCollection（コレクションの取得）"
@@ -35,8 +32,14 @@
       "hooks-useQuery": {
         "title": "useQuery（クエリオプションを用いたドキュメント・コレクションの取得・監視）"
       },
+      "hooks-useSetCollection": {
+        "title": "useSetCollection\\n（コレクションの書き込み）"
+      },
       "hooks-useSetDoc": {
         "title": "useSetDoc（ドキュメントの書き込み）"
+      },
+      "hooks-useSetDocs": {
+        "title": "useSetDocs（ドキュメントの一括書き込み）"
       },
       "hooks-useSubscribeCollection": {
         "title": "useSubscribeCollection（コレクションの監視）"
@@ -47,11 +50,14 @@
       "hooks-useUpdateDoc": {
         "title": "useUpdateDoc（ドキュメントの更新）"
       },
+      "hooks-useUpdateDocs": {
+        "title": "useUpdateDocs（ドキュメントの一括更新）"
+      },
       "architecture": {
         "title": "Fireclientの内部構造"
       },
       "misc-type": {
-        "title": "タイプ"
+        "title": "型定義"
       },
       "options-overview": {
         "title": "概要"

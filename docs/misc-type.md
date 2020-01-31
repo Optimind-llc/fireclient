@@ -1,6 +1,6 @@
 ---
 id: misc-type
-title: タイプ
+title: 型定義
 ---
 
 # DocData
@@ -61,9 +61,14 @@ title: タイプ
 ### プロパティ
 
 - _`optional`_ **id**: `string`
-- _`optional`_ **fields**: `{[field: string]: any}`
-- _`optional`_ **subCollection**: `{[key: string]: StaticSetFql[]}`
+
+* _`optional`_ **fields**: `{[field: string]: any}`
+* _`optional`_ **subCollection**: `{[key: string]: StaticSetFql[]}`
 
 # DynamicSetFql
 
 ### 型 : `(...args: any[]) => StaticSetFql`
+
+# SetCollectionFql
+
+### 型 : `SetFql[]`

@@ -6,7 +6,7 @@ title: useUpdateDoc（ドキュメントの更新）
 Firestore 上のドキュメントのデータを更新するのに用います。
 
 ```js
-const [setFn, writing, called, error] = useUpdateDoc(path, query, options);
+const [setFn, writing, called, error] = useUpdateDoc(path, fql, options);
 ```
 
 ### Hooks の戻り値
@@ -33,7 +33,7 @@ const [setFn, writing, called, error] = useUpdateDoc(path, query, options);
 
   更新対象のドキュメントの Firestore 上のパスです。
 
-- **query**: [`SetFql`](misc-type.md#setfql)
+- **fql**: [`SetFql`](misc-type.md#setfql)
 
   ドキュメントに書き込む内容を宣言的に示すオブジェクトです。
 

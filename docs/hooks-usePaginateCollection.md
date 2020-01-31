@@ -97,10 +97,12 @@ prevHandler.fn();
 例えばページ移動のボタン部分は次のようにして実装することができます。
 
 ```js
-<button disabled={!prevHandler.enabled} onClick={prevHandler.fn}>
-prev
-</button>
-<button disabled={!nextHandler.enabled} onClick={nextHandler.fn}>
-next
-</button>
+<>
+  <button disabled={!prevHandler.enabled} onClick={prevHandler.fn}>
+    prev
+  </button>
+  <button disabled={!nextHandler.enabled} onClick={nextHandler.fn}>
+    next
+  </button>
+</>
 ```
