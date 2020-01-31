@@ -56,22 +56,27 @@ var firebaseConfig = {
 
 ## React プロジェクトの作成
 
-React プロジェクトを作成しましょう。
-
+React プロジェクトを作成しましょう。<br>
 React に慣れていなければ、[Create-React-App](https://ja.reactjs.org/docs/create-a-new-react-app.html#create-react-app) などで作成することを推奨します。
 
 ## パッケージのインストール
 
-`TODO: Github からのインストールを NPM サーバーからに変更する`
-
 `npm`または`yarn`コマンドでパッケージをインストールします。
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--npm-->
+
 ```sh
-# NPM
-npm install --save https://github.com/Optimind-llc/fire-client.git
-# Yarn
-yarn add https://github.com/Optimind-llc/fire-client.git
+npm install --save react-fireclient
 ```
+
+<!--yarn-->
+
+```sh
+yarn add react-fireclient
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 # Provider の設置
 

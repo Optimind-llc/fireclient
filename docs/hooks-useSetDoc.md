@@ -21,7 +21,7 @@ const [setFn, writing, called, error] = useSetDoc(path, query, options);
 
 - **called**: `boolean`
 
-  `setFn` が呼ばれたかを表します。
+  `setFn` が呼び出されたかどうかを表します。
 
 - **error**: `any`
 
@@ -36,9 +36,7 @@ const [setFn, writing, called, error] = useSetDoc(path, query, options);
 - **query**: [`SetFql`](misc-type.md#setfql)
 
   ドキュメントに書き込む内容を宣言的に示すオブジェクトです。
-
   書き込む内容を Hooks を使う時点で確定させる[`StaticSetFql`](misc-type.md#staticsetfql)を用いたり、
-
   書き込む内容を `setFn` を呼び出す時点で確定させる[`DynamicSetFql`](misc-type.md#dynamicsetfql)を用いることができます.
 
 * _`optional`_ **options**: `object`
@@ -101,4 +99,17 @@ const [setTokyo, writing, called, error] = useSetDoc("/cities/Tokyo", fql);
 
 ```js
 setTokyo("Japan", 35676000);
+```
+
+### View でのステータス表示
+
+`writing`と`called`を組み合わせることで、書き込みに関するステータスを表現することができます。
+
+```js
+return (
+  <>
+  {}
+  {!writing && called && error === null && }
+  </>
+)
 ```

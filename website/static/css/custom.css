@@ -7,19 +7,23 @@
 
 /* your custom css */
 
-@media only screen and (min-device-width: 360px) and (max-device-width: 736px) {}
+@media only screen and (min-device-width: 360px) and (max-device-width: 736px) {
+}
 
-@media only screen and (min-width: 1024px) {}
+@media only screen and (min-width: 1024px) {
+}
 
-@media only screen and (max-width: 1023px) {}
+@media only screen and (max-width: 1023px) {
+}
 
-@media only screen and (min-width: 1400px) {}
+@media only screen and (min-width: 1400px) {
+}
 
-@media only screen and (min-width: 1500px) {}
+@media only screen and (min-width: 1500px) {
+}
 
-/* .docusaurus-highlight-code-line {
-  background-color: rgb(72, 77, 91);
-  display: block;
-  margin: 0 calc(-1 * var(--ifm-pre-padding));
-  padding: 0 var(--ifm-pre-padding);
-} */
+p {
+  line-height: 1.7;
+  margin-top: 25px !important;
+  margin-bottom: 25px !important;
+}

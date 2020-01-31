@@ -21,7 +21,7 @@ const [setFn, writing, called, error] = useAddDoc(path, setFql);
 
 - **called**: `boolean`
 
-  `setFn` が呼ばれたかを表します。
+  `setFn` が呼び出されたかどうかを表します。
 
 - **error**: `any`
 
@@ -31,18 +31,15 @@ const [setFn, writing, called, error] = useAddDoc(path, setFql);
 
 - **path**: `string`
 
-  追加対象のドキュメント / コレクションの Firestore 上のパスです。
-
+  追加対象のドキュメント / コレクションの Firestore 上のパスです。<br>
   コレクションのパスを渡すと、ドキュメントの ID はランダムに決められます。
 
 - **query**: [`SetFql`](misc-type.md#setfql)
 
   ドキュメントに書き込む内容を宣言的に示すオブジェクトです。
 
-  書き込む内容を Hooks を使う時点で確定させる[`StaticSetFql`](misc-type.md#staticsetfql)を用いたり、
-
-  書き込む内容を `setFn` を呼び出す時点で確定させる[`DynamicSetFql`](misc-type.md#dynamicsetfql)を用いることができます.
-
+  書き込む内容を Hooks を使う時点で確定させる[`StaticSetFql`](misc-type.md#staticsetfql)を用いたり、<br>
+  書き込む内容を `setFn` を呼び出す時点で確定させる[`DynamicSetFql`](misc-type.md#dynamicsetfql)を用いることができます.<br>
   具体的な違いについては `useSetDoc` の [Example](hooks-useSetDoc#example)を参照してください。
 
 * _`optional`_ **options**: `object`
