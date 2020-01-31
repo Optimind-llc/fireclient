@@ -128,7 +128,7 @@ const fql = {
     "foo.a": 2,
   },
 };
-const [setFn] = useSetDoc("cities/Tokyo", fql, { merge: true });
+const [setFn] = useUpdateDoc("cities/Tokyo", fql);
 ```
 
 どちらの場合でも、`setFn()`の実行後は次のように書き換えられます。
