@@ -222,14 +222,14 @@ export declare type StaticSetFql = {
         [field: string]: any;
     };
     subCollection?: {
-        [name: string]: SetCollectionSchemaObject;
+        [name: string]: StaticSetCollectionFql;
     };
 };
-export declare type DynamicSetFql = (...args: any) => StaticSetFql;
+export declare type DynamicSetFql = (...args: any[]) => StaticSetFql;
 export declare type SetFql = StaticSetFql | DynamicSetFql;
-export declare type SetCollectionSchemaObject = StaticSetFql[];
-export declare type SetCollectionSchemaGenerator = (...args: any) => SetCollectionSchemaObject;
-export declare type SetCollectionSchema = SetCollectionSchemaObject | SetCollectionSchemaGenerator;
+export declare type StaticSetCollectionFql = StaticSetFql[];
+export declare type DynamicSetCollectionFql = (...args: any[]) => StaticSetCollectionFql;
+export declare type SetCollectionFql = StaticSetCollectionFql | DynamicSetCollectionFql;
 export declare type ProviderContext = {
     state: FireclientState | null;
     dispatch: React.Dispatch<reducer.Actions> | null;

@@ -228,15 +228,15 @@ export type StaticSetFql = {
     [field: string]: any;
   };
   subCollection?: {
-    [name: string]: SetCollectionSchemaObject;
+    [name: string]: StaticSetCollectionFql;
   };
 };
-export type DynamicSetFql = (...args: any) => StaticSetFql;
+export type DynamicSetFql = (...args: any[]) => StaticSetFql;
 export type SetFql = StaticSetFql | DynamicSetFql;
 
-export type SetCollectionSchemaObject = StaticSetFql[];
-export type SetCollectionSchemaGenerator = (...args: any) => SetCollectionSchemaObject;
-export type SetCollectionSchema = SetCollectionSchemaObject | SetCollectionSchemaGenerator;
+export type StaticSetCollectionFql = StaticSetFql[];
+export type DynamicSetCollectionFql = (...args: any[]) => StaticSetCollectionFql;
+export type SetCollectionFql = StaticSetCollectionFql | DynamicSetCollectionFql;
 
 export type ProviderContext = {
   state: FireclientState | null;

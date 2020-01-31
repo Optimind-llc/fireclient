@@ -494,9 +494,9 @@ describe("SetSchema", () => {
       }),
     ).toThrow();
   });
-  it("SetCollectionSchema", () => {
+  it("SetCollectionFql", () => {
     expect(
-      fn2(typeCheck.assertSetCollectionSchemaObject, [
+      fn2(typeCheck.assertStaticSetCollectionFql, [
         {
           id: "asdf",
           fields: { foo: "bar" },
@@ -507,7 +507,7 @@ describe("SetSchema", () => {
       ]),
     ).not.toThrow();
     expect(
-      fn2(typeCheck.assertSetCollectionSchemaObject, [
+      fn2(typeCheck.assertStaticSetCollectionFql, [
         {
           id: 123,
           fields: { foo: "bar" },
@@ -515,7 +515,7 @@ describe("SetSchema", () => {
       ]),
     ).toThrow();
     expect(
-      fn2(typeCheck.assertSetCollectionSchemaObject, [
+      fn2(typeCheck.assertStaticSetCollectionFql, [
         {
           id: null,
           fields: { foo: "bar" },
@@ -523,13 +523,13 @@ describe("SetSchema", () => {
       ]),
     ).toThrow();
     expect(
-      fn2(typeCheck.assertSetCollectionSchemaObject, {
+      fn2(typeCheck.assertStaticSetCollectionFql, {
         id: null,
         fields: { foo: "bar" },
       }),
     ).toThrow();
     expect(
-      fn2(typeCheck.assertSetCollectionSchemaObject, [
+      fn2(typeCheck.assertStaticSetCollectionFql, [
         {
           id: "asdf",
           fields: { foo: "bar" },
@@ -540,7 +540,7 @@ describe("SetSchema", () => {
       ]),
     ).toThrow();
     expect(
-      fn2(typeCheck.assertSetCollectionSchemaObject, [
+      fn2(typeCheck.assertStaticSetCollectionFql, [
         {
           id: "asdf",
           fields: { foo: "bar" },
@@ -551,7 +551,7 @@ describe("SetSchema", () => {
       ]),
     ).toThrow();
     expect(
-      fn2(typeCheck.assertSetCollectionSchemaObject, [
+      fn2(typeCheck.assertStaticSetCollectionFql, [
         {
           id: "asdf",
           fields: { foo: "bar" },

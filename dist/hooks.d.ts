@@ -133,14 +133,14 @@ export declare function useSetDoc(
   path: string,
   query: SetFql,
   option: any,
-): (boolean | ((...args: any) => void) | null)[];
+): (boolean | ((...args: any[]) => void) | null)[];
 export declare function useAddDoc(
   path: string,
   query: SetFql,
   option: any,
-): (boolean | ((...args: any) => void) | null)[];
+): (boolean | ((...args: any[]) => void) | null)[];
 export declare function useUpdateDoc(
   path: string,
   query: SetFql,
   option: any,
-): (boolean | ((...args: any) => void) | null)[];
+): (boolean | ((...args: any[]) => void) | null)[];

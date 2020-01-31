@@ -111,7 +111,7 @@ function useSetDocBase(path, query, setFunction, options) {
 }
 function useSetCollectionBase(path, queries, setFunction, options) {
     // Arg typeCheck
-    typeCheck.assertSetCollectionSchema(queries);
+    typeCheck.assertSetCollectionFql(queries);
     typeCheck_1.matches([
         { key: "path", fn: typeCheck.isString },
         {

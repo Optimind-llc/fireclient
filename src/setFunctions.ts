@@ -1,12 +1,12 @@
 import * as pathlib from "path";
-import { SetCollectionSchemaObject, StaticSetFql } from ".";
+import { StaticSetCollectionFql, StaticSetFql } from ".";
 import { getContext } from "./provider";
 import { Actions } from "./reducer";
 import { createData, isDocPath, saveDoc } from "./utils";
 
 type Fields = { [field: string]: any };
 type SubCollection = {
-  [name: string]: SetCollectionSchemaObject;
+  [name: string]: StaticSetCollectionFql;
 };
 
 // 書き込み完了時のCallback
@@ -191,7 +191,7 @@ export function updateDoc(
  */
 export function setCollection(
   collectionPath: string,
-  queries: SetCollectionSchemaObject,
+  queries: StaticSetCollectionFql,
   onSet: () => void,
   onError: (error: any) => void,
   options?: {

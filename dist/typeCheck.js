@@ -306,14 +306,14 @@ exports.assertSetFql = function (obj, target) {
         exports.assertStaticSetFql(obj, target);
     }
 };
-exports.assertSetCollectionSchemaObject = function (obj, target) {
+exports.assertStaticSetCollectionFql = function (obj, target) {
     exports.assertArray(obj, target);
     obj.forEach(function (ele) { return exports.assertSetFql(ele); });
 };
-exports.assertSetCollectionSchema = function (obj, target) {
-    if (target === void 0) { target = "SetCollectionSchema"; }
+exports.assertSetCollectionFql = function (obj, target) {
+    if (target === void 0) { target = "SetCollectionFql"; }
     if (!(obj instanceof Function)) {
-        exports.assertSetCollectionSchemaObject(obj, target);
+        exports.assertStaticSetCollectionFql(obj, target);
     }
 };
 exports.assertSubCollectionQuery = function (obj, target) {

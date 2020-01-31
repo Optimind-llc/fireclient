@@ -1,6 +1,6 @@
 import "firebase/firestore";
 import { useState } from "react";
-import { SetCollectionSchema, SetCollectionSchemaObject, SetFql, StaticSetFql } from ".";
+import { SetCollectionFql, StaticSetCollectionFql, SetFql, StaticSetFql } from ".";
 import { addDoc, setCollection, setDoc, updateDoc } from "./setFunctions";
 import * as typeCheck from "./typeCheck";
 import { assertRule, matches, assertStaticSetFql } from "./typeCheck";
@@ -11,7 +11,7 @@ import { assertRule, matches, assertStaticSetFql } from "./typeCheck";
 
 function useSetBase<SetQueryObject>(
   path: string,
-  query: SetQueryObject | ((...args: any) => SetQueryObject),
+  query: SetQueryObject | ((...args: any[]) => SetQueryObject),
   setFunction: (
     path: string,
     query: SetQueryObject,
@@ -47,7 +47,7 @@ function useSetBase<SetQueryObject>(
   // ObjectでQueryを指定していた場合Functionに変換する
   const queryGenerator = query instanceof Function ? query : () => query;
 
-  const writeFn = (...args: any) => {
+  const writeFn = (...args: any[]) => {
     const queryObject = queryGenerator(...args);
     assertStaticSetFql(queryObject);
     setWriting(true);
@@ -105,7 +105,7 @@ function useSetDocsBase(
 
   const queryEntries = Object.entries(queries);
 
-  const writeFn = (...args: any) => {
+  const writeFn = (...args: any[]) => {
     setWriting(true);
     setCalled(true);
 
@@ -167,10 +167,10 @@ function useSetDocBase(
 
 function useSetCollectionBase(
   path: string,
-  queries: SetCollectionSchema,
+  queries: SetCollectionFql,
   setFunction: (
     path: string,
-    queries: SetCollectionSchemaObject,
+    queries: StaticSetCollectionFql,
     onWrite: () => void,
     onError: (error: any) => void,
     options?: {
@@ -185,7 +185,7 @@ function useSetCollectionBase(
   },
 ) {
   // Arg typeCheck
-  typeCheck.assertSetCollectionSchema(queries);
+  typeCheck.assertSetCollectionFql(queries);
   matches([
     { key: "path", fn: typeCheck.isString },
     {
@@ -267,7 +267,7 @@ export function useUpdateDocs(
 
 export function useSetCollection(
   collectionPath: string,
-  query: SetCollectionSchema,
+  query: SetCollectionFql,
   options?: {
     merge?: boolean;
     mergeFields?: string[];

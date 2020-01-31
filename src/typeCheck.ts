@@ -324,13 +324,13 @@ export const assertSetFql = (obj: any, target: string = "SetFql") => {
     assertStaticSetFql(obj, target);
   }
 };
-export const assertSetCollectionSchemaObject = (obj: any, target: string) => {
+export const assertStaticSetCollectionFql = (obj: any, target: string) => {
   assertArray(obj, target);
   (obj as any).forEach((ele: any) => assertSetFql(ele));
 };
-export const assertSetCollectionSchema = (obj: any, target: string = "SetCollectionSchema") => {
+export const assertSetCollectionFql = (obj: any, target: string = "SetCollectionFql") => {
   if (!(obj instanceof Function)) {
-    assertSetCollectionSchemaObject(obj, target);
+    assertStaticSetCollectionFql(obj, target);
   }
 };
 
