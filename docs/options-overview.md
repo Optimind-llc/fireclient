@@ -1,5 +1,5 @@
 ---
-id: option-overview
+id: options-overview
 title: 概要
 ---
 
@@ -7,18 +7,28 @@ title: 概要
 
 # Where
 
+### 型 : `object`
+
+### プロパティ
+
+- **field**: `string`
+- **operator**: [`Firestore.WhereFilterOp`](https://firebase.google.com/docs/reference/node/firebase.firestore.html?hl=ja#wherefilterop)
+- **value**: `any`
+
 Doc のフィールドの内容からコレクションをフィルタリングします。
 次の例では `population` が `15000000` よりも大きいドキュメントのみを取得します。
 
 ```js
 where: {
-    field: "population",
-    operator: ">",
-    value: 15000000
+  field: "population",
+  operator: ">",
+  value: 15000000
 }
 ```
 
 # Limit
+
+### 型 : `number`
 
 取得するドキュメントの数を指定します。
 次の例ではドキュメントを 100 個取得します。
@@ -28,6 +38,13 @@ limit: 100;
 ```
 
 # Order
+
+### 型 : `object`
+
+### プロパティ
+
+- **by**: `string`
+- _`optional`_ **direction**: `"asc" | "desc"`
 
 クエリする際のドキュメントの並び順を指定します。
 次の例では、`population` で降順にソートしています。
@@ -41,6 +58,13 @@ order: {
 ```
 
 # Cursor
+
+### 型 : `object`
+
+### プロパティ
+
+- **origin**: `any`
+- **direction**: `"startAt" | "startAfter" | "endAt" | "endBefore"`
 
 クエリの開始ポイントや終了ポイントを指定します。
 次の例では`order` と組み合わせて使用することで、`population` が `15000000` 以上であるドキュメントを取得します。

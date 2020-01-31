@@ -9,23 +9,45 @@ Doc をリッスンすることで、Firestore 側でドキュメントの内容
 データを常に最新の状態に保つことができます。
 
 ```js
-const [docData, loading, error, unsubscribeFn] = useSubscribeDoc(path, option);
+const [docData, loading, error, unsubscribeFn] = useSubscribeDoc(path, options);
 ```
 
-| Hooks         | 説明                                                                                                           |
-| ------------- | -------------------------------------------------------------------------------------------------------------- |
-| docData       | Firestore から取得したドキュメントの内容であり、<br>初期値には `{ data: null, id: null }` が代入されています。 |
-| loading       | データを取得しているかどうかを表します。                                                                       |
-| error         | データ取得の際にエラーが発生した場合エラー内容が入力されます。<br>初期値には`null`が代入されています。         |
-| unsubscribeFn | ドキュメントのリッスンを中断するための関数です。                                                               |
+### Hooks の戻り値
 
-| option   | 説明                                                         |
-| -------- | ------------------------------------------------------------ |
-| callback | データを取得する際に実行される関数を指定することができます。 |
+- **docData**: [`DocData`](misc-type.md#docdata)
 
-注意：Firestore 上のパスは `/Collection/Doc/Collection/Doc/...` となっていることに注意してください。
+  Firestore から取得したドキュメントの内容であり、<br>初期値には `{ data: null, id: null }` が代入されています。
 
-もしコレクションを取得する場合は、代わりに `useSubscribeCollection` を使用してください。
+- **loading**: `boolean`
+
+  データを取得しているかを表します。
+
+- **error**: `any`
+
+  データ取得の際にエラーが発生した場合エラー内容が入力されます。<br>初期値には`null`が代入されています。
+
+- **unsubscribeFn**: `() => void`
+
+  ドキュメントのリッスンを中断するための関数です。
+
+### Hooks の引数
+
+- **path**: `string`
+
+  監視対象のドキュメントの Firestore 上のパスです。
+
+- _`optional`_ **options**: `object`
+
+  データを取得する際のオプションです。
+
+### options の内容
+
+- _`optional`_ **callback**: `(DocData) => void`
+
+  データを取得する際に実行される関数を指定することができます。
+
+> 注意：Firestore 上のパスは `/Collection/Doc/Collection/Doc/...` となっていることに注意してください。
+> もしコレクションを取得する場合は、代わりに [`useSubscribeCollection`](hooks-useSubscribeCollection.md) を使用してください。
 
 # Example
 

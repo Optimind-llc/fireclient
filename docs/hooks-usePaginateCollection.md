@@ -5,37 +5,82 @@ title: usePaginateCollection（ページネーションを用いたコレクシ�
 
 この Hooks を使用することで、Firestore 上のコレクションを使ったページ切り替えを簡単に行うことができます。
 
-`useGetCollection`などとは異なり、この Hooks には `order` と `limit` を持った `option` が必須になっています。
+`useGetCollection`などとは異なり、この Hooks には `order` と `limit` を持った `options` が必須になっています。
 
 ```js
 const [collectionData, loading, error, prevHandler, nextHandler] = usePaginateCollection(
   path,
-  option
+  options
 );
 ```
 
-| Hooks          | 説明                                                                                                                |
-| -------------- | ------------------------------------------------------------------------------------------------------------------- |
-| collectionData | Firestore から取得したドキュメントの内容であり、<br>初期値には `[]` が代入されています。                            |
-| loading        | データを取得しているかどうかを表します。                                                                            |
-| error          | データ取得の際にエラーが発生した場合エラー内容が入力されます。<br>初期値には`null`が代入されています。              |
-| prevHandler    | 前のページへ戻るための関数`prevHandler.fn`と<br>前のページが存在するかどうかを表す`prevHandler.enabled`を持ちます。 |
-| nextHandler    | 次のページへ戻るための関数`nextHandler.fn`と<br>次のページが存在するかどうかを表す`nextHandler.enabled`を持ちます。 |
+### Hooks の戻り値
 
-| option         | 説明                                                                                                                                        |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| acceptOutdated | Fireclient では Subscribe 済みドキュメントを取得する際にキャッシュを利用しますが、<br>その機能を Get 済みドキュメントの取得にも適応します。 |
+- **collectionData**: [`CollectionData`](misc-type.md#collectiondata)
+
+  Firestore から取得したコレクションの内容であり、初期値には `[]` が代入されています。
+
+- **loading**: `boolean`
+
+  データを取得しているかを表します。
+
+- **error**: `any`
+
+  データ取得の際にエラーが発生した場合エラー内容が入力されます。初期値には`null`が代入されています。
+
+- **prevHandler**: `{fn: () => void, enabled: boolean}`
+
+  前のページへ戻るための関数`prevHandler.fn`と前のページが存在するかを表す`prevHandler.enabled`を持ちます。
+
+- **nextHandler**: `{fn: () => void, enabled: boolean}`
+
+  前のページへ戻るための関数`nextHandler.fn`と前のページが存在するかを表す`nextHandler.enabled`を持ちます。
+
+### Hooks の引数
+
+- **path**: `string`
+
+  取得対象のコレクションの Firestore 上のパスです。
+
+- _`optional`_ **options**: `object`
+
+  データを取得する際のオプションです。
+
+### options の内容
+
+- **limit**: [`Limit`](options-overview.md#limit)
+
+  取得するコレクションの数を制限することができます。
+
+- **order**: [`Order`](options-overview.md#order)
+
+  コレクションをソートした状態で取得します。`limit` と組み合わせることで、上位 n 個を取得ということができます。
+
+- **cursor**: [`Cursor`](options-overview.md#cursor)
+
+  取得するコレクションの開始地点・終了地点を指定します。
+
+- _`optional`_ **where**: [`Where`](options-overview.md#where)
+
+  条件を付けてコレクションを取得することができます。
+
+- _`optional`_ **acceptOutdated**: `boolean`
+
+  Fireclient ではリッスンしているコレクションを取得する際にキャッシュを利用しますが、その機能を過去に取得したコレクションの再取得にも適応します。
 
 # Example
 
 ```js
-const option = {
+const options = {
   order: {
     by: "population",
   },
   limit: 2,
 };
-const [cities, loading, error, prevHandler, nextHandler] = usePaginateCollection("/cities", option);
+const [cities, loading, error, prevHandler, nextHandler] = usePaginateCollection(
+  "/cities",
+  options
+);
 ```
 
 次を実行することでページの切り替えを行えます。

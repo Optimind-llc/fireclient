@@ -6,24 +6,49 @@ title: useLazyGetDoc（ドキュメントの遅延取得）
 `useGetDoc` に近い Hooks ですが、大きな違いとして `useLazyGetDoc` は関数を実行して初めてデータの取得を行います。
 
 ```js
-const [docData, loading, error, reloadFn] = useLazyGetDoc(path, option);
+const [docData, loading, error, loadFn] = useLazyGetDoc(path, options);
 ```
 
-| Hooks   | 説明                                                                                                           |
-| ------- | -------------------------------------------------------------------------------------------------------------- |
-| docData | Firestore から取得したドキュメントの内容であり、<br>初期値には `{ data: null, id: null }` が代入されています。 |
-| loading | データを取得しているかどうかを表します。                                                                       |
-| error   | データ取得の際にエラーが発生した場合エラー内容が入力されます。<br>初期値には`null`が代入されています。         |
-| loadFn  | データを取得するための関数です。                                                                               |
+### Hooks の戻り値
 
-| option         | 説明                                                                                                                                        |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| callback       | データを取得する際に実行される関数を指定することができます。                                                                                |
-| acceptOutdated | Fireclient では Subscribe 済みドキュメントを取得する際にキャッシュを利用しますが、<br>その機能を Get 済みドキュメントの取得にも適応します。 |
+- **docData**: [`DocData`](misc-type.md#docdata)
 
-注意：Firestore 上のパスは `/Collection/Doc/Collection/Doc/...` となっていることに注意してください。
+  Firestore から取得したドキュメントの内容であり、<br>初期値には `{ data: null, id: null }` が代入されています。
 
-もしコレクションを取得する場合は、代わりに `useLazyGetCollection` を使用してください。
+- **loading**: `boolean`
+
+  データを取得しているかを表します。
+
+- **error**: `any`
+
+  データ取得の際にエラーが発生した場合エラー内容が入力されます。<br>初期値には`null`が代入されています。
+
+- **loadFn**: `() => void`
+
+  データを取得するための関数です。
+
+### Hooks の引数
+
+- **path**: `string`
+
+  取得対象のドキュメントの Firestore 上のパスです。
+
+- _`optional`_ **options**: `object`
+
+  データを取得する際のオプションです。
+
+### options の内容
+
+- _`optional`_ **callback**: `(DocData) => void`
+
+  データを取得する際に実行される関数を指定することができます。
+
+- _`optional`_ **acceptOutdated**: `boolean`
+
+  Fireclient ではリッスンしているドキュメントを取得する際にキャッシュを利用しますが、その機能を過去に取得したドキュメントの再取得にも適応します。
+
+> 注意：Firestore 上のパスは `/Collection/Doc/Collection/Doc/...` となっていることに注意してください。
+> もしコレクションを取得する場合は、代わりに [`useLazyGetCollection`](hooks-useLazyGetCollection.md) を使用してください。
 
 # Example
 

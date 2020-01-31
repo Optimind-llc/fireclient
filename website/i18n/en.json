@@ -14,6 +14,9 @@
       "custom-hooks": {
         "title": "カスタムHooksの作成"
       },
+      "hooks-useAddDoc": {
+        "title": "useAddDoc（ドキュメントの追加）"
+      },
       "hooks-useGetCollection": {
         "title": "useGetCollection（コレクションの取得）"
       },
@@ -32,22 +35,31 @@
       "hooks-useQuery": {
         "title": "useQuery（クエリオプションを用いたドキュメント・コレクションの取得・監視）"
       },
+      "hooks-useSetDoc": {
+        "title": "useSetDoc（ドキュメントの書き込み）"
+      },
       "hooks-useSubscribeCollection": {
         "title": "useSubscribeCollection（コレクションの監視）"
       },
       "hooks-useSubscribeDoc": {
         "title": "useSubscribeDoc（ドキュメントの監視）"
       },
+      "hooks-useUpdateDoc": {
+        "title": "useUpdateDoc（ドキュメントの更新）"
+      },
       "architecture": {
         "title": "Fireclientの内部構造"
       },
-      "option-overview": {
+      "misc-type": {
+        "title": "タイプ"
+      },
+      "options-overview": {
         "title": "概要"
       },
-      "option-useGetCollection": {
+      "options-useGetCollection": {
         "title": "コレクションの取得での使用"
       },
-      "option-useQuery": {
+      "options-useQuery": {
         "title": "useQueryでの使用"
       },
       "overview": {
@@ -69,7 +81,8 @@
       "基本的なHooks": "基本的なHooks",
       "高度なHooks": "高度なHooks",
       "カスタムHooks": "カスタムHooks",
-      "クエリオプション": "クエリオプション"
+      "クエリオプション": "クエリオプション",
+      "その他": "その他"
     }
   },
   "pages-strings": {

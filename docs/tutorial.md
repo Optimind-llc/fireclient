@@ -28,7 +28,7 @@ const [tokyo, loading, error] = useGetDoc("/cities/Tokyo");
 ```
 
 これらの内容をコンポーネントに描写してみましょう。
-読み込み中かどうかは`loading`を用いて確認することができます。
+読み込み中かは`loading`を用いて確認することができます。
 
 ```jsx
 return <>東京の人口：{loading ? "読み込み中..." : data.population}</>;
@@ -138,14 +138,14 @@ Tokyo：35676000
 `useGetCollection`には`where`や`order`などの条件を付けることができます。
 
 ```js
-const option = {
+const options = {
   where: {
     field: "population",
     operator: ">",
     value: 19000000,
   },
 };
-const [cities, loading, error] = useGetCollection("/cities", option);
+const [cities, loading, error] = useGetCollection("/cities", options);
 ```
 
 取得が完了すると、`cities`には次のようなオブジェクトが入っています。
@@ -182,7 +182,7 @@ const [cities, loading, error] = useGetCollection("/cities", option);
 また、条件は複数付けることもできます。
 
 ```js
-const option = {
+const options = {
   where: [
     {
       field: "population",
@@ -196,7 +196,7 @@ const option = {
     },
   ],
 };
-const [cities, loading, error] = useGetCollection("/cities", option);
+const [cities, loading, error] = useGetCollection("/cities", options);
 ```
 
 取得が完了すると、`cities`には次のようなオブジェクトが入っています。
@@ -222,7 +222,7 @@ const [cities, loading, error] = useGetCollection("/cities", option);
 ];
 ```
 
-その他のオプションについては[こちら](option-overview.md)にて紹介しています。
+その他のオプションについては[こちら](options-overview.md)にて紹介しています。
 
 #ドキュメントのリアルタイムアップデートを取得する
 

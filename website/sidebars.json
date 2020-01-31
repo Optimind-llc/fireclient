@@ -1,34 +1,24 @@
 {
   "docs": {
-    "クイックスタート": [
-      "quick-start"
-    ],
-    "イントロダクション": [
-      "overview",
-      "concept",
-      "quick-start",
-      "tutorial"
-    ],
+    "クイックスタート": ["quick-start"],
+    "イントロダクション": ["overview", "concept", "quick-start", "tutorial"],
     "基本的なHooks": [
       "hooks-useGetDoc",
       "hooks-useGetCollection",
-      "hooks-useSubscribeDoc",
-      "hooks-useSubscribeCollection",
-      "hooks-useQuery"
+      "hooks-useSetDoc",
+      "hooks-useAddDoc",
+      "hooks-useUpdateDoc"
     ],
     "高度なHooks": [
+      "hooks-useSubscribeDoc",
+      "hooks-useSubscribeCollection",
       "hooks-useLazyGetDoc",
       "hooks-useLazyGetCollection",
+      "hooks-useQuery",
       "hooks-usePaginateCollection"
     ],
-    "カスタムHooks": [
-      "custom-hooks",
-      "custom-hooks-subcollection"
-    ],
-    "クエリオプション": [
-      "option-overview",
-      "option-useGetCollection",
-      "option-useQuery"
-    ]
+    "カスタムHooks": ["custom-hooks", "custom-hooks-subcollection"],
+    "クエリオプション": ["options-overview", "options-useGetCollection", "options-useQuery"],
+    "その他": ["misc-type"]
   }
 }
