@@ -94,21 +94,37 @@ const App = () => {
   const [queryCache, setQueryCache] = useState("");
   const [docPath, setDocPath] = useState("");
   const [collectionPath, setCollectionPath] = useState("");
-  const [query, setQuery] = useState({
-    foo: "Hello",
-    bar: "Fireclient",
-  });
-  const [parseError, setParseError] = useState(false);
-
-  const queryExample = `
-  {
-    foo: "Hello",
-    bar: "Fireclient"
-  }
-  `;
-
-  const pages = pagesTemplate(docPath, collectionPath, query);
-
+  const pages = [
+    {
+      title: "useGetDoc",
+      path: "/",
+      component: (docPath, collectionPath) =>
+        docPath.length > 0 ? <GetDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
+    },
+    {
+      title: "useGetCollection",
+      component: (docPath, collectionPath) =>
+        collectionPath.length > 0 ? (
+          <GetCollection collectionPath={collectionPath} />
+        ) : (
+          <h2>Collection path is required.</h2>
+        ),
+    },
+    {
+      title: "useSubscribeDoc",
+      component: (docPath, collectionPath) =>
+        docPath.length > 0 ? <SubscribeDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
+    },
+    {
+      title: "useLazyGetDoc",
+      component: (docPath, collectionPath) =>
+        docPath.length > 0 ? <LazyGetDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
+    },
+    {
+      title: "useGetSubCollection",
+      component: () => <GetSubCollection />,
+    },
+  ];
   return (
     <>
       <BrowserRouter>

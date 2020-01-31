@@ -2,9 +2,9 @@ import { firestore } from "firebase";
 import { List, Map, Set } from "immutable";
 import * as advancedHooks from "./advancedHooks";
 import * as getHooks from "./getHooks";
-import * as setHooks from "./setHooks";
 import * as provider from "./provider";
 import * as reducer from "./reducer";
+import * as setHooks from "./setHooks";
 import * as utils from "./utils";
 
 export type HooksId = string;
