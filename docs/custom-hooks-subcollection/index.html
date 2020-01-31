@@ -1,30 +1,222 @@
-<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>作成例：サブコレクションの参照 · Fireclient</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="この例では、サブコレクションの内容を取得するための Hooks を作成します。"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="作成例：サブコレクションの参照 · Fireclient"/><meta property="og:type" content="website"/><meta property="og:url" content="https://Optimind-llc.github.io/fireclient/"/><meta property="og:description" content="この例では、サブコレクションの内容を取得するための Hooks を作成します。"/><meta property="og:image" content="https://Optimind-llc.github.io/fireclient/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://Optimind-llc.github.io/fireclient/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/fireclient/img/favicon.ico"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/fireclient/js/scrollSpy.js"></script><link rel="stylesheet" href="/fireclient/css/main.css"/><script src="/fireclient/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/fireclient/"><h2 class="headerTitle">Fireclient</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/fireclient/docs/overview" target="_self">Docs</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">作成例：サブコレクションの参照</h1></header><article><div><span><p>この例では、サブコレクションの内容を取得するための Hooks を作成します。</p>
-<p>サブコレクションについて見てみましょう。
-例えば Firestore が次のような構造になっているとします。</p>
-<p><img src="/fireclient/docs/assets/subcollection-cities.png" alt="">
-<img src="/fireclient/docs/assets/subcollection-users.png" alt=""></p>
-<pre><code class="hljs css language-json">{
-  <span class="hljs-attr">"cities"</span>: {
-    <span class="hljs-attr">"NewYork"</span>: {
-      <span class="hljs-attr">"country"</span>: <span class="hljs-string">"United States"</span>,
-      <span class="hljs-attr">"name"</span>: <span class="hljs-string">"New York"</span>,
-      <span class="hljs-attr">"population"</span>: <span class="hljs-number">19354922</span>,
-      <span class="hljs-attr">"users"</span>: [<span class="hljs-string">"Baker"</span>, <span class="hljs-string">"Davis"</span>]
-    }
-  },
-  <span class="hljs-attr">"users"</span>: {
-    <span class="hljs-attr">"Adams"</span>: { <span class="hljs-attr">"name"</span>: <span class="hljs-string">"James Adams"</span>, <span class="hljs-attr">"age"</span>: <span class="hljs-number">22</span> },
-    <span class="hljs-attr">"Baker"</span>: { <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Mary Baker"</span>, <span class="hljs-attr">"age"</span>: <span class="hljs-number">19</span> },
-    <span class="hljs-attr">"Clark"</span>: { <span class="hljs-attr">"name"</span>: <span class="hljs-string">"John Clark"</span>, <span class="hljs-attr">"age"</span>: <span class="hljs-number">25</span> },
-    <span class="hljs-attr">"Davis"</span>: { <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Patricia Davis"</span>, <span class="hljs-attr">"age"</span>: <span class="hljs-number">28</span> }
-  }
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>作成例：サブコレクションの参照 · Fireclient</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="この例では、複数ドキュメントに渡るサブコレクションを一括で取得するための Hooks を作成します。"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="作成例：サブコレクションの参照 · Fireclient"/><meta property="og:type" content="website"/><meta property="og:url" content="https://Optimind-llc.github.io/fireclient/"/><meta property="og:description" content="この例では、複数ドキュメントに渡るサブコレクションを一括で取得するための Hooks を作成します。"/><meta property="og:image" content="https://Optimind-llc.github.io/fireclient/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://Optimind-llc.github.io/fireclient/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/fireclient/img/favicon.ico"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/fireclient/js/scrollSpy.js"></script><link rel="stylesheet" href="/fireclient/css/main.css"/><script src="/fireclient/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/fireclient/"><h2 class="headerTitle">Fireclient</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/fireclient/docs/overview" target="_self">Docs</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>カスタムHooks</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">イントロダクション</h3><ul class=""><li class="navListItem"><a class="navItem" href="/fireclient/docs/overview">概要</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/concept">3原則</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/quick-start">始め方</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/tutorial">チュートリアル</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">基本的なHooks</h3><ul class=""><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useGetDoc">useGetDoc（ドキュメントの取得）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useGetCollection">useGetCollection（コレクションの取得）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useSetDoc">useSetDoc（ドキュメントの書き込み）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useUpdateDoc">useUpdateDoc（ドキュメントの更新）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useSetCollection">useSetCollection（コレクションの書き込み）</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">高度なHooks</h3><ul class=""><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useSubscribeDoc">useSubscribeDoc（ドキュメントの監視）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useSubscribeCollection">useSubscribeCollection（コレクションの監視）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useLazyGetDoc">useLazyGetDoc（ドキュメントの遅延取得）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useLazyGetCollection">useLazyGetCollection（コレクションの遅延取得）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useQuery">useQuery（クエリオプションを用いたドキュメント・コレクションの取得・監視）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useSetDocs">useSetDocs（ドキュメントの一括書き込み）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-useUpdateDocs">useUpdateDocs（ドキュメントの一括更新）</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/hooks-usePaginateCollection">usePaginateCollection（ページネーションを用いたコレクション取得）</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">カスタムHooks</h3><ul class=""><li class="navListItem"><a class="navItem" href="/fireclient/docs/custom-hooks">概要</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/fireclient/docs/custom-hooks-subcollection">作成例：サブコレクションの参照</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">クエリオプション</h3><ul class=""><li class="navListItem"><a class="navItem" href="/fireclient/docs/options-overview">概要</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/options-useGetCollection">コレクションの取得での使用</a></li><li class="navListItem"><a class="navItem" href="/fireclient/docs/options-useQuery">useQueryでの使用</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">その他</h3><ul class=""><li class="navListItem"><a class="navItem" href="/fireclient/docs/misc-type">型定義</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">作成例：サブコレクションの参照</h1></header><article><div><span><p>この例では、複数ドキュメントに渡るサブコレクションを一括で取得するための Hooks を作成します。</p>
+<p>次のようなデータ構造を例に考えてみましょう、同じコレクション内に A と B の 2 つのドキュメントが存在しています。
+それぞれのドキュメントはサブコレクションとして <code>members</code> を持っています。</p>
+<pre><code class="hljs">─── <span class="hljs-built_in">teams</span>
+    ├── A
+    │   └── <span class="hljs-built_in">members</span>
+    │       ├── adams
+    │       └── baker
+    ├── B
+    │   └── <span class="hljs-built_in">members</span>
+    │       ├── clark
+    │       └── davis
+</code></pre>
+<p><img src="/fireclient/docs/assets/subcollection-A.png" alt=""></p>
+<h1><a class="anchor" aria-hidden="true" id="hooks-の雛形を作成"></a><a href="#hooks-の雛形を作成" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Hooks の雛形を作成</h1>
+<p>Hooks の引数を考えてみましょう。サブコレクションを取得するために必要な項目は次の 2 つです。</p>
+<ul>
+<li>コレクションのパス（例：<code>/teams</code>）</li>
+<li>サブコレクションの名称（例：<code>members</code>）</li>
+</ul>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">useSubCollection</span>(<span class="hljs-params">collectionPath, subCollectionName</span>) </span>{
+  <span class="hljs-comment">// Code</span>
 }
 </code></pre>
-<p>サブコレクションの参照では、<code>NewYork</code>の<code>users</code>に含まれるユーザーの Doc を取得します。
-つまり、上記の例では次のような内容を取得します。</p>
-<pre><code class="hljs css language-json">[
-  { <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Baker"</span>, <span class="hljs-attr">"age"</span>: <span class="hljs-number">20</span> },
-  { <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Davis"</span>, <span class="hljs-attr">"age"</span>: <span class="hljs-number">26</span> }
+<h1><a class="anchor" aria-hidden="true" id="サブコレクションのパスを取得"></a><a href="#サブコレクションのパスを取得" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>サブコレクションのパスを取得</h1>
+<p>コレクション <code>teams</code> に含まれるドキュメントを取得し、
+取得したドキュメント ID からサブコレクションのパスを取得します。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> [collection] = useGetCollection(collectionPath);
+<span class="hljs-keyword">const</span> docIds = collection.map(<span class="hljs-function"><span class="hljs-params">doc</span> =&gt;</span> doc.id);
+<span class="hljs-keyword">const</span> subCollectionPaths = docIds.map(<span class="hljs-function"><span class="hljs-params">id</span> =&gt;</span> path.resolve(collectionPath, id, subCollectionName));
+</code></pre>
+<p><code>collection</code> は次のようになります。</p>
+<pre><code class="hljs css language-js">[
+  {
+    <span class="hljs-attr">id</span>: <span class="hljs-string">"A"</span>,
+    <span class="hljs-attr">data</span>: { ... }
+  },
+  {
+    <span class="hljs-attr">id</span>: <span class="hljs-string">"B"</span>,
+    <span class="hljs-attr">data</span>: { ... }
+  }
 ]
 </code></pre>
-</span></div></article></div><div class="docs-prevnext"></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/fireclient/docs/en/overview.html">Introduction</a><a href="/fireclient/docs/en/hooks-useGetDoc.html">API Reference</a></div><div><h5>More</h5><a href="https://github.com/optimind-llc/fire-client">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2020 Optimind</section></footer></div></body></html>
+<p>サブコレクションの取得には <code>id</code> の部分のみを使用します。
+<code>subCollectionPaths</code> は次のようになります。</p>
+<pre><code class="hljs css language-js">[<span class="hljs-string">"/teams/A/members"</span>, <span class="hljs-string">"/teams/B/members"</span>];
+</code></pre>
+<h1><a class="anchor" aria-hidden="true" id="サブコレクションのそれぞれのドキュメントを取得"></a><a href="#サブコレクションのそれぞれのドキュメントを取得" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>サブコレクションのそれぞれのドキュメントを取得</h1>
+<p>上記ではサブコレクションのパスを配列の形で取得することができました。
+次はこのパスを使用して、それぞれのコレクションを取得しましょう。</p>
+<p>このような配列に対応するクエリを行いたい場合は <code>useArrayQuery</code> を使用します。
+<code>useArrayQuery</code> には次のような FQL を渡します。</p>
+<pre><code class="hljs css language-js">{
+  <span class="hljs-attr">queries</span>: [
+    {
+      <span class="hljs-attr">location</span>: <span class="hljs-string">"path/to/doc/in/firestore"</span>,
+    },
+    {
+      <span class="hljs-attr">location</span>: <span class="hljs-string">"path/to/doc/in/firestore"</span>,
+    },
+  ];
+}
+</code></pre>
+<p>上記で作成した <code>subCollectionPaths</code> をこの FQL の形式に合わせます。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> fql = {
+  <span class="hljs-attr">queries</span>: subCollectionPaths.map(<span class="hljs-function"><span class="hljs-params">subCollectionPath</span> =&gt;</span> ({ <span class="hljs-attr">location</span>: subCollectionPath })),
+};
+</code></pre>
+<p>これを <code>useArrayQuery</code> に渡してそれぞれのコレクションを取得しましょう。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> [subCollection] = useArrayQuery(fql);
+</code></pre>
+<p><code>subCollection</code> は次のようになります。</p>
+<pre><code class="hljs css language-js">[
+  [
+    {
+      <span class="hljs-attr">data</span>: { ... },
+      <span class="hljs-attr">id</span>: <span class="hljs-string">"adams"</span>,
+    },
+    {
+      <span class="hljs-attr">data</span>: { ... },
+      <span class="hljs-attr">id</span>: <span class="hljs-string">"baker"</span>,
+    },
+  ],
+  [
+    {
+      <span class="hljs-attr">data</span>: { ... },
+      <span class="hljs-attr">id</span>: <span class="hljs-string">"clark"</span>,
+    },
+    {
+      <span class="hljs-attr">data</span>: { ... },
+      <span class="hljs-attr">id</span>: <span class="hljs-string">"davis"</span>,
+    },
+  ],
+];
+</code></pre>
+<p>このままでは <code>[Aのサブコレクション, Bのサブコレクション]</code> という形になっているので、配列を 2 次元から 1 次元に変換しましょう。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> flatten = <span class="hljs-built_in">Array</span>.prototype.concat.apply([], subCollection);
+</code></pre>
+<p><code>flatten</code> は次のようになります。</p>
+<pre><code class="hljs css language-js">[
+  {
+    <span class="hljs-attr">data</span>: { ... },
+    <span class="hljs-attr">id</span>: <span class="hljs-string">"adams"</span>,
+  },
+  {
+    <span class="hljs-attr">data</span>: { ... },
+    <span class="hljs-attr">id</span>: <span class="hljs-string">"baker"</span>,
+  },
+  {
+    <span class="hljs-attr">data</span>: { ... },
+    <span class="hljs-attr">id</span>: <span class="hljs-string">"clark"</span>,
+  },
+  {
+    <span class="hljs-attr">data</span>: { ... },
+    <span class="hljs-attr">id</span>: <span class="hljs-string">"davis"</span>,
+  },
+];
+</code></pre>
+<h1><a class="anchor" aria-hidden="true" id="hooks-の戻り値を決める"></a><a href="#hooks-の戻り値を決める" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Hooks の戻り値を決める</h1>
+<p>戻り値を指定しましょう。取得したデータだけを返すのであれば、次のようにすることができます。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">return</span> [flatten];
+</code></pre>
+<p>しかし、これでは <code>loading</code> や <code>error</code> を返していないので、データを読み込み中なのかエラーが発生したのか、View 側から判断することはできません。
+そのため、途中で使用した <code>useGetCollection</code> と <code>useArrayQuery</code> の <code>loading</code> と <code>error</code> を戻り値に含めましょう。</p>
+<p>先程のコードを一部修正します。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> [collection, colLoading, colError] = useGetCollection(collectionPath);
+</code></pre>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> [subCollection, subColLoading, subColError] = useArrayQuery(fql);
+</code></pre>
+<p>戻り値は次のようにすることができます。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> loading = colLoading || subColLoading;
+<span class="hljs-keyword">const</span> error = colError !== <span class="hljs-literal">null</span> ? colError : subColError;
+<span class="hljs-keyword">return</span> [flatten, loading, error];
+</code></pre>
+<h1><a class="anchor" aria-hidden="true" id="完成形"></a><a href="#完成形" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>完成形</h1>
+<p>今回作成したカスタム Hooks は次のようになります。</p>
+<pre><code class="hljs css language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">useSubCollection</span>(<span class="hljs-params">collectionPath, subCollectionName</span>) </span>{
+  <span class="hljs-comment">// サブコレクションのパスを取得</span>
+  <span class="hljs-keyword">const</span> [collection, colLoading, colError] = useGetCollection(collectionPath);
+  <span class="hljs-keyword">const</span> docIds = collection.map(<span class="hljs-function"><span class="hljs-params">doc</span> =&gt;</span> doc.id);
+  <span class="hljs-keyword">const</span> subCollectionPaths = docIds.map(<span class="hljs-function"><span class="hljs-params">id</span> =&gt;</span> path.resolve(collectionPath, id, subCollectionName));
+
+  <span class="hljs-comment">// サブコレクションのそれぞれのドキュメントを取得</span>
+  <span class="hljs-keyword">const</span> fql = {
+    <span class="hljs-attr">queries</span>: subCollectionPaths.map(<span class="hljs-function"><span class="hljs-params">subCollectionPath</span> =&gt;</span> ({ <span class="hljs-attr">location</span>: subCollectionPath })),
+  };
+  <span class="hljs-keyword">const</span> [subCollection, subColLoading, subColError, subColReloadFn] = useArrayQuery(fql);
+  <span class="hljs-keyword">const</span> flatten = <span class="hljs-built_in">Array</span>.prototype.concat.apply([], subCollection);
+
+  <span class="hljs-keyword">const</span> loading = colLoading || subColLoading;
+  <span class="hljs-keyword">const</span> error = colError !== <span class="hljs-literal">null</span> ? colError : subColError;
+  <span class="hljs-keyword">return</span> [flatten, loading, error];
+}
+</code></pre>
+<p>コンポーネント側からは次のようにして呼び出すことができます。</p>
+<pre><code class="hljs css language-js"><span class="hljs-keyword">const</span> [members, loading, error] = useSubCollection(<span class="hljs-string">"/teams"</span>, <span class="hljs-string">"members"</span>);
+<span class="hljs-keyword">return</span> (
+  <span class="xml"><span class="hljs-tag">&lt;&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">pre</span>&gt;</span>{loading ? "Loading ..." : JSON.stringify(members, null, 4)}<span class="hljs-tag">&lt;/<span class="hljs-name">pre</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">pre</span>&gt;</span>{error &amp;&amp; JSON.stringify(error)}<span class="hljs-tag">&lt;/<span class="hljs-name">pre</span>&gt;</span>
+  <span class="hljs-tag">&lt;/&gt;</span>
+);
+</span></code></pre>
+<p>また、今回の内容と同じ機能をもった Hooks が <code>useGetSubCollection</code> という名称で Fireclient に組み込まれているので、
+ライブラリをインストールしてすぐに試すことができます。</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/fireclient/docs/custom-hooks"><span class="arrow-prev">← </span><span>概要</span></a><a class="docs-next button" href="/fireclient/docs/options-overview"><span>概要</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/fireclient/docs/en/overview.html">Introduction</a><a href="/fireclient/docs/en/hooks-useGetDoc.html">API Reference</a></div><div><h5>More</h5><a href="https://github.com/optimind-llc/fire-client">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2020 Optimind</section></footer></div></body></html>
