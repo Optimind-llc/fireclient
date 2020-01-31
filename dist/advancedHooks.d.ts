@@ -1,22 +1,26 @@
 import "firebase/firestore";
 import { Map } from "immutable";
-import { ArrayQuerySchema, FireclientDoc, QueryOption, QuerySchema } from ".";
-declare type ArrayQueryData = (FireclientDoc | FireclientDoc[])[];
-export declare function useArrayQuery(querySchema: ArrayQuerySchema): [ArrayQueryData, boolean, any, {
+import { ArrayQuery, CollectionData, DocData, GetFql, ObjectQuery, QueryOptions } from ".";
+declare type ArrayQueryData = (DocData | CollectionData)[];
+export declare function useArrayQuery(getFql: GetFql<ArrayQuery>): [ArrayQueryData, boolean, any, {
     unsubscribe: () => void;
     reload: () => void;
 }];
-declare type QueryData = Map<string, FireclientDoc | FireclientDoc[] | {}>;
-export declare function useQuery(querySchema: QuerySchema): [QueryData, boolean, any, {
+declare type QueryData = Map<string, DocData | CollectionData | {}>;
+export declare function useQuery(getFql: GetFql<ObjectQuery>): [QueryData, boolean, any, {
     unsubscribe: () => void;
     reload: () => void;
 }];
-export declare function usePaginateCollection(path: string, option: {
+declare type PageHandler = {
+    fn: () => void;
+    enabled: boolean;
+};
+export declare function usePaginateCollection(path: string, options: {
     callback?: () => void;
     acceptOutdated?: boolean;
-} & QueryOption): any[];
-export declare function useGetSubCollection(path: string, option: {
-    subCollectionName: string;
+} & QueryOptions): [CollectionData, boolean, any, PageHandler, PageHandler];
+export declare function useGetSubCollection(path: string, subCollectionName: string, options?: {
     acceptOutdated?: boolean;
-}): (boolean | any[] | (() => void))[];
+    callback?: () => void;
+}): [CollectionData, boolean, any, () => void];
 export {};

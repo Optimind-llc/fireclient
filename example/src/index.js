@@ -4,21 +4,13 @@ import firebase from "firebase";
 import { Provider } from "./react-fireclient";
 import "./index.css";
 import App from "./App";
+import firebaseConfig from "./firebaseConfig";
 
-const firebaseConfig = {
-  apiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-  authDomain: "xxxxxxxxxxxxxxxxxxxxxxx.firebaseapp.com",
-  databaseURL: "https://xxxxxxxxxxxxxxxxxxxxxxx.firebaseio.com",
-  projectId: "xxxxxxxxxxxxxxxxxxxxxxx",
-  storageBucket: "xxxxxxxxxxxxxxxxxxxxxxx.appspot.com",
-  messagingSenderId: "xxxxxxxxxxxx",
-  appId: "x:xxxxxxxxxxxx:web:xxxxxxxxxxxxxxxxxxxxxx",
-};
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 ReactDOM.render(
-  <Provider firestoreDB={db}>
+  <Provider firestoreDB={db} onAccess={() => console.log("trying to access firestore")}>
     <App />
   </Provider>,
   document.getElementById("root"),

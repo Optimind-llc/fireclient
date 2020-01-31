@@ -1,13 +1,12 @@
-import { firestore } from "firebase";
 import { List, Set } from "immutable";
-import { FireclientState, HooksId } from ".";
+import { DocData, FireclientState, HooksId } from ".";
 
 export type Actions =
   | {
       type: "setDoc";
       payload: {
         docId: string;
-        snapshot: firestore.DocumentSnapshot;
+        data: DocData;
       };
     }
   | {
@@ -49,7 +48,7 @@ export type Actions =
 function reducer(state: FireclientState, action: Actions): FireclientState {
   switch (action.type) {
     case "setDoc":
-      return state.setIn(["doc", action.payload.docId, "snapshot"], action.payload.snapshot);
+      return state.setIn(["doc", action.payload.docId, "data"], action.payload.data);
 
     case "setCollection":
       return state.setIn(

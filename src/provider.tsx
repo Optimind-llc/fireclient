@@ -2,9 +2,9 @@ import { firestore } from "firebase";
 import "firebase/firestore";
 import { Map } from "immutable";
 import React from "react";
-import { createDataFromDoc, FireclientDocState, FireclientState, ProviderContext } from ".";
+import { FireclientState, ProviderContext } from ".";
 import reducer, { Actions } from "./reducer";
-import { assert } from "./validation";
+import { assert } from "./typeCheck";
 
 export const Context = React.createContext<any>(null);
 // ライブラリ内で共有する Context
@@ -12,34 +12,25 @@ export const providerContext: ProviderContext = {
   state: null,
   dispatch: null,
   firestoreDB: null,
+  onAccess: () => {},
 };
 const initialState: FireclientState = Map({
   doc: Map(),
   collection: Map(),
 });
 
-export function unwrapContext(
-  context: ProviderContext,
-): {
+export function getContext(): {
   state: FireclientState;
   dispatch: React.Dispatch<Actions>;
   firestoreDB: firestore.Firestore;
+  onAccess: () => void;
 } {
-  const { state, dispatch, firestoreDB } = context;
+  const { state, dispatch, firestoreDB, onAccess } = providerContext;
   if (state === null || dispatch === null || firestoreDB === null) {
     throw Error(`state, dispatch, db is null.
     You should use <Provider> in parent component.`);
   }
-  return { state, dispatch, firestoreDB };
-}
-
-function convertDocSnapshotToData(state: FireclientState) {
-  return state.update("doc", docStates =>
-    docStates.map((docState: FireclientDocState) => ({
-      data: createDataFromDoc(docState.get("snapshot")),
-      connectedFrom: docState.get("connectedFrom"),
-    })),
-  );
+  return { state, dispatch, firestoreDB, onAccess };
 }
 /**
  *
@@ -52,17 +43,17 @@ function convertDocSnapshotToData(state: FireclientState) {
  *    const json = convertStateToJson(state);
  */
 export function convertStateToJson(state: FireclientState) {
-  return JSON.stringify(convertDocSnapshotToData(state), null, 4);
+  return JSON.stringify(state, null, 4);
 }
 
 function Provider({
   children,
   firestoreDB,
-  onAccess = () => {},
+  onAccess,
 }: {
   children: any;
   firestoreDB: firestore.Firestore;
-  onAccess: () => void;
+  onAccess?: () => void;
 }) {
   assert(firestoreDB !== undefined, "firestoreDB props of Provider is undefined");
   assert(firestoreDB !== null, "firestoreDB props of Provider is null");
@@ -71,6 +62,9 @@ function Provider({
   providerContext.state = state;
   providerContext.dispatch = dispatch;
   providerContext.firestoreDB = firestoreDB;
+  if (onAccess !== undefined) {
+    providerContext.onAccess = onAccess;
+  }
 
   return (
     <Context.Provider

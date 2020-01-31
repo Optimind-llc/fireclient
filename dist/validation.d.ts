@@ -1,48 +1,77 @@
-export declare const isArray: (obj: any) => boolean;
+declare type ValidateResult = {
+    valid: boolean;
+    message: string;
+};
+declare type ValidateFunction = (obj: any, target: string) => ValidateResult;
+declare type Rule = {
+    key: string;
+    fn: ValidateFunction;
+    optional?: boolean;
+}[];
+export declare const isObject: (obj: any, target: string) => {
+    valid: boolean;
+    message: string;
+};
+export declare const isAnyOf: (candidate: any[]) => (obj: any, target: string) => {
+    valid: boolean;
+    message: string;
+};
+export declare const isArrayOf: (rule: ValidateFunction) => (obj: any, target: string) => {
+    valid: boolean;
+    message: string;
+};
+export declare const isString: (obj: any, target: string) => {
+    valid: boolean;
+    message: string;
+};
+export declare const isNumber: (obj: any, target: string) => {
+    valid: boolean;
+    message: string;
+};
+export declare const isBoolean: (obj: any, target: string) => {
+    valid: boolean;
+    message: string;
+};
+export declare const isNotNull: (obj: any, target: string) => {
+    valid: boolean;
+    message: string;
+};
+export declare const isFunction: (obj: any, target: string) => {
+    valid: boolean;
+    message: string;
+};
+export declare const condition: (condition: (obj: any) => boolean, fn1: ValidateFunction, fn2: ValidateFunction) => (obj: any, target: string) => ValidateResult;
+export declare const matches: (rule: Rule) => (obj: any, target: string) => ValidateResult;
+export declare const matchesArrayOf: (rule: Rule) => (obj: any, target: string) => ValidateResult;
+export declare const matchesObjectOf: (rule: Rule) => (obj: any, target: string) => ValidateResult;
+export declare const queryOptionRule: Rule;
+export declare const queryRule: Rule;
+export declare const acceptOutdatedRule: Rule;
+export declare const callbackRule: Rule;
+export declare const mergeRule: Rule;
+export declare const arrayGetFqlRule: Rule;
+export declare const getFqlRule: Rule;
+export declare const subCollectionOptionRule: {
+    key: string;
+    fn: (obj: any, target: string) => {
+        valid: boolean;
+        message: string;
+    };
+}[];
+export declare const paginateOptionRule: {
+    key: string;
+    fn: (obj: any, target: string) => {
+        valid: boolean;
+        message: string;
+    };
+}[];
 export declare const assert: (isValid: boolean, errorMessage: string) => void;
-/**
- * Check if `obj` satisfies `QueryOption` type.
- * @example
- * type Option = {
- *    where?: Where | [Where];
- *    limit?: Limit;
- *    order?: Order | [Order];
- *    cursor?: Cursor;
- * }
- * ```
- */
-export declare const assertQueryOption: (obj: any) => void;
-export declare const assertAcceptOutdatedOption: (obj: any) => void;
-export declare const assertCallbackOption: (obj: any) => void;
-/**
- * Check if `obj` satisfies `ArrayQuerySchema` type.
- * @example
- * type ArrayQuerySchema = {
- *    connects?: boolean;
- *    queries: Query[];
- * };
- */
-export declare const assertArrayQuerySchema: (obj: any) => void;
-/**
- * Check if `obj` satisfies `QuerySchema` type.
- * @example
- * type QuerySchema = {
- *    connects?: boolean;
- *    queries: {
- *      [field: string]: Query;
- *    };
- * };
- */
-export declare const assertQuerySchema: (obj: any) => void;
-/**
- * Check if `obj` satisfies `string` type.
- */
-export declare const assertPath: (obj: any) => void;
-/**
- * Check if `obj` satisfies option of `usePaginateCollection`.
- */
-export declare const assertPaginateOption: (obj: any) => void;
-/**
- * Check if `obj` satisfies option of `useGetSubCollection`.
- */
-export declare const assertSubCollectionOption: (obj: any) => void;
+export declare const assertObject: (obj: any, target: string) => void;
+export declare const assertArray: (obj: any, target: string) => void;
+export declare const assertRule: (rule: Rule) => (obj: any, target: string) => void;
+export declare const assertStaticSetFql: (obj: any, target?: string) => void;
+export declare const assertSetFql: (obj: any, target?: string) => void;
+export declare const assertSetCollectionFql: (obj: any, target?: string) => void;
+export declare const assertSubCollectionQuery: (obj: any, target?: string) => void;
+export declare const assertSetDocsQuery: (obj: any, target?: string) => void;
+export {};

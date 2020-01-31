@@ -5,10 +5,11 @@ import { FireclientState, ProviderContext } from ".";
 import { Actions } from "./reducer";
 export declare const Context: React.Context<any>;
 export declare const providerContext: ProviderContext;
-export declare function unwrapContext(context: ProviderContext): {
+export declare function getContext(): {
     state: FireclientState;
     dispatch: React.Dispatch<Actions>;
     firestoreDB: firestore.Firestore;
+    onAccess: () => void;
 };
 /**
  *
@@ -24,6 +25,6 @@ export declare function convertStateToJson(state: FireclientState): string;
 declare function Provider({ children, firestoreDB, onAccess, }: {
     children: any;
     firestoreDB: firestore.Firestore;
-    onAccess: () => void;
+    onAccess?: () => void;
 }): JSX.Element;
 export default Provider;

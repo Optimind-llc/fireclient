@@ -7,7 +7,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc --jsx react"
+    "build": "tsc --jsx react",
+    "test": "jest src/test/* --silent",
+    "test-v": "jest src/test/*"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
@@ -19,7 +21,20 @@
     "path": "^0.12.7"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-export-default-from": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/preset-react": "^7.8.3",
+    "@types/enzyme": "^3.10.4",
+    "@types/enzyme-adapter-react-16": "^1.0.5",
+    "@types/jest": "^24.9.0",
     "@types/react": ">=16.8.0",
+    "dotenv": "^8.2.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
+    "firestore-export-import": "^0.3.2",
+    "jest": "^24.9.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.7.4"
   }

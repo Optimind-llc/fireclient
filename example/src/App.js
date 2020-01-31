@@ -6,13 +6,22 @@ import GetDoc from "./container/GetDoc";
 import GetCollection from "./container/GetCollection";
 import SubscribeDoc from "./container/SubscribeDoc";
 import LazyGetDoc from "./container/LazyGetDoc";
-import GetSubCollection from "./container/GetSubCollection";
+import SetDoc from "./container/SetDoc";
+import UpdateDoc from "./container/UpdateDoc";
+
+import Playground from "./container/Playground";
 
 const PageContainer = styled.div`
   padding: 20px;
 `;
 const StyledInput = styled.input`
   padding: 5px;
+`;
+const StyledTextArea = styled.textarea`
+  padding: 5px;
+  width: 300px;
+  height: 80px;
+  resize: none;
 `;
 const StyledButton = styled.button`
   margin: 10px;
@@ -30,9 +39,59 @@ const firebaseConfig = {
 };
 `;
 
+const pagesTemplate = (docPath, collectionPath, query) => [
+  {
+    title: "useGetDoc",
+    path: "/",
+    component: docPath.length > 0 ? <GetDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
+  },
+  {
+    title: "useGetCollection",
+    component:
+      collectionPath.length > 0 ? (
+        <GetCollection collectionPath={collectionPath} />
+      ) : (
+        <h2>Collection path is required.</h2>
+      ),
+  },
+  {
+    title: "useSubscribeDoc",
+    component:
+      docPath.length > 0 ? <SubscribeDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
+  },
+  {
+    title: "useLazyGetDoc",
+    component:
+      docPath.length > 0 ? <LazyGetDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
+  },
+  {
+    title: "useSetDoc",
+    component:
+      docPath.length > 0 && query !== null ? (
+        <SetDoc docPath={docPath} query={query} />
+      ) : (
+        <h2>Doc path and query is required.</h2>
+      ),
+  },
+  {
+    title: "useUpdateDoc",
+    component:
+      docPath.length > 0 && query !== null ? (
+        <UpdateDoc docPath={docPath} query={query} />
+      ) : (
+        <h2>Doc path and query is required.</h2>
+      ),
+  },
+  {
+    title: "Playground",
+    component: <Playground />,
+  },
+];
+
 const App = () => {
   const [docPathCache, setDocPathCache] = useState("");
   const [collectionPathCache, setCollectionPathCache] = useState("");
+  const [queryCache, setQueryCache] = useState("");
   const [docPath, setDocPath] = useState("");
   const [collectionPath, setCollectionPath] = useState("");
   const pages = [
@@ -80,6 +139,7 @@ const App = () => {
         />
         <StyledButton onClick={() => setDocPath(docPathCache)}>Apply</StyledButton>
         <pre>Doc Path : {docPath}</pre>
+
         <h2>Collection Path</h2>
         <StyledInput
           type="text"
@@ -88,6 +148,33 @@ const App = () => {
         />
         <StyledButton onClick={() => setCollectionPath(collectionPathCache)}>Apply</StyledButton>
         <pre>Collection Path : {collectionPath}</pre>
+
+        <h2>Query Object</h2>
+        <StyledTextArea
+          type="text"
+          placeholder={queryExample}
+          onChange={e => setQueryCache(e.target.value)}
+        />
+        <StyledButton
+          onClick={() => {
+            try {
+              const obj = new Function("return " + queryCache)();
+              if (obj === undefined) {
+                return;
+              }
+              setQuery(obj);
+              setParseError(false);
+            } catch (err) {
+              setParseError(true);
+            }
+          }}
+        >
+          Apply
+        </StyledButton>
+        <pre>
+          Query Object : <br />
+          {!parseError ? JSON.stringify(query) : "Object parsing fails."}
+        </pre>
 
         <h1>2. Select Hooks and check results 🥳</h1>
 
@@ -99,11 +186,7 @@ const App = () => {
 
         <PageContainer>
           {pages.map(page => (
-            <Route
-              exact
-              path={`/${page.title}`}
-              render={() => page.component(docPath, collectionPath)}
-            />
+            <Route exact path={`/${page.title}`} render={() => page.component} />
           ))}
         </PageContainer>
       </BrowserRouter>

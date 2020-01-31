@@ -1,0 +1,120 @@
+{
+  "cities": {
+    "MexicoCity": {
+      "population": 19028000,
+      "name": "Mexico City",
+      "area": 1485,
+      "foo": 2,
+      "country": "Mexico"
+    },
+    "Mumbai": {
+      "name": "Mumbai",
+      "country": "India",
+      "foo": 1,
+      "area": 603,
+      "population": 18978000
+    },
+    "NewYork": {
+      "population": 19354922,
+      "name": "New York",
+      "country": "United States",
+      "foo": 1,
+      "area": 783,
+      "users": [
+        "Baker",
+        "Davis"
+      ]
+    },
+    "SaoPaulo": {
+      "population": 18845000,
+      "name": "São Paulo",
+      "foo": 2,
+      "area": 1521,
+      "country": "Brazil"
+    },
+    "Tokyo": {
+      "name": "Tokyo",
+      "country": "Japan",
+      "foo": 2,
+      "area": 622,
+      "population": 35676000
+    }
+  },
+  "test": {
+    "array": {
+      "field1": [
+        "value1",
+        {
+          "key2": "value2"
+        }
+      ]
+    },
+    "boolean": {
+      "field1": true,
+      "field2": false
+    },
+    "map": {
+      "field1": {
+        "key3": {
+          "key4": "value4"
+        },
+        "key1": "value1",
+        "key5": [
+          "array-value1"
+        ],
+        "key2": "value2"
+      }
+    },
+    "null": {
+      "field1": null
+    },
+    "number": {
+      "field3": 0.128,
+      "field1": 256,
+      "field2": -256
+    },
+    "string": {
+      "field1": "Hello World",
+      "field2": "Emoji 😋"
+    },
+    "subcollection": {
+      "field1": "field1-value",
+      "subCollection": {
+        "test/subcollection/subcollection1": {
+          "doc1": {
+            "field1": "field1-value",
+            "subCollection": {
+              "test/subcollection/subcollection1/doc1/subcollection2": {
+                "doc2": {
+                  "field1": "field1-value"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "users": {
+    "Adams": {
+      "gender": "man",
+      "age": 22,
+      "name": "James Adams"
+    },
+    "Baker": {
+      "age": 19,
+      "name": "Mary Baker",
+      "gender": "female"
+    },
+    "Clark": {
+      "gender": "male",
+      "age": 25,
+      "name": "John Clark"
+    },
+    "Davis": {
+      "age": 28,
+      "name": "Patricia Davis",
+      "gender": "female"
+    }
+  }
+}
