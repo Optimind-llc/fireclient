@@ -59,20 +59,20 @@
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="hooks-の戻り値"></a><a href="#hooks-の戻り値" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Hooks の戻り値</h3>
 <ul>
-<li><p><strong>queryData</strong>: <code>(</code><a href="/fireclient/docs/misc-type#docdata"><code>DocData</code></a><code>|</code><a href="/fireclient/docs/misc-type#collectiondata"><code>CollectionData</code></a><code>)[ ]</code></p>
+<li><p><strong>queryData</strong>: <code>(</code><a href="/fireclient/docs/misc-type#docdata"><code>DocData</code></a><code>|</code><a href="/fireclient/docs/misc-type#collectiondata"><code>CollectionData</code></a><code>)[]</code></p>
 <p>Firestore から取得したドキュメント/コレクションの内容です。</p></li>
 <li><p><strong>loading</strong>: <code>boolean</code></p>
 <p>データを取得しているかを表します。</p></li>
 <li><p><strong>error</strong>: <code>any</code></p>
-<p>データ取得の際にエラーが発生した場合エラー内容が入力されます。</p>
-<p>初期値には<code>null</code>が代入されています。</p></li>
+<p>データ取得の際にエラーが発生した場合エラー内容が入力されます。
+初期値には<code>null</code>が代入されています。</p></li>
 <li><p><strong>fn</strong>: <code>{reload: () =&gt; void, unsubscribe: () =&gt; void}</code></p>
-<p><code>fn.reload</code> で Get で取得したドキュメント/コレクションを再読込、</p>
-<p><code>fn.unsubscribe</code> で リッスンしているドキュメント/コレクションのリッスンを中断します。</p></li>
+<p><code>fn.reload</code> で Get で取得したドキュメント/コレクションを再読込、<br>
+<code>fn.unsubscribe</code> で リッスンしているドキュメント/コレクションのリッスンを中断します。</p></li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" id="hooks-の引数"></a><a href="#hooks-の引数" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Hooks の引数</h3>
 <ul>
-<li><p><strong>fql</strong>: <a href="/fireclient/docs/misc-type#getfql">GetFql</a></p>
+<li><p><strong>fql</strong>: <a href="/fireclient/docs/misc-type#getfql"><code>GetFql</code></a></p>
 <p>Firestore 上のどの ドキュメント / コレクション を取得するかを宣言的に示すオブジェクトです。取得時のオプションなども指定することができます。</p></li>
 </ul>
 <h1><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h1>
@@ -81,13 +81,14 @@
     <span class="hljs-attr">newYork</span>: {
       <span class="hljs-attr">location</span>: <span class="hljs-string">"/cities/NewYork"</span>,
     },
-    <span class="hljs-attr">adams</span>: {
+    <span class="hljs-attr">users</span>: {
       <span class="hljs-attr">location</span>: <span class="hljs-string">"/users"</span>,
     },
   },
 };
 
 <span class="hljs-keyword">const</span> [queryData, loading, error, queryData] = useQuery(fql);
+<span class="hljs-keyword">const</span> { newYork, users } = queryData;
 </code></pre>
 <p><code>queryData</code> には次のような内容が代入されます。</p>
 <pre><code class="hljs css language-js">{
@@ -99,7 +100,7 @@
     },
     <span class="hljs-attr">id</span>: <span class="hljs-string">"NewYork"</span>,
   },
-  <span class="hljs-attr">adams</span>: [
+  <span class="hljs-attr">users</span>: [
     {
       <span class="hljs-attr">data</span>: {
         <span class="hljs-attr">age</span>: <span class="hljs-number">22</span>,

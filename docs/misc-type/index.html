@@ -55,54 +55,218 @@
               }
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">型定義</h1></header><article><div><span><h1><a class="anchor" aria-hidden="true" id="docdata"></a><a href="#docdata" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>DocData</h1>
+<p>Fireclient で Firestore 上のドキュメントを取得した際の型であり、<code>useGetDoc</code> や <code>useSubscribeDoc</code> などで取得したデータは全てこの型になります。</p>
 <h3><a class="anchor" aria-hidden="true" id="型--object"></a><a href="#型--object" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <code>object</code></h3>
 <h3><a class="anchor" aria-hidden="true" id="プロパティ"></a><a href="#プロパティ" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>プロパティ</h3>
 <ul>
-<li><strong>data</strong>: <code>{[field: string]: any}</code></li>
-<li><strong>id</strong>: <code>string</code></li>
+<li><p><strong>data</strong>: <code>{[field: string]: any}</code></p>
+<p>取得したドキュメントの内容です。</p></li>
+<li><p><strong>id</strong>: <code>string</code></p>
+<p>取得したドキュメントの Firestore 上でのドキュメント ID です。<br>
+例えば、<code>/cities/Tokyo</code> に存在するドキュメントを取得した場合、<code>Tokyo</code> が <strong>id</strong> となります。</p></li>
 </ul>
+<h3><a class="anchor" aria-hidden="true" id="例"></a><a href="#例" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>例</h3>
+<pre><code class="hljs css language-js">{
+  <span class="hljs-attr">data</span>: {
+    <span class="hljs-attr">name</span>: <span class="hljs-string">"New York"</span>,
+    <span class="hljs-attr">population</span>: <span class="hljs-number">19354922</span>,
+    <span class="hljs-attr">country</span>: <span class="hljs-string">"United States"</span>,
+  },
+  <span class="hljs-attr">id</span>: <span class="hljs-string">"NewYork"</span>,
+};
+</code></pre>
 <h1><a class="anchor" aria-hidden="true" id="collectiondata"></a><a href="#collectiondata" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>CollectionData</h1>
-<h3><a class="anchor" aria-hidden="true" id="型--docdata"></a><a href="#型--docdata" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <code>DocData[]</code></h3>
+<p>Fireclient で Firestore 上のコレクションを取得した際の型であり、<code>useGetCollection</code> や <code>useSubscribeCollection</code> などで取得したデータは全てこの型になります。</p>
+<h3><a class="anchor" aria-hidden="true" id="型--docdatafireclientdocsmisc-typedocdata"></a><a href="#型--docdatafireclientdocsmisc-typedocdata" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <a href="/fireclient/docs/misc-type#docdata"><code>DocData</code></a><code>[]</code></h3>
+<h3><a class="anchor" aria-hidden="true" id="例-1"></a><a href="#例-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>例</h3>
+<pre><code class="hljs css language-js">[
+  {
+    <span class="hljs-attr">data</span>: {
+      <span class="hljs-attr">name</span>: <span class="hljs-string">"New York"</span>,
+      <span class="hljs-attr">population</span>: <span class="hljs-number">19354922</span>,
+      <span class="hljs-attr">country</span>: <span class="hljs-string">"United States"</span>,
+    },
+    <span class="hljs-attr">id</span>: <span class="hljs-string">"NewYork"</span>,
+  },
+  {
+    <span class="hljs-attr">data</span>: {
+      <span class="hljs-attr">country</span>: <span class="hljs-string">"Japan"</span>,
+      <span class="hljs-attr">name</span>: <span class="hljs-string">"Tokyo"</span>,
+      <span class="hljs-attr">population</span>: <span class="hljs-number">35676000</span>,
+    },
+    <span class="hljs-attr">id</span>: <span class="hljs-string">"Tokyo"</span>,
+  },
+];
+</code></pre>
 <h1><a class="anchor" aria-hidden="true" id="query"></a><a href="#query" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Query</h1>
+<p>特定のドキュメントやコレクションを取得するためのクエリです。</p>
 <h3><a class="anchor" aria-hidden="true" id="型--object-1"></a><a href="#型--object-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <code>object</code></h3>
 <h3><a class="anchor" aria-hidden="true" id="プロパティ-1"></a><a href="#プロパティ-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>プロパティ</h3>
 <ul>
-<li><strong>location</strong>: <code>string</code></li>
-<li><strong>connects</strong>: <code>boolean</code></li>
-<li><strong>acceptOutdated</strong>: <code>boolean</code></li>
-<li><strong>callback</strong>: <code>() =&gt; void</code></li>
-<li><strong>where</strong>: <a href="/fireclient/docs/options-overview#where"><code>Where</code></a></li>
-<li><strong>limit</strong>: <a href="/fireclient/docs/options-overview#limit"><code>Limit</code></a></li>
-<li><strong>order</strong>: <a href="/fireclient/docs/options-overview#order"><code>Order</code></a></li>
-<li><strong>cursor</strong>: <a href="/fireclient/docs/options-overview#cursor"><code>Cursor</code></a></li>
+<li><p><strong>location</strong>: <code>string</code></p>
+<p>取得するドキュメント / コレクションの Firestore 上でのパスを指定します。</p></li>
+<li><p><em><code>optional</code></em>　<strong>connects</strong>: <code>boolean</code></p>
+<p>ドキュメント / コレクション をリッスンするかどうかを指定することができます。</p></li>
+<li><p><em><code>optional</code></em>　<strong>acceptOutdated</strong>: <code>boolean</code></p>
+<p>Fireclient ではリッスンしているドキュメントを取得する際にキャッシュを利用しますが、その機能を過去に取得したドキュメントの再取得にも適応するかを指定できます。</p></li>
+<li><p><em><code>optional</code></em>　<strong>callback</strong>: <code>(</code><a href="/fireclient/docs/misc-type#docdata"><code>DocData</code></a><code>|</code><a href="/fireclient/docs/misc-type#collectiondata"><code>CollectionData</code></a><code>) =&gt; void</code></p>
+<p>データを取得する際に実行される関数を指定することができます。</p></li>
+<li><p><em><code>optional</code></em>　<strong>where</strong>: <a href="/fireclient/docs/options-overview#where"><code>Where</code></a></p>
+<p>条件を付けてコレクションを取得することができます。</p></li>
+<li><p><em><code>optional</code></em>　<strong>limit</strong>: <a href="/fireclient/docs/options-overview#limit"><code>Limit</code></a></p>
+<p>取得するコレクションの数を制限することができます。</p></li>
+<li><p><em><code>optional</code></em>　<strong>order</strong>: <a href="/fireclient/docs/options-overview#order"><code>Order</code></a></p>
+<p>コレクションをソートした状態で取得します。<code>limit</code> と組み合わせることで、上位 n 個を取得ということができます。</p></li>
+<li><p><em><code>optional</code></em>　<strong>cursor</strong>: <a href="/fireclient/docs/options-overview#cursor"><code>Cursor</code></a></p>
+<p>取得するコレクションの開始地点・終了地点を指定します。</p></li>
 </ul>
+<h3><a class="anchor" aria-hidden="true" id="例-2"></a><a href="#例-2" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>例</h3>
+<pre><code class="hljs css language-js">{
+  <span class="hljs-attr">location</span>: <span class="hljs-string">"/cities/NewYork"</span>,
+  <span class="hljs-attr">connects</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">acceptOutdated</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">callback</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> { ... },
+  <span class="hljs-attr">where</span>: { ... },
+  <span class="hljs-attr">limit</span>: <span class="hljs-number">15</span>,
+  <span class="hljs-attr">order</span>: { ... },
+  <span class="hljs-attr">cursor</span>: { ... }
+};
+</code></pre>
 <h1><a class="anchor" aria-hidden="true" id="objectquery"></a><a href="#objectquery" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>ObjectQuery</h1>
-<h3><a class="anchor" aria-hidden="true" id="型--key-string-query"></a><a href="#型--key-string-query" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <code>{[key: string]: Query}</code></h3>
+<p>Firestore 上の複数の ドキュメント / コレクション を取得するためのクエリです。
+<code>key</code> には自由に名前を指定することができ、<code>useQuery</code> ではこの <code>key</code> を保持した状態でデータが取得されます。</p>
+<h3><a class="anchor" aria-hidden="true" id="型--key-stringqueryfireclientdocsmisc-typequery"></a><a href="#型--key-stringqueryfireclientdocsmisc-typequery" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <code>{[key: string]:</code><a href="/fireclient/docs/misc-type#query"><code>Query</code></a><code>}</code></h3>
+<h3><a class="anchor" aria-hidden="true" id="例-3"></a><a href="#例-3" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>例</h3>
+<pre><code class="hljs css language-js">{
+  <span class="hljs-attr">newYork</span>: {
+    <span class="hljs-attr">location</span>: <span class="hljs-string">"/cities/NewYork"</span>,
+  },
+  <span class="hljs-attr">tokyo</span>: {
+    <span class="hljs-attr">location</span>: <span class="hljs-string">"/cities/Tokyo"</span>,
+    <span class="hljs-attr">acceptOutdated</span>: <span class="hljs-literal">true</span>
+  }
+}
+</code></pre>
 <h1><a class="anchor" aria-hidden="true" id="arrayquery"></a><a href="#arrayquery" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>ArrayQuery</h1>
-<h3><a class="anchor" aria-hidden="true" id="型--query"></a><a href="#型--query" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <code>Query[]</code></h3>
+<p>Firestore 上の複数の ドキュメント / コレクション を取得するためのクエリです。
+<code>ObjectQuery</code> とは異なり、配列で指定することができます。</p>
+<h3><a class="anchor" aria-hidden="true" id="型--queryfireclientdocsmisc-typequery"></a><a href="#型--queryfireclientdocsmisc-typequery" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <a href="/fireclient/docs/misc-type#query"><code>Query</code></a><code>[]</code></h3>
+<h3><a class="anchor" aria-hidden="true" id="例-4"></a><a href="#例-4" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>例</h3>
+<pre><code class="hljs css language-js">[
+  {
+    <span class="hljs-attr">location</span>: <span class="hljs-string">"/cities/NewYork"</span>,
+  },
+  {
+    <span class="hljs-attr">location</span>: <span class="hljs-string">"/cities/Tokyo"</span>,
+    <span class="hljs-attr">acceptOutdated</span>: <span class="hljs-literal">true</span>,
+  },
+];
+</code></pre>
 <h1><a class="anchor" aria-hidden="true" id="getfqlquerytype"></a><a href="#getfqlquerytype" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>GetFql<code>&lt;QueryType&gt;</code></h1>
+<p><code>useQuery</code> や <code>useArrayQuery</code> などに渡すための FQL です。</p>
 <h3><a class="anchor" aria-hidden="true" id="型--object-2"></a><a href="#型--object-2" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <code>object</code></h3>
 <h3><a class="anchor" aria-hidden="true" id="プロパティ-2"></a><a href="#プロパティ-2" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>プロパティ</h3>
 <ul>
-<li><strong>queries</strong>: <code>QueryType</code></li>
-<li><strong>loading</strong>: <code>boolean</code></li>
-<li><strong>error</strong>: <code>any</code></li>
-<li><strong>loadFn</strong>: <code>() =&gt; void</code></li>
+<li><p><strong>queries</strong>: <code>QueryType</code></p>
+<p>Firestore 上の複数の ドキュメント / コレクション を取得するクエリを指定します。<br>
+<code>useQuery</code> では <code>ObjectQuery</code> 、<code>useArrayQuery</code> では <code>ArrayQuery</code> を指定します。</p></li>
+<li><p><em><code>optional</code></em>　<strong>connects</strong>: <code>boolean</code></p>
+<p>ドキュメント / コレクション をリッスンするかどうかを指定することができます。</p></li>
 </ul>
+<p>これは <code>queries</code> 全体に反映されますが、<a href="/fireclient/docs/misc-type#query"><code>Query</code></a> 側にも指定されていた場合 <a href="/fireclient/docs/misc-type#query"><code>Query</code></a> 側の値が優先されます。</p>
+<ul>
+<li><p><em><code>optional</code></em>　<strong>acceptOutdated</strong>: <code>boolean</code></p>
+<p>Fireclient ではリッスンしているコレクションを取得する際にキャッシュを利用しますが、その機能を過去に取得したコレクションの再取得にも適応します。</p>
+<p>これは <code>queries</code> 全体に反映されますが、クエリ側にも指定されていた場合クエリ側の値が優先されます。</p></li>
+<li><p><em><code>optional</code></em>　<strong>callback</strong>: <code>(</code><a href="/fireclient/docs/misc-type#docdata"><code>DocData</code></a><code>|</code><a href="/fireclient/docs/misc-type#collectiondata"><code>CollectionData</code></a><code>) =&gt; void</code></p>
+<p>データを取得する際に実行される関数を指定することができます。</p></li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" id="例-5"></a><a href="#例-5" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>例</h3>
+<pre><code class="hljs css language-js">{
+  <span class="hljs-attr">queries</span>: {
+    <span class="hljs-attr">newYork</span>: {
+      <span class="hljs-attr">location</span>: <span class="hljs-string">"/cities/NewYork"</span>,
+    },
+    <span class="hljs-attr">users</span>: {
+      <span class="hljs-attr">location</span>: <span class="hljs-string">"/users"</span>,
+    },
+  },
+};
+</code></pre>
 <h1><a class="anchor" aria-hidden="true" id="setfql"></a><a href="#setfql" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>SetFql</h1>
-<h3><a class="anchor" aria-hidden="true" id="型--staticsetfql--dynamicsetfql"></a><a href="#型--staticsetfql--dynamicsetfql" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <code>StaticSetFql | DynamicSetFql</code></h3>
+<p><code>useSetDoc</code>, <code>useUpdateDoc</code> などで書き込む内容を指定するためのクエリです。<br>
+<code>StaticSetFql</code> は指定する時点で内容が決定しており、<code>DynamicSetFql</code> は書き込む関数を実行する時点で内容が決定します。</p>
+<h3><a class="anchor" aria-hidden="true" id="型--staticsetfqlfireclientdocsmisc-typestaticsetfqldynamicsetfqlfireclientdocsmisc-typedynamicsetfql"></a><a href="#型--staticsetfqlfireclientdocsmisc-typestaticsetfqldynamicsetfqlfireclientdocsmisc-typedynamicsetfql" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <a href="/fireclient/docs/misc-type#staticsetfql"><code>StaticSetFql</code></a><code>|</code><a href="/fireclient/docs/misc-type#dynamicsetfql"><code>DynamicSetFql</code></a></h3>
 <h1><a class="anchor" aria-hidden="true" id="staticsetfql"></a><a href="#staticsetfql" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>StaticSetFql</h1>
 <h3><a class="anchor" aria-hidden="true" id="型--object-3"></a><a href="#型--object-3" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <code>object</code></h3>
 <h3><a class="anchor" aria-hidden="true" id="プロパティ-3"></a><a href="#プロパティ-3" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>プロパティ</h3>
 <ul>
-<li><em><code>optional</code></em> <strong>id</strong>: <code>string</code></li>
+<li><p><em><code>optional</code></em> <strong>fields</strong>: <code>{[field: string]: any}</code></p>
+<p>書き込むドキュメントの内容をオブジェクトで指定します。</p></li>
+<li><p><em><code>optional</code></em> <strong>subCollection</strong>: <code>{[key: string]: StaticSetFql[]}</code></p>
+<p>ドキュメントのサブコレクションを指定します。
+<code>key</code> でサブコレクション名を指定し、配列でサブコレクションに含まれるドキュメントを指定します。
+この時、指定するドキュメントに <code>id</code> が含まれていない場合はランダムなドキュメント ID が割り振られます。</p></li>
+<li><p><em><code>optional</code></em> <strong>id</strong>: <code>string</code></p>
+<p>サブコレクションのドキュメントを指定する際、これを指定することでドキュメント ID を決めることができます。</p></li>
 </ul>
-<ul>
-<li><em><code>optional</code></em> <strong>fields</strong>: <code>{[field: string]: any}</code></li>
-<li><em><code>optional</code></em> <strong>subCollection</strong>: <code>{[key: string]: StaticSetFql[]}</code></li>
-</ul>
+<h3><a class="anchor" aria-hidden="true" id="例-6"></a><a href="#例-6" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>例</h3>
+<pre><code class="hljs css language-js">{
+  <span class="hljs-attr">fields</span>: {
+    <span class="hljs-attr">country</span>: <span class="hljs-string">"Japan"</span>,
+    <span class="hljs-attr">name</span>: <span class="hljs-string">"Tokyo"</span>,
+    <span class="hljs-attr">population</span>: <span class="hljs-number">35676000</span>,
+  },
+  <span class="hljs-attr">subCollection</span>: {
+    <span class="hljs-attr">users</span>: [
+      <span class="hljs-comment">//  "/cities/Tokyo/users/adams"</span>
+      {
+        <span class="hljs-attr">id</span>: <span class="hljs-string">"adams"</span>,
+        <span class="hljs-attr">fields</span>: {
+          <span class="hljs-attr">name</span>: <span class="hljs-string">"James Adams"</span>,
+        },
+      },
+      <span class="hljs-comment">//  "/cities/Tokyo/users/(Random ID)"</span>
+      {
+        <span class="hljs-attr">fields</span>: {
+          <span class="hljs-attr">name</span>: <span class="hljs-string">"guest"</span>,
+        },
+      },
+    ],
+  },
+};
+</code></pre>
 <h1><a class="anchor" aria-hidden="true" id="dynamicsetfql"></a><a href="#dynamicsetfql" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>DynamicSetFql</h1>
+<p><code>StaticSetFql</code> とは異なり、書き込み関数に渡す引数を受け取って書き込み内容を確定させることができます。</p>
 <h3><a class="anchor" aria-hidden="true" id="型--args-any--staticsetfql"></a><a href="#型--args-any--staticsetfql" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <code>(...args: any[]) =&gt; StaticSetFql</code></h3>
+<h3><a class="anchor" aria-hidden="true" id="例-7"></a><a href="#例-7" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>例</h3>
+<pre><code class="hljs css language-js">(tokyoPopulation) =&gt; ({
+  <span class="hljs-attr">fields</span>: {
+    <span class="hljs-attr">country</span>: <span class="hljs-string">"Japan"</span>,
+    <span class="hljs-attr">name</span>: <span class="hljs-string">"Tokyo"</span>,
+    <span class="hljs-attr">population</span>: tokyoPopulation,
+  }),
+}
+</code></pre>
 <h1><a class="anchor" aria-hidden="true" id="setcollectionfql"></a><a href="#setcollectionfql" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>SetCollectionFql</h1>
 <h3><a class="anchor" aria-hidden="true" id="型--setfql"></a><a href="#型--setfql" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>型 : <code>SetFql[]</code></h3>
+<h3><a class="anchor" aria-hidden="true" id="例-8"></a><a href="#例-8" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>例</h3>
+<pre><code class="hljs css language-js">[
+  <span class="hljs-function">(<span class="hljs-params">newPopulation, newWeather</span>) =&gt;</span> ({
+    <span class="hljs-attr">fields</span>: {
+      <span class="hljs-attr">country</span>: <span class="hljs-string">"Japan"</span>,
+      <span class="hljs-attr">name</span>: <span class="hljs-string">"Tokyo"</span>,
+      <span class="hljs-attr">population</span>: newPopulation,
+      <span class="hljs-attr">weather</span>: newWeather,
+    },
+  }),
+  {
+    <span class="hljs-attr">fields</span>: {
+      <span class="hljs-attr">country</span>: <span class="hljs-string">"United States"</span>,
+      <span class="hljs-attr">name</span>: <span class="hljs-string">"New York"</span>,
+      <span class="hljs-attr">population</span>: <span class="hljs-number">19354922</span>,
+    },
+  },
+];
+</code></pre>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/fireclient/docs/options-useQuery"><span class="arrow-prev">← </span><span class="function-name-prevnext">useQueryでの使用</span></a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/fireclient/docs/en/overview.html">Introduction</a><a href="/fireclient/docs/en/hooks-useGetDoc.html">API Reference</a></div><div><h5>More</h5><a href="https://github.com/optimind-llc/fire-client">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2020 Optimind</section></footer></div></body></html>
