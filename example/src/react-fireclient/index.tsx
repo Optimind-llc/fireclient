@@ -153,7 +153,7 @@ export type Query = {
   location: string;
   connects?: boolean;
   acceptOutdated?: boolean;
-  callback?: () => void;
+  callback?: (data: DocData | CollectionData) => void;
 } & QueryOptions;
 /**
  * @example
@@ -220,7 +220,7 @@ export type GetFql<QueryType> = {
   connects?: boolean;
   queries: QueryType;
   acceptOutdated?: boolean;
-  callback?: () => void;
+  callback?: (data: DocData | CollectionData) => void;
 };
 export type StaticSetFql = {
   id?: string;

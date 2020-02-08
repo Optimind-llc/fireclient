@@ -10,9 +10,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("firebase/firestore");
 var react_1 = require("react");
 var getFunctions_1 = require("./getFunctions");
+var utils_1 = require("./utils");
 var typeCheck = __importStar(require("./typeCheck"));
 var typeCheck_1 = require("./typeCheck");
-var utils_1 = require("./utils");
 function generateHooksId() {
     return Math.random()
         .toString(32)

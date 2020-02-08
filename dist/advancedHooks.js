@@ -61,9 +61,9 @@ function useArrayQuery(getFql) {
                 var onChange = function (data) {
                     resolve({ data: data, key: i });
                     if (callback !== undefined)
-                        callback();
+                        callback(data);
                     if (queryCallback !== undefined)
-                        queryCallback();
+                        queryCallback(data);
                 };
                 var onError = reject;
                 var onListen = function () { };

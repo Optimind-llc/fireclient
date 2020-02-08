@@ -134,20 +134,20 @@ export declare type QueryOptions = {
  *    order: { ... },
  *    cursor: { ... },
  * }
- * @property {string} location        - Where doc or collection is in firestore.
- * @property {string?} connects       - Whether doc or collection is to be subscribed.
- * @property {boolean} acceptOutdated - Whether un-connected cache is to be used.
- * @property {()=>void} callback      - This is excecuted after fetching from Firestore or getting cache.
- * @property {Where?}  where          - Filters collection by doc's field.
- * @property {Limit?}  limit          - Limits the number of fetching docs.
- * @property {Order?}  order          - Defines the order of docs.
- * @property {Cursor?} cursor         - Defines the start and end point.
+ * @property {string} location                              - Where doc or collection is in firestore.
+ * @property {string?} connects                             - Whether doc or collection is to be subscribed.
+ * @property {boolean} acceptOutdated                       - Whether un-connected cache is to be used.
+ * @property {(DocData | CollectionData) => void} callback  - This is excecuted after fetching from Firestore or getting cache.
+ * @property {Where?}  where                                - Filters collection by doc's field.
+ * @property {Limit?}  limit                                - Limits the number of fetching docs.
+ * @property {Order?}  order                                - Defines the order of docs.
+ * @property {Cursor?} cursor                               - Defines the start and end point.
  */
 export declare type Query = {
     location: string;
     connects?: boolean;
     acceptOutdated?: boolean;
-    callback?: () => void;
+    callback?: (data: DocData | CollectionData) => void;
 } & QueryOptions;
 /**
  * @example
@@ -204,17 +204,17 @@ export declare type ArrayQuery = Query[];
  *    queries:
  * }
  *
- * @property {string?} connects               - Whether doc or collection is to be subscribed.
- *                                              This is applied to all queries unless query has `connects` property.
- * @property { { [string]: Query } } queries  - Query property with arbitrary name.
- * @property {boolean}  acceptOutdated        - Whether if non-subscribed cache is used.
- * @property {()=>void} callback              - This is excecuted after fetching from Firestore or getting cache.
+ * @property {string?} connects                                 - Whether doc or collection is to be subscribed.
+ *                                                                This is applied to all queries unless query has `connects` property.
+ * @property { { [string]: Query } } queries                    - Query property with arbitrary name.
+ * @property {boolean}  acceptOutdated                          - Whether if non-subscribed cache is used.
+ * @property {(data: DocData | CollectionData)=>void} callback  - This is excecuted after fetching from Firestore or getting cache.
  */
 export declare type GetFql<QueryType> = {
     connects?: boolean;
     queries: QueryType;
     acceptOutdated?: boolean;
-    callback?: () => void;
+    callback?: (data: DocData | CollectionData) => void;
 };
 export declare type StaticSetFql = {
     id?: string;

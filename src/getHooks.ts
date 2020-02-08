@@ -12,9 +12,9 @@ import {
   subscribeDoc,
   subscribeDocSnapshot,
 } from "./getFunctions";
+import { getHashCode } from "./utils";
 import * as typeCheck from "./typeCheck";
 import { assertRule, matches } from "./typeCheck";
-import { getHashCode } from "./utils";
 
 export function generateHooksId(): HooksId {
   return Math.random()
@@ -342,7 +342,7 @@ export function useLazyGetDoc(
 export function useGetDoc(
   path: string,
   options?: {
-    callback?: () => void;
+    callback?: (data: DocData) => void;
     acceptOutdated?: boolean;
   },
 ): [DocData, boolean, any, () => void] {

@@ -342,7 +342,7 @@ export function useLazyGetDoc(
 export function useGetDoc(
   path: string,
   options?: {
-    callback?: () => void;
+    callback?: (data: DocData) => void;
     acceptOutdated?: boolean;
   },
 ): [DocData, boolean, any, () => void] {

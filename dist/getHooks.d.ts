@@ -41,7 +41,7 @@ export declare function useLazyGetDoc(path: string, options?: {
     acceptOutdated?: boolean;
 }): [DocData, boolean, any, () => void];
 export declare function useGetDoc(path: string, options?: {
-    callback?: () => void;
+    callback?: (data: DocData) => void;
     acceptOutdated?: boolean;
 }): [DocData, boolean, any, () => void];
 export declare function useSubscribeDoc(path: string, options?: {
