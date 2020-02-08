@@ -21,7 +21,7 @@ type Rule = {
 
 const isNull = (obj: any) => obj === undefined || obj === null;
 export const isObject = (obj: any, target: string) => ({
-  valid: typeof obj === "object",
+  valid: obj !== null && typeof obj === "object" && obj.constructor === Object,
   message: `${target} should be object.`,
 });
 export const isAnyOf = (candidate: any[]) => (obj: any, target: string) => ({
@@ -75,6 +75,9 @@ export const condition = (
 ) => (obj: any, target: string) => {
   return condition(obj) ? fn1(obj, target) : fn2(obj, target);
 };
+
+export const concatRule = (...otherRules: Rule[]) =>
+  otherRules.reduce((acc, val) => acc.concat(val), []);
 
 export const matches = (rule: Rule) => (obj: any, target: string) => {
   if (typeof obj !== "object") {
@@ -160,8 +163,20 @@ export const callbackRule: Rule = [
     fn: isFunction,
   },
 ];
+export const mergeRule: Rule = [
+  {
+    key: "merge",
+    optional: true,
+    fn: isBoolean,
+  },
+  {
+    key: "mergeFields",
+    optional: true,
+    fn: isArrayOf(isString),
+  },
+];
 
-const whereRule: Rule = [
+export const whereRule: Rule = [
   {
     key: "field",
     fn: isString,
@@ -175,7 +190,7 @@ const whereRule: Rule = [
     fn: isNotNull,
   },
 ];
-const orderRule: Rule = [
+export const orderRule: Rule = [
   {
     key: "by",
     fn: isString,
@@ -186,7 +201,7 @@ const orderRule: Rule = [
     fn: isAnyOf(["asc", "desc"]),
   },
 ];
-const cursorRule: Rule = [
+export const cursorRule: Rule = [
   {
     key: "origin",
     fn: isNotNull,
@@ -224,64 +239,74 @@ export const queryOptionRule: Rule = [
     fn: matches(cursorRule),
   },
 ];
-export const queryRule: Rule = [
-  {
-    key: "location",
-    fn: isString,
-  },
-  {
-    key: "connects",
-    optional: true,
-    fn: isBoolean,
-  },
-].concat(queryOptionRule as any, acceptOutdatedRule as any);
 
-export const mergeRule: Rule = [
-  {
-    key: "merge",
-    optional: true,
-    fn: isBoolean,
-  },
-  {
-    key: "mergeFields",
-    optional: true,
-    fn: isArrayOf(isString),
-  },
-];
-export const arrayGetFqlRule: Rule = [
-  {
-    key: "connects",
-    fn: isBoolean,
-    optional: true,
-  },
-  {
-    key: "queries",
-    fn: matchesArrayOf(queryRule),
-  },
-].concat(acceptOutdatedRule as any, callbackRule as any);
+export const queryRule: Rule = concatRule(
+  [
+    {
+      key: "location",
+      fn: isString,
+    },
+    {
+      key: "connects",
+      optional: true,
+      fn: isBoolean,
+    },
+  ],
+  queryOptionRule,
+  acceptOutdatedRule,
+  callbackRule,
+);
+export const arrayGetFqlRule: Rule = concatRule(
+  [
+    {
+      key: "connects",
+      fn: isBoolean,
+      optional: true,
+    },
+    {
+      key: "queries",
+      fn: matchesArrayOf(queryRule),
+    },
+  ],
+  acceptOutdatedRule,
+  callbackRule,
+);
 
-export const getFqlRule: Rule = [
-  {
-    key: "connects",
-    fn: isBoolean,
-    optional: true,
-  },
-  {
-    key: "queries",
-    fn: matchesObjectOf(queryRule),
-  },
-].concat(acceptOutdatedRule as any, callbackRule as any);
-export const subCollectionOptionRule = [].concat(acceptOutdatedRule as any, callbackRule as any);
-export const paginateOptionRule = [
-  {
-    key: "limit",
-    fn: isNumber,
-  },
-  {
-    key: "order",
-    fn: condition((obj: any) => !Array.isArray(obj), matches(orderRule), matchesArrayOf(orderRule)),
-  },
-].concat(queryOptionRule, callbackRule, acceptOutdatedRule);
+export const getFqlRule: Rule = concatRule(
+  [
+    {
+      key: "connects",
+      fn: isBoolean,
+      optional: true,
+    },
+    {
+      key: "queries",
+      fn: matchesObjectOf(queryRule),
+    },
+  ],
+  acceptOutdatedRule,
+  callbackRule,
+);
+export const subCollectionOptionRule = concatRule(acceptOutdatedRule, callbackRule);
+export const paginateOptionRule = concatRule(
+  [
+    {
+      key: "limit",
+      fn: isNumber,
+    },
+    {
+      key: "order",
+      fn: condition(
+        (obj: any) => !Array.isArray(obj),
+        matches(orderRule),
+        matchesArrayOf(orderRule),
+      ),
+    },
+  ],
+  queryOptionRule,
+  callbackRule,
+  acceptOutdatedRule,
+);
 
 export const assert = (isValid: boolean, errorMessage: string) => {
   if (!isValid) throw Error(errorMessage);
@@ -333,7 +358,7 @@ export const assertSetCollectionFql = (obj: any, target: string = "SetCollection
   obj.forEach((ele: any) => assertSetFql(ele));
 };
 
-export const assertSubCollectionQuery = (obj: any, target: string = "SubCollectionQuery") => {
+const assertSubCollectionQuery = (obj: any, target: string = "SubCollectionQuery") => {
   assertObject(obj, target);
   const values = Object.values(obj);
   values.forEach(value => {

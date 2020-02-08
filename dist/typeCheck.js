@@ -12,7 +12,7 @@ var firestoreWhereFilterOp = [
 ];
 var isNull = function (obj) { return obj === undefined || obj === null; };
 exports.isObject = function (obj, target) { return ({
-    valid: typeof obj === "object",
+    valid: obj !== null && typeof obj === "object" && obj.constructor === Object,
     message: target + " should be object.",
 }); };
 exports.isAnyOf = function (candidate) { return function (obj, target) { return ({
@@ -62,6 +62,13 @@ exports.isFunction = function (obj, target) { return ({
 exports.condition = function (condition, fn1, fn2) { return function (obj, target) {
     return condition(obj) ? fn1(obj, target) : fn2(obj, target);
 }; };
+exports.concatRule = function () {
+    var otherRules = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        otherRules[_i] = arguments[_i];
+    }
+    return otherRules.reduce(function (acc, val) { return acc.concat(val); }, []);
+};
 exports.matches = function (rule) { return function (obj, target) {
     if (typeof obj !== "object") {
         return exports.isObject(obj, target);
@@ -145,7 +152,19 @@ exports.callbackRule = [
         fn: exports.isFunction,
     },
 ];
-var whereRule = [
+exports.mergeRule = [
+    {
+        key: "merge",
+        optional: true,
+        fn: exports.isBoolean,
+    },
+    {
+        key: "mergeFields",
+        optional: true,
+        fn: exports.isArrayOf(exports.isString),
+    },
+];
+exports.whereRule = [
     {
         key: "field",
         fn: exports.isString,
@@ -159,7 +178,7 @@ var whereRule = [
         fn: exports.isNotNull,
     },
 ];
-var orderRule = [
+exports.orderRule = [
     {
         key: "by",
         fn: exports.isString,
@@ -170,7 +189,7 @@ var orderRule = [
         fn: exports.isAnyOf(["asc", "desc"]),
     },
 ];
-var cursorRule = [
+exports.cursorRule = [
     {
         key: "origin",
         fn: exports.isNotNull,
@@ -189,7 +208,7 @@ exports.queryOptionRule = [
     {
         key: "where",
         optional: true,
-        fn: exports.condition(function (obj) { return !Array.isArray(obj); }, exports.matches(whereRule), exports.matchesArrayOf(whereRule)),
+        fn: exports.condition(function (obj) { return !Array.isArray(obj); }, exports.matches(exports.whereRule), exports.matchesArrayOf(exports.whereRule)),
     },
     {
         key: "limit",
@@ -199,15 +218,15 @@ exports.queryOptionRule = [
     {
         key: "order",
         optional: true,
-        fn: exports.condition(function (obj) { return !Array.isArray(obj); }, exports.matches(orderRule), exports.matchesArrayOf(orderRule)),
+        fn: exports.condition(function (obj) { return !Array.isArray(obj); }, exports.matches(exports.orderRule), exports.matchesArrayOf(exports.orderRule)),
     },
     {
         key: "cursor",
         optional: true,
-        fn: exports.matches(cursorRule),
+        fn: exports.matches(exports.cursorRule),
     },
 ];
-exports.queryRule = [
+exports.queryRule = exports.concatRule([
     {
         key: "location",
         fn: exports.isString,
@@ -217,20 +236,8 @@ exports.queryRule = [
         optional: true,
         fn: exports.isBoolean,
     },
-].concat(exports.queryOptionRule, exports.acceptOutdatedRule);
-exports.mergeRule = [
-    {
-        key: "merge",
-        optional: true,
-        fn: exports.isBoolean,
-    },
-    {
-        key: "mergeFields",
-        optional: true,
-        fn: exports.isArrayOf(exports.isString),
-    },
-];
-exports.arrayGetFqlRule = [
+], exports.queryOptionRule, exports.acceptOutdatedRule, exports.callbackRule);
+exports.arrayGetFqlRule = exports.concatRule([
     {
         key: "connects",
         fn: exports.isBoolean,
@@ -240,8 +247,8 @@ exports.arrayGetFqlRule = [
         key: "queries",
         fn: exports.matchesArrayOf(exports.queryRule),
     },
-].concat(exports.acceptOutdatedRule, exports.callbackRule);
-exports.getFqlRule = [
+], exports.acceptOutdatedRule, exports.callbackRule);
+exports.getFqlRule = exports.concatRule([
     {
         key: "connects",
         fn: exports.isBoolean,
@@ -251,18 +258,18 @@ exports.getFqlRule = [
         key: "queries",
         fn: exports.matchesObjectOf(exports.queryRule),
     },
-].concat(exports.acceptOutdatedRule, exports.callbackRule);
-exports.subCollectionOptionRule = [].concat(exports.acceptOutdatedRule, exports.callbackRule);
-exports.paginateOptionRule = [
+], exports.acceptOutdatedRule, exports.callbackRule);
+exports.subCollectionOptionRule = exports.concatRule(exports.acceptOutdatedRule, exports.callbackRule);
+exports.paginateOptionRule = exports.concatRule([
     {
         key: "limit",
         fn: exports.isNumber,
     },
     {
         key: "order",
-        fn: exports.condition(function (obj) { return !Array.isArray(obj); }, exports.matches(orderRule), exports.matchesArrayOf(orderRule)),
+        fn: exports.condition(function (obj) { return !Array.isArray(obj); }, exports.matches(exports.orderRule), exports.matchesArrayOf(exports.orderRule)),
     },
-].concat(exports.queryOptionRule, exports.callbackRule, exports.acceptOutdatedRule);
+], exports.queryOptionRule, exports.callbackRule, exports.acceptOutdatedRule);
 exports.assert = function (isValid, errorMessage) {
     if (!isValid)
         throw Error(errorMessage);
@@ -297,7 +304,7 @@ exports.assertStaticSetFql = function (obj, target) {
         },
     ])(obj, "Set doc query");
     if (obj.subCollection !== undefined) {
-        exports.assertSubCollectionQuery(obj.subCollection, '"subCollection"');
+        assertSubCollectionQuery(obj.subCollection, '"subCollection"');
     }
 };
 exports.assertSetFql = function (obj, target) {
@@ -315,7 +322,7 @@ exports.assertSetCollectionFql = function (obj, target) {
     exports.assert(Array.isArray(obj), target + " should be array.\"");
     obj.forEach(function (ele) { return exports.assertSetFql(ele); });
 };
-exports.assertSubCollectionQuery = function (obj, target) {
+var assertSubCollectionQuery = function (obj, target) {
     if (target === void 0) { target = "SubCollectionQuery"; }
     exports.assertObject(obj, target);
     var values = Object.values(obj);
