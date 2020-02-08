@@ -11,7 +11,7 @@ const [queryData, loading, error, fn] = useQuery(fql));
 
 ### Hooks の戻り値
 
-- **queryData**: `(`[`DocData`](misc-type.md#docdata)`|`[`CollectionData`](misc-type.md#collectiondata)`)[ ]`
+- **queryData**: `(`[`DocData`](misc-type.md#docdata)`|`[`CollectionData`](misc-type.md#collectiondata)`)[]`
 
   Firestore から取得したドキュメント/コレクションの内容です。
 
@@ -22,18 +22,16 @@ const [queryData, loading, error, fn] = useQuery(fql));
 - **error**: `any`
 
   データ取得の際にエラーが発生した場合エラー内容が入力されます。
-
   初期値には`null`が代入されています。
 
 - **fn**: `{reload: () => void, unsubscribe: () => void}`
 
-  `fn.reload` で Get で取得したドキュメント/コレクションを再読込、
-
+  `fn.reload` で Get で取得したドキュメント/コレクションを再読込、<br>
   `fn.unsubscribe` で リッスンしているドキュメント/コレクションのリッスンを中断します。
 
 ### Hooks の引数
 
-- **fql**: [GetFql](misc-type.md#getfql)
+- **fql**: [`GetFql`](misc-type.md#getfql)
 
   Firestore 上のどの ドキュメント / コレクション を取得するかを宣言的に示すオブジェクトです。取得時のオプションなども指定することができます。
 
@@ -45,13 +43,14 @@ const fql = {
     newYork: {
       location: "/cities/NewYork",
     },
-    adams: {
+    users: {
       location: "/users",
     },
   },
 };
 
 const [queryData, loading, error, queryData] = useQuery(fql);
+const { newYork, users } = queryData;
 ```
 
 `queryData` には次のような内容が代入されます。
@@ -66,7 +65,7 @@ const [queryData, loading, error, queryData] = useQuery(fql);
     },
     id: "NewYork",
   },
-  adams: [
+  users: [
     {
       data: {
         age: 22,

@@ -127,6 +127,7 @@ const fql = {
     country: "Japan",
     name: "Tokyo",
     population: 35676000,
+    weather: "sunny",
   },
 };
 const [setTokyo, writing, called, error] = useSetDoc("/cities/Tokyo", fql);
@@ -143,11 +144,12 @@ setTokyo();
 `fql` を関数で指定します。
 
 ```js
-const fql = (countryName, populationCount) => ({
+const fql = (newPopulation, newWeather) => ({
   fields: {
-    country: countryName,
+    country: "Japan",
     name: "Tokyo",
-    population: populationCount,
+    population: newPopulation,
+    weather: newWeather,
   },
 });
 const [setTokyo, writing, called, error] = useSetDoc("/cities/Tokyo", fql);
@@ -156,7 +158,7 @@ const [setTokyo, writing, called, error] = useSetDoc("/cities/Tokyo", fql);
 次を実行することでデータが書き込まれます。
 
 ```js
-setTokyo("Japan", 35676000);
+setTokyo(35676000, "sunny");
 ```
 
 ### View でのステータス表示
