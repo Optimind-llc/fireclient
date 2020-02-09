@@ -1,32 +1,35 @@
-import React from "react";
+import { renderHook } from "@testing-library/react-hooks";
 import * as pathlib from "path";
-import { mount } from "../enzyme";
-import db from "../firestore";
+import { useState } from "react";
+import { setContext } from "../../../dist";
+import { getDoc } from "../../../dist/getFunctions";
 import backup from "../backup1.json";
-import { Provider } from "../../../dist";
-import { getDoc, subscribeDoc } from "../../../dist/getFunctions";
-import { generateHooksId } from "../../../dist/utils";
+import db from "../firestore";
 
-let container;
-
-const GetWrapper = ({ path, onGet }) => {
+const useTest = ({ path, onGet }) => {
+  setContext(db);
+  const [finished, setFinished] = useState(false);
   const onError = err => {
     throw new Error(err);
   };
-  getDoc(path, onGet, onError, false, false);
-  return <></>;
+  getDoc(
+    path,
+    doc => {
+      onGet(doc);
+      setFinished(true);
+    },
+    err => {
+      onError(err);
+      setFinished(true);
+    },
+    false,
+    false,
+  );
+  return finished;
 };
 
-const mountComponent = (path, onGet) =>
-  mount(
-    <Provider firestoreDB={db}>
-      <GetWrapper path={path} onGet={onGet} />
-    </Provider>,
-    { attachTo: container },
-  );
-
 const testGettingDoc = path => {
-  it(`Get Doc "${path}"`, async done => {
+  it(`Get Doc "${path}"`, async () => {
     const pathSplitted = pathlib
       .resolve(path)
       .split("/")
@@ -37,9 +40,10 @@ const testGettingDoc = path => {
     };
     const onGet = docData => {
       expect(docData).toEqual(expected);
-      done();
     };
-    mountComponent(path, onGet);
+
+    const { waitForNextUpdate } = renderHook(() => useTest({ path, onGet }));
+    await waitForNextUpdate();
   });
 };
 

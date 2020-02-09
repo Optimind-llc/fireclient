@@ -1,8 +1,8 @@
-import { List } from "immutable";
 import { renderHook } from "@testing-library/react-hooks";
-import db from "../firestore";
-import backup from "../backup1.json";
+import { List } from "immutable";
 import { setContext, useGetCollection } from "../../../dist";
+import backup from "../backup1.json";
+import db from "../firestore";
 
 const expected = [
   {

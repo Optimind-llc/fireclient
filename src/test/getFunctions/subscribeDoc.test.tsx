@@ -1,33 +1,39 @@
-import React from "react";
+import { renderHook } from "@testing-library/react-hooks";
 import * as pathlib from "path";
-import { mount } from "../enzyme";
-import db from "../firestore";
-import backup from "../backup1.json";
-import { Provider } from "../../../dist";
-import { getDoc, subscribeDoc } from "../../../dist/getFunctions";
+import { useState } from "react";
+import { setContext } from "../../../dist";
+import { subscribeDoc } from "../../../dist/getFunctions";
 import { generateHooksId } from "../../../dist/utils";
+import backup from "../backup1.json";
+import db from "../firestore";
 
-let container;
-const SubscribeWrapper = ({ path, onChange }) => {
+const useTest = ({ path, onGet }) => {
+  setContext(db);
+  const [finished, setFinished] = useState(false);
+  const uuid = generateHooksId();
   const onError = err => {
     throw new Error(err);
   };
   const onListen = () => {};
-  const uuid = generateHooksId();
-  subscribeDoc(uuid, path, onChange, onError, onListen, false);
-  return <></>;
+  subscribeDoc(
+    uuid,
+    path,
+    doc => {
+      onGet(doc);
+      setFinished(true);
+    },
+    err => {
+      onError(err);
+      setFinished(true);
+    },
+    onListen,
+    false,
+  );
+  return finished;
 };
 
-const mountComponent = (path, onChange) =>
-  mount(
-    <Provider firestoreDB={db}>
-      <SubscribeWrapper path={path} onChange={onChange} />
-    </Provider>,
-    { attachTo: container },
-  );
-
-const testSubscribingDoc = path => {
-  it(`should handle a simple query "${path}"`, async done => {
+const testGettingDoc = path => {
+  it(`Get Doc "${path}"`, async () => {
     const pathSplitted = pathlib
       .resolve(path)
       .split("/")
@@ -36,15 +42,16 @@ const testSubscribingDoc = path => {
       data: pathSplitted.reduce((acc, val) => acc[val], backup),
       id: pathlib.basename(path),
     };
-    const onChange = docData => {
+    const onGet = docData => {
       expect(docData).toEqual(expected);
-      done();
     };
-    mountComponent(path, onChange);
+
+    const { waitForNextUpdate } = renderHook(() => useTest({ path, onGet }));
+    await waitForNextUpdate();
   });
 };
 
-describe("Subscribe Doc", () => {
+describe("should handle a simple query", () => {
   const docPaths = [
     "/test/array",
     "/test/boolean",
@@ -53,5 +60,5 @@ describe("Subscribe Doc", () => {
     "/test/number",
     "/test/string",
   ];
-  docPaths.forEach(docPath => testSubscribingDoc(docPath));
+  docPaths.forEach(docPath => testGettingDoc(docPath));
 });

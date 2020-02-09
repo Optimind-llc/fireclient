@@ -1,11 +1,8 @@
-import React from "react";
-import { List } from "immutable";
-import * as pathlib from "path";
-import { mount } from "../enzyme";
 import { renderHook } from "@testing-library/react-hooks";
-import db from "../firestore";
-import backup from "../backup1.json";
+import { List } from "immutable";
 import { setContext, useSubscribeCollection } from "../../../dist";
+import backup from "../backup1.json";
+import db from "../firestore";
 
 let container;
 

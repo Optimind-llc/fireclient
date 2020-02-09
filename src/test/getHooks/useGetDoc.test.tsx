@@ -1,8 +1,8 @@
-import * as pathlib from "path";
 import { renderHook } from "@testing-library/react-hooks";
-import db from "../firestore";
+import * as pathlib from "path";
+import { setContext, useGetDoc } from "../../../dist";
 import backup from "../backup1.json";
-import { useGetDoc, setContext } from "../../../dist";
+import db from "../firestore";
 
 const testGettingDoc = path => {
   it(`Get Doc "${path}"`, async () => {

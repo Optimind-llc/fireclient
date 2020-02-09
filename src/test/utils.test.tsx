@@ -1,4 +1,4 @@
-import { getHashCode, generateHooksId, isDocPath } from "../../dist/utils";
+import { generateHooksId, getHashCode, isDocPath } from "../../dist/utils";
 
 describe("getHashCode", () => {
   it("different key, different value", () => {
