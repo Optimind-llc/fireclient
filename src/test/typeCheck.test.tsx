@@ -220,7 +220,7 @@ describe("merge rule", () => {
   it("expected usage", () => {
     expect(
       checkRule(typeCheck.mergeRule, {
-        merge: exampleVals.true,
+        merge: exampleVals.boolean,
         mergeFields: [exampleVals.string],
       }),
     ).not.toThrow();

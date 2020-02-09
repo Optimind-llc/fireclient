@@ -12,15 +12,10 @@ import {
   subscribeDoc,
   subscribeDocSnapshot,
 } from "./getFunctions";
-import { getHashCode } from "./utils";
+import { getHashCode, generateHooksId } from "./utils";
 import * as typeCheck from "./typeCheck";
 import { assertRule, matches } from "./typeCheck";
 
-export function generateHooksId(): HooksId {
-  return Math.random()
-    .toString(32)
-    .substring(2);
-}
 // ------------------------------------------
 //  Get Doc Hooks Base
 // ------------------------------------------

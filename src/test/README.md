@@ -17,6 +17,7 @@ yarn install
 
 - `firestore/firebaseConfig.json`
 - `serviceAccountKey.json`
+- `databaseUrl` in `importFirestoreBackup.js`
 
 3. Import test data into your Firestore.
 

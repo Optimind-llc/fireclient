@@ -20,6 +20,8 @@ export function getDocSnapshot(
   path: string,
   onGet: (doc: firestore.DocumentSnapshot) => void,
   onError: (err: any) => void,
+  acceptOutdated = false,
+  saveToState = true,
 ) {
   const docId = pathlib.resolve(path);
   const { dispatch, firestoreDB, onAccess } = getContext();
@@ -30,7 +32,7 @@ export function getDocSnapshot(
     ref
       .get()
       .then(doc => {
-        saveDoc(dispatch, docId, createDataFromDoc(doc));
+        if (saveToState) saveDoc(dispatch, docId, createDataFromDoc(doc));
         onGet(doc);
       })
       .catch(err => {
@@ -47,6 +49,7 @@ export function getDoc(
   onGet: (doc: DocData) => void,
   onError: (err: any) => void,
   acceptOutdated = false,
+  saveToState?: boolean,
 ) {
   const docId = pathlib.resolve(path);
   const { state } = getContext();
@@ -59,7 +62,7 @@ export function getDoc(
     return;
   }
 
-  getDocSnapshot(path, doc => onGet(createDataFromDoc(doc)), onError);
+  getDocSnapshot(path, doc => onGet(createDataFromDoc(doc)), onError, acceptOutdated, saveToState);
 }
 
 export function subscribeDocSnapshot(
@@ -68,6 +71,7 @@ export function subscribeDocSnapshot(
   onChange: (doc: firestore.DocumentSnapshot) => void,
   onError: (err: any) => void,
   onListen: () => void = () => {},
+  saveToState: boolean = true,
 ): () => void {
   const docId = pathlib.resolve(path);
   const { dispatch, firestoreDB, onAccess } = getContext();
@@ -77,8 +81,10 @@ export function subscribeDocSnapshot(
     const ref = firestoreDB.doc(path);
     const unsubscribe = ref.onSnapshot(doc => {
       onListen();
-      saveDoc(dispatch, docId, createDataFromDoc(doc));
-      connectDocToState(dispatch, docId, uuid);
+      if (saveToState) {
+        saveDoc(dispatch, docId, createDataFromDoc(doc));
+        connectDocToState(dispatch, docId, uuid);
+      }
       onChange(doc);
     }, onError);
     return () => {
@@ -97,6 +103,7 @@ export function subscribeDoc(
   onChange: (doc: DocData) => void,
   onError: (err: any) => void,
   onListen: () => void = () => {},
+  saveToState?: boolean,
 ): () => void {
   return subscribeDocSnapshot(
     uuid,
@@ -104,6 +111,7 @@ export function subscribeDoc(
     (doc: firestore.DocumentSnapshot) => onChange(createDataFromDoc(doc)),
     onError,
     onListen,
+    saveToState,
   );
 }
 
@@ -113,6 +121,7 @@ export function getCollectionSnapshot(
   onError: (err: any) => void,
   options: QueryOptions = {},
   acceptOutdated = false,
+  saveToState = true,
 ): void {
   const { dispatch, firestoreDB, onAccess } = getContext();
 
@@ -122,7 +131,8 @@ export function getCollectionSnapshot(
     ref
       .get()
       .then(collection => {
-        saveCollection(dispatch, path, options, createDataFromCollection(collection.docs));
+        if (saveToState)
+          saveCollection(dispatch, path, options, createDataFromCollection(collection.docs));
         onGet(collection.docs);
       })
       .catch(err => {
@@ -140,6 +150,7 @@ export function getCollection(
   onError: (err: any) => void,
   options: QueryOptions = {},
   acceptOutdated = false,
+  saveToState?: boolean,
 ): void {
   const collectionId = getQueryId(path, options);
   const { state } = getContext();
@@ -165,6 +176,8 @@ export function getCollection(
     collection => onGet(createDataFromCollection(collection)),
     onError,
     options,
+    acceptOutdated,
+    saveToState,
   );
 }
 
@@ -175,6 +188,7 @@ export function subscribeCollectionSnapshot(
   onError: (err: any) => void,
   onListen: () => void = () => {},
   options: QueryOptions = {},
+  saveToState: boolean = true,
 ): () => void {
   const collectionId = getQueryId(path, options);
   const { dispatch, firestoreDB, onAccess } = getContext();
@@ -192,8 +206,10 @@ export function subscribeCollectionSnapshot(
       decreased.forEach(docId => disconnectDocFromState(dispatch, docId, uuid));
       docIds = nextDocIds;
 
-      saveCollection(dispatch, path, options, createDataFromCollection(collection.docs));
-      connectCollectionToState(dispatch, collectionId, uuid, docIds);
+      if (saveToState) {
+        saveCollection(dispatch, path, options, createDataFromCollection(collection.docs));
+        connectCollectionToState(dispatch, collectionId, uuid, docIds);
+      }
       onChange(collection.docs);
     }, onError);
     return () => {
@@ -213,6 +229,7 @@ export function subscribeCollection(
   onError: (err: any) => void,
   onListen: () => void = () => {},
   options: QueryOptions = {},
+  saveToState?: boolean,
 ): () => void {
   return subscribeCollectionSnapshot(
     uuid,
@@ -221,5 +238,6 @@ export function subscribeCollection(
     onError,
     onListen,
     options,
+    saveToState,
   );
 }

@@ -13,12 +13,6 @@ var getFunctions_1 = require("./getFunctions");
 var utils_1 = require("./utils");
 var typeCheck = __importStar(require("./typeCheck"));
 var typeCheck_1 = require("./typeCheck");
-function generateHooksId() {
-    return Math.random()
-        .toString(32)
-        .substring(2);
-}
-exports.generateHooksId = generateHooksId;
 // ------------------------------------------
 //  Get Doc Hooks Base
 // ------------------------------------------
@@ -61,7 +55,7 @@ function useSubscribeDocBase(path, initialValue, subscribeFunction, options) {
             fn: typeCheck_1.matches(typeCheck.callbackRule),
         },
     ])({ path: path, options: options }, "Argument");
-    var hooksId = react_1.useState(generateHooksId())[0];
+    var hooksId = react_1.useState(utils_1.generateHooksId())[0];
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), doc = _b[0], setDoc = _b[1];
     var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
@@ -127,7 +121,7 @@ function useSubscribeCollectionBase(path, initialValue, subscribeFunction, optio
             fn: typeCheck_1.matches(typeCheck.queryOptionRule.concat(typeCheck.callbackRule)),
         },
     ])({ path: path, options: options }, "Argument");
-    var hooksId = react_1.useState(generateHooksId())[0];
+    var hooksId = react_1.useState(utils_1.generateHooksId())[0];
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), collection = _b[0], setCollection = _b[1];
     var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];

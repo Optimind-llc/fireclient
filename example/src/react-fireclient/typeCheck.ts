@@ -40,13 +40,13 @@ export const isArrayOf = (rule: ValidateFunction) => (obj: any, target: string) 
     .filter((res: ValidateResult) => !res.valid);
   return notMatched.length > 0
     ? {
-      valid: false,
-      message: `${target} should be array and every element should satisfy below.\n"${notMatched[0].message}"`,
-    }
+        valid: false,
+        message: `${target} should be array and every element should satisfy below.\n"${notMatched[0].message}"`,
+      }
     : {
-      valid: true,
-      message: "",
-    };
+        valid: true,
+        message: "",
+      };
 };
 export const isString = (obj: any, target: string) => ({
   valid: typeof obj === "string",

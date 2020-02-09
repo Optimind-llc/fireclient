@@ -19,6 +19,19 @@ const initialState: FireclientState = Map({
   collection: Map(),
 });
 
+export function setContext(firestoreDB?: firestore.Firestore, onAccess?: () => void) {
+  assert(firestoreDB !== undefined, "firestoreDB props of Provider is undefined");
+  assert(firestoreDB !== null, "firestoreDB props of Provider is null");
+  const [state, dispatch] = React.useReducer(reducer, initialState);
+  // Provider呼び出し時にライブラリ共有 Contextをセットする
+  providerContext.state = state;
+  providerContext.dispatch = dispatch;
+  providerContext.firestoreDB = firestoreDB as firestore.Firestore;
+  if (onAccess !== undefined) {
+    providerContext.onAccess = onAccess;
+  }
+}
+
 export function getContext(): {
   state: FireclientState;
   dispatch: React.Dispatch<Actions>;
@@ -55,16 +68,8 @@ function Provider({
   firestoreDB: firestore.Firestore;
   onAccess?: () => void;
 }) {
-  assert(firestoreDB !== undefined, "firestoreDB props of Provider is undefined");
-  assert(firestoreDB !== null, "firestoreDB props of Provider is null");
-  const [state, dispatch] = React.useReducer(reducer, initialState);
-  // Provider呼び出し時にライブラリ共有 Contextをセットする
-  providerContext.state = state;
-  providerContext.dispatch = dispatch;
-  providerContext.firestoreDB = firestoreDB;
-  if (onAccess !== undefined) {
-    providerContext.onAccess = onAccess;
-  }
+  setContext(firestoreDB);
+  const { state, dispatch } = providerContext;
 
   return (
     <Context.Provider

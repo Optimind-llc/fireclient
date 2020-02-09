@@ -18,7 +18,6 @@ import {
 } from ".";
 import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "./getFunctions";
 import {
-  generateHooksId,
   initialCollectionData,
   initialDocData,
   useGetCollection,
@@ -26,7 +25,7 @@ import {
 } from "./getHooks";
 import * as typeCheck from "./typeCheck";
 import { assertRule, matches } from "./typeCheck";
-import { getHashCode, isDocPath } from "./utils";
+import { generateHooksId, getHashCode, isDocPath } from "./utils";
 
 type ArrayQueryData = (DocData | CollectionData)[];
 

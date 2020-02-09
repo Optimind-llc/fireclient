@@ -1,7 +1,6 @@
 import { firestore } from "firebase";
 import "firebase/firestore";
 import { CollectionData, DocData, HooksId, QueryOptions } from ".";
-export declare function generateHooksId(): HooksId;
 export declare function useSubscribeDocBase<State, InitialState = State>(path: string, initialValue: State | InitialState, subscribeFunction: (hooksId: HooksId, path: string, onChange: (doc: State) => void, onError: (err: any) => void, onListen?: () => void) => () => void, options?: {
     callback?: (snapshot: State) => void;
 }): [State | InitialState, boolean, any, () => void];

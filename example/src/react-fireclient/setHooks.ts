@@ -1,9 +1,9 @@
 import "firebase/firestore";
 import { useState } from "react";
-import { SetCollectionFql, SetFql, StaticSetFql, StaticSetCollectionFql } from ".";
+import { SetCollectionFql, SetFql, StaticSetCollectionFql, StaticSetFql } from ".";
 import { setCollection, setDoc, updateDoc } from "./setFunctions";
 import * as typeCheck from "./typeCheck";
-import { assertRule, matches, assertStaticSetFql } from "./typeCheck";
+import { assertRule, assertStaticSetFql, matches } from "./typeCheck";
 
 // ------------------------------------------
 //  Set Hooks Base
