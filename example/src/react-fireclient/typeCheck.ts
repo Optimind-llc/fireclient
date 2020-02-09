@@ -163,6 +163,13 @@ export const callbackRule: Rule = [
     fn: isFunction,
   },
 ];
+export const saveToStateRule: Rule = [
+  {
+    key: "saveToStateRule",
+    optional: true,
+    fn: isBoolean,
+  },
+];
 export const mergeRule: Rule = [
   {
     key: "merge",

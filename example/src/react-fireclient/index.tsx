@@ -249,6 +249,8 @@ export const deleteField = firestore.FieldValue.delete();
 export const convertStateToJson = provider.convertStateToJson;
 export const Provider = provider.default;
 export const Context = provider.Context;
+export const getContext = provider.getContext;
+export const setContext = provider.setContext;
 
 export const getHashCode = utils.getHashCode;
 export const createDataFromDoc = utils.createDataFromDoc;

@@ -152,6 +152,13 @@ exports.callbackRule = [
         fn: exports.isFunction,
     },
 ];
+exports.saveToStateRule = [
+    {
+        key: "saveToStateRule",
+        optional: true,
+        fn: exports.isBoolean,
+    },
+];
 exports.mergeRule = [
     {
         key: "merge",

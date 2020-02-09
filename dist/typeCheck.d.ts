@@ -47,6 +47,7 @@ export declare const matchesArrayOf: (rule: Rule) => (obj: any, target: string) 
 export declare const matchesObjectOf: (rule: Rule) => (obj: any, target: string) => ValidateResult;
 export declare const acceptOutdatedRule: Rule;
 export declare const callbackRule: Rule;
+export declare const saveToStateRule: Rule;
 export declare const mergeRule: Rule;
 export declare const whereRule: Rule;
 export declare const orderRule: Rule;

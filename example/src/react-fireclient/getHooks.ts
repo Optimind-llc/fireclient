@@ -20,27 +20,62 @@ import { assertRule, matches } from "./typeCheck";
 //  Get Doc Hooks Base
 // ------------------------------------------
 
+type GetDocFunction<State> = (
+  path: string,
+  onGet: (data: State) => void,
+  onError: (err: any) => void,
+  acceptOutdated?: boolean,
+  saveToState?: boolean,
+) => void;
+type GetCollectionFunction<State> = (
+  path: string,
+  onGet: (data: State) => void,
+  onError: (err: any) => void,
+  options?: QueryOptions,
+  acceptOutdated?: boolean,
+  saveToState?: boolean,
+) => void;
+type SubscribeDocFunction<State> = (
+  hooksId: HooksId,
+  path: string,
+  onChange: (doc: State) => void,
+  onError: (err: any) => void,
+  onListen?: () => void,
+  saveToState?: boolean,
+) => () => void;
+type SubscribeCollectionFunction<State> = (
+  hooksId: HooksId,
+  path: string,
+  onChange: (doc: State) => void,
+  onError: (err: any) => void,
+  onListen?: () => void,
+  options?: QueryOptions,
+  saveToState?: boolean,
+) => () => void;
+
 function useLazyGetDocBase<State, InitialState = State>(
   path: string,
   initialValue: State | InitialState,
-  getFunction: (
-    path: string,
-    onGet: (data: State) => void,
-    onError: (err: any) => void,
-    acceptOutdated?: boolean,
-  ) => void,
+  getFunction: GetDocFunction<State>,
   options?: {
     callback?: (snapshot: State) => void;
     acceptOutdated?: boolean;
+    saveToState?: boolean;
   },
 ): [State | InitialState, boolean, any, () => void] {
-  // Arg typeCheck
+  // Argument typeCheck
   assertRule([
     { key: "path", fn: typeCheck.isString },
     {
       key: "options",
       optional: true,
-      fn: typeCheck.matches(typeCheck.callbackRule.concat(typeCheck.acceptOutdatedRule)),
+      fn: typeCheck.matches(
+        typeCheck.concatRule(
+          typeCheck.callbackRule,
+          typeCheck.acceptOutdatedRule,
+          typeCheck.saveToStateRule,
+        ),
+      ),
     },
   ])({ path, options }, "Argument");
 
@@ -70,24 +105,19 @@ function useLazyGetDocBase<State, InitialState = State>(
 export function useSubscribeDocBase<State, InitialState = State>(
   path: string,
   initialValue: State | InitialState,
-  subscribeFunction: (
-    hooksId: HooksId,
-    path: string,
-    onChange: (doc: State) => void,
-    onError: (err: any) => void,
-    onListen?: () => void,
-  ) => () => void,
+  subscribeFunction: SubscribeDocFunction<State>,
   options?: {
     callback?: (snapshot: State) => void;
+    saveToState?: boolean;
   },
 ): [State | InitialState, boolean, any, () => void] {
-  // Arg typeCheck
+  // Argument typeCheck
   assertRule([
     { key: "path", fn: typeCheck.isString },
     {
       key: "options",
       optional: true,
-      fn: matches(typeCheck.callbackRule),
+      fn: matches(typeCheck.concatRule(typeCheck.callbackRule, typeCheck.saveToStateRule)),
     },
   ])({ path, options }, "Argument");
 
@@ -129,26 +159,26 @@ export function useSubscribeDocBase<State, InitialState = State>(
 export function useLazyGetCollectionBase<State, InitialState = State>(
   path: string,
   initialValue: State | InitialState,
-  getFunction: (
-    path: string,
-    onGet: (data: State) => void,
-    onError: (err: any) => void,
-    options?: QueryOptions,
-    acceptOutdated?: boolean,
-  ) => void,
+  getFunction: GetCollectionFunction<State>,
   options?: {
     callback?: (data: State) => void;
     acceptOutdated?: boolean;
+    saveToState?: boolean;
   } & QueryOptions,
 ): [State | InitialState, boolean, any, () => void] {
-  // Arg typeCheck
+  // Argument typeCheck
   assertRule([
     { key: "path", fn: typeCheck.isString },
     {
       key: "options",
       optional: true,
       fn: matches(
-        typeCheck.queryOptionRule.concat(typeCheck.callbackRule, typeCheck.acceptOutdatedRule),
+        typeCheck.concatRule(
+          typeCheck.queryOptionRule,
+          typeCheck.callbackRule,
+          typeCheck.acceptOutdatedRule,
+          typeCheck.saveToStateRule,
+        ),
       ),
     },
   ])({ path, options }, "Argument");
@@ -180,23 +210,24 @@ export function useLazyGetCollectionBase<State, InitialState = State>(
 export function useSubscribeCollectionBase<State, InitialState = State>(
   path: string,
   initialValue: State | InitialState,
-  subscribeFunction: (
-    hooksId: HooksId,
-    path: string,
-    onChange: (doc: State) => void,
-    onError: (err: any) => void,
-    onListen?: () => void,
-    options?: QueryOptions,
-  ) => () => void,
+  subscribeFunction: SubscribeCollectionFunction<State>,
   options?: {
     callback?: (data: State) => void;
+    saveToState?: boolean;
   } & QueryOptions,
 ): [State | InitialState, boolean, any, () => void] {
+  // Argument typeCheck
   assertRule([
     { key: "path", fn: typeCheck.isString },
     {
       key: "options",
-      fn: matches(typeCheck.queryOptionRule.concat(typeCheck.callbackRule)),
+      fn: matches(
+        typeCheck.concatRule(
+          typeCheck.queryOptionRule,
+          typeCheck.callbackRule,
+          typeCheck.saveToStateRule,
+        ),
+      ),
     },
   ])({ path, options }, "Argument");
 
@@ -241,6 +272,7 @@ export function useLazyGetDocSnapshot(
   options?: {
     callback?: (snapshot: firestore.DocumentSnapshot) => void;
     acceptOutdated?: boolean;
+    saveToState?: boolean;
   },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
   return useLazyGetDocBase<firestore.DocumentSnapshot, null>(path, null, getDocSnapshot, options);
@@ -251,6 +283,7 @@ export function useGetDocSnapshot(
   options?: {
     callback?: (snapshot: firestore.DocumentSnapshot) => void;
     acceptOutdated?: boolean;
+    saveToState?: boolean;
   },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
   const [doc, loading, error, reloadDoc] = useLazyGetDocSnapshot(path, options);
@@ -264,6 +297,7 @@ export function useSubscribeDocSnapshot(
   path: string,
   options?: {
     callback?: (snapshot: firestore.DocumentSnapshot) => void;
+    saveToState?: boolean;
   },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
   return useSubscribeDocBase(path, null, subscribeDocSnapshot, options);
@@ -278,6 +312,7 @@ export function useLazyGetCollectionSnapshot(
   options?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
     acceptOutdated?: boolean;
+    saveToState?: boolean;
   } & QueryOptions,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
   return useLazyGetCollectionBase<firestore.DocumentSnapshot[], null>(
@@ -293,6 +328,7 @@ export function useGetCollectionSnapshot(
   options?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
     acceptOutdated?: boolean;
+    saveToState?: boolean;
   } & QueryOptions,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
   const [collection, loading, error, reloadCollection] = useLazyGetCollectionSnapshot(
@@ -309,6 +345,7 @@ export function useSubscribeCollectionSnapshot(
   path: string,
   options?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
+    saveToState?: boolean;
   } & QueryOptions,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
   return useSubscribeCollectionBase(path, [], subscribeCollectionSnapshot, options);
@@ -329,6 +366,7 @@ export function useLazyGetDoc(
   options?: {
     callback?: (data: DocData) => void;
     acceptOutdated?: boolean;
+    saveToState?: boolean;
   },
 ): [DocData, boolean, any, () => void] {
   return useLazyGetDocBase(path, initialDocData, getDoc, options);
@@ -339,6 +377,7 @@ export function useGetDoc(
   options?: {
     callback?: (data: DocData) => void;
     acceptOutdated?: boolean;
+    saveToState?: boolean;
   },
 ): [DocData, boolean, any, () => void] {
   const [doc, loading, error, reloadDoc] = useLazyGetDoc(path, options);
@@ -353,6 +392,7 @@ export function useSubscribeDoc(
   options?: {
     callback?: (data: DocData) => void;
     acceptOutdated?: boolean;
+    saveToState?: boolean;
   },
 ): [DocData, boolean, any, () => void] {
   return useSubscribeDocBase(path, initialDocData, subscribeDoc, options);
@@ -367,6 +407,7 @@ export function useLazyGetCollection(
   options?: {
     callback?: (collection: CollectionData) => void;
     acceptOutdated?: boolean;
+    saveToState?: boolean;
   } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
   return useLazyGetCollectionBase(path, initialCollectionData, getCollection, options);
@@ -377,6 +418,7 @@ export function useGetCollection(
   options?: {
     callback?: (collection: CollectionData) => void;
     acceptOutdated?: boolean;
+    saveToState?: boolean;
   } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
   const [collection, loading, error, reloadCollection] = useLazyGetCollection(path, options);
@@ -390,6 +432,7 @@ export function useSubscribeCollection(
   path: string,
   options?: {
     callback?: (collection: CollectionData) => void;
+    saveToState?: boolean;
   } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
   return useSubscribeCollectionBase(path, initialCollectionData, subscribeCollection, options);
