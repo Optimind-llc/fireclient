@@ -240,7 +240,6 @@ export declare const convertStateToJson: typeof provider.convertStateToJson;
 export declare const Provider: typeof provider.default;
 export declare const Context: import("react").Context<any>;
 export declare const getContext: typeof provider.getContext;
-export declare const setContext: typeof provider.setContext;
 export declare const getHashCode: typeof utils.getHashCode;
 export declare const createDataFromDoc: typeof utils.createDataFromDoc;
 export declare const createDataFromCollection: typeof utils.createDataFromCollection;

@@ -1,7 +1,7 @@
 import { renderHook } from "@testing-library/react-hooks";
 import * as pathlib from "path";
-import { setContext, useSetDoc, useGetDoc } from "../../../dist";
-import backup from "../backup1.json";
+import { useGetDoc, useSetDoc } from "../../../dist";
+import { useSetContext } from "../../../dist/provider";
 import db from "../firestore";
 
 describe("useSetDoc", () => {
@@ -21,7 +21,7 @@ describe("useSetDoc", () => {
     };
 
     const hooks1 = renderHook(() => {
-      setContext(db);
+      useSetContext(db);
       return useSetDoc(path, fql, { saveToState: false });
     });
     const result1 = hooks1.result;
@@ -38,7 +38,7 @@ describe("useSetDoc", () => {
     expect(result1.current[3]).toBeNull(); // error
 
     const hooks2 = renderHook(() => {
-      setContext(db);
+      useSetContext(db);
       return useGetDoc(path, { saveToState: false });
     });
     const result2 = hooks2.result;

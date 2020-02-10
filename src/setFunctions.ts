@@ -124,6 +124,7 @@ export function setDoc(
         });
     }
   } catch (err) {
+    console.error(err);
     onError(err);
   }
 }
@@ -153,6 +154,7 @@ export function updateDoc(
         onError(err);
       });
   } catch (err) {
+    console.error(err);
     onError(err);
   }
 }

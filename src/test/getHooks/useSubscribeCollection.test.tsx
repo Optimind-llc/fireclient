@@ -1,8 +1,9 @@
-import { List } from "immutable";
 import { renderHook } from "@testing-library/react-hooks";
-import db from "../firestore";
+import { List } from "immutable";
+import { useSubscribeCollection } from "../../../dist";
+import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
-import { setContext, useSubscribeCollection } from "../../../dist";
+import db from "../firestore";
 
 const expected = [
   {
@@ -30,7 +31,7 @@ const expected = [
 describe("useSubscribeCollection", () => {
   it("should handle a simple query", async () => {
     const { result, waitForNextUpdate } = renderHook(() => {
-      setContext(db);
+      useSetContext(db);
       const options = {
         order: {
           by: "name",

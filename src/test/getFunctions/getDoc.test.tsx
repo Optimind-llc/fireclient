@@ -1,13 +1,13 @@
 import { renderHook } from "@testing-library/react-hooks";
 import * as pathlib from "path";
 import { useState } from "react";
-import { setContext } from "../../../dist";
 import { getDoc } from "../../../dist/getFunctions";
+import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
 import db from "../firestore";
 
 const useTest = ({ path, onGet }) => {
-  setContext(db);
+  useSetContext(db);
   const [finished, setFinished] = useState(false);
   const onError = err => {
     throw new Error(err);

@@ -1,8 +1,7 @@
 import { renderHook } from "@testing-library/react-hooks";
 import { fromJS } from "immutable";
-import * as pathlib from "path";
-import { setContext, useSetCollection, useGetCollection } from "../../../dist";
-import backup from "../backup1.json";
+import { useGetCollection, useSetCollection } from "../../../dist";
+import { useSetContext } from "../../../dist/provider";
 import db from "../firestore";
 
 describe("useSetCollection", () => {
@@ -37,7 +36,7 @@ describe("useSetCollection", () => {
       .toJS();
 
     const hooks1 = renderHook(() => {
-      setContext(db);
+      useSetContext(db);
       return useSetCollection(path, fql, { saveToState: false });
     });
     const result1 = hooks1.result;
@@ -53,7 +52,7 @@ describe("useSetCollection", () => {
     expect(result1.current[3]).toBeNull(); // error
 
     const hooks2 = renderHook(() => {
-      setContext(db);
+      useSetContext(db);
       return useGetCollection(path, { order: { by: "field1" }, saveToState: false });
     });
     const result2 = hooks2.result;

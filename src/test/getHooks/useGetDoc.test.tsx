@@ -1,6 +1,7 @@
 import { renderHook } from "@testing-library/react-hooks";
 import * as pathlib from "path";
-import { setContext, useGetDoc } from "../../../dist";
+import { useGetDoc } from "../../../dist";
+import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
 import db from "../firestore";
 
@@ -16,7 +17,7 @@ const testGettingDoc = path => {
     };
 
     const { result, waitForNextUpdate } = renderHook(() => {
-      setContext(db);
+      useSetContext(db);
       return useGetDoc(path, { saveToState: false });
     });
 

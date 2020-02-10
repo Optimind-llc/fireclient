@@ -40,6 +40,7 @@ export function getDocSnapshot(
         onError(err);
       });
   } catch (err) {
+    console.error(err);
     onError(err);
   }
 }
@@ -79,19 +80,26 @@ export function subscribeDocSnapshot(
   try {
     onAccess();
     const ref = firestoreDB.doc(path);
-    const unsubscribe = ref.onSnapshot(doc => {
-      onListen();
-      if (saveToState) {
-        saveDoc(dispatch, docId, createDataFromDoc(doc));
-        connectDocToState(dispatch, docId, uuid);
-      }
-      onChange(doc);
-    }, onError);
+    const unsubscribe = ref.onSnapshot(
+      doc => {
+        onListen();
+        if (saveToState) {
+          saveDoc(dispatch, docId, createDataFromDoc(doc));
+          connectDocToState(dispatch, docId, uuid);
+        }
+        onChange(doc);
+      },
+      err => {
+        console.log(err);
+        onError(err);
+      },
+    );
     return () => {
       unsubscribe();
       disconnectDocFromState(dispatch, docId, uuid);
     };
   } catch (err) {
+    console.error(err);
     onError(err);
     return () => {};
   }
@@ -124,7 +132,6 @@ export function getCollectionSnapshot(
   saveToState = true,
 ): void {
   const { dispatch, firestoreDB, onAccess } = getContext();
-
   try {
     onAccess();
     const ref = withOption(firestoreDB.collection(path), options);
@@ -140,6 +147,7 @@ export function getCollectionSnapshot(
         onError(err);
       });
   } catch (err) {
+    console.error(err);
     onError(err);
   }
 }
@@ -197,26 +205,33 @@ export function subscribeCollectionSnapshot(
   try {
     onAccess();
     const ref = withOption(firestoreDB.collection(path), options);
-    const unsubscribe = ref.onSnapshot(collection => {
-      onListen();
-      // docIdsを更新
-      // 対象から外れたdocをunsubscribeする
-      const nextDocIds = List(collection.docs.map(doc => pathlib.resolve(path, doc.id)));
-      const decreased = docIds.filter(id => nextDocIds.indexOf(id) === -1);
-      decreased.forEach(docId => disconnectDocFromState(dispatch, docId, uuid));
-      docIds = nextDocIds;
+    const unsubscribe = ref.onSnapshot(
+      collection => {
+        onListen();
+        // docIdsを更新
+        // 対象から外れたdocをunsubscribeする
+        const nextDocIds = List(collection.docs.map(doc => pathlib.resolve(path, doc.id)));
+        const decreased = docIds.filter(id => nextDocIds.indexOf(id) === -1);
+        decreased.forEach(docId => disconnectDocFromState(dispatch, docId, uuid));
+        docIds = nextDocIds;
 
-      if (saveToState) {
-        saveCollection(dispatch, path, options, createDataFromCollection(collection.docs));
-        connectCollectionToState(dispatch, collectionId, uuid, docIds);
-      }
-      onChange(collection.docs);
-    }, onError);
+        if (saveToState) {
+          saveCollection(dispatch, path, options, createDataFromCollection(collection.docs));
+          connectCollectionToState(dispatch, collectionId, uuid, docIds);
+        }
+        onChange(collection.docs);
+      },
+      err => {
+        console.error(err);
+        onError(err);
+      },
+    );
     return () => {
       unsubscribe();
       disconnectCollectionFromState(dispatch, collectionId, uuid, docIds);
     };
   } catch (err) {
+    console.error(err);
     onError(err);
     return () => {};
   }

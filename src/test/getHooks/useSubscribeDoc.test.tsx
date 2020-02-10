@@ -1,6 +1,7 @@
 import { renderHook } from "@testing-library/react-hooks";
 import { List } from "immutable";
-import { setContext, useSubscribeCollection } from "../../../dist";
+import { useSubscribeCollection } from "../../../dist";
+import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
 import db from "../firestore";
 
@@ -32,7 +33,7 @@ const expected = [
 describe("useSubscribeDoc", () => {
   it("should handle a simple query", async () => {
     const { result, waitForNextUpdate } = renderHook(() => {
-      setContext(db);
+      useSetContext(db);
       const options = {
         order: {
           by: "name",

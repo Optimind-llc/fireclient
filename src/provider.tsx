@@ -19,7 +19,8 @@ const initialState: FireclientState = Map({
   collection: Map(),
 });
 
-export function setContext(firestoreDB?: firestore.Firestore, onAccess?: () => void) {
+// for testing
+export function useSetContext(firestoreDB?: firestore.Firestore, onAccess?: () => void) {
   assert(firestoreDB !== undefined, "firestoreDB props of Provider is undefined");
   assert(firestoreDB !== null, "firestoreDB props of Provider is null");
   const [state, dispatch] = React.useReducer(reducer, initialState);
@@ -68,7 +69,7 @@ function Provider({
   firestoreDB: firestore.Firestore;
   onAccess?: () => void;
 }) {
-  setContext(firestoreDB);
+  useSetContext(firestoreDB);
   const { state, dispatch } = providerContext;
 
   return (

@@ -18,7 +18,6 @@ exports.convertStateToJson = provider.convertStateToJson;
 exports.Provider = provider.default;
 exports.Context = provider.Context;
 exports.getContext = provider.getContext;
-exports.setContext = provider.setContext;
 exports.getHashCode = utils.getHashCode;
 exports.createDataFromDoc = utils.createDataFromDoc;
 exports.createDataFromCollection = utils.createDataFromCollection;

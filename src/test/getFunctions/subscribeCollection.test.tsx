@@ -1,14 +1,14 @@
 import { renderHook } from "@testing-library/react-hooks";
 import { List } from "immutable";
 import { useState } from "react";
-import { setContext } from "../../../dist";
 import { subscribeCollection } from "../../../dist/getFunctions";
+import { useSetContext } from "../../../dist/provider";
 import { generateHooksId } from "../../../dist/utils";
 import backup from "../backup1.json";
 import db from "../firestore";
 
 const useTest = ({ path, onGet, options }) => {
-  setContext(db);
+  useSetContext(db);
   const [finished, setFinished] = useState(false);
   const uuid = generateHooksId();
   const onError = err => {

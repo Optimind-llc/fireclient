@@ -1,13 +1,13 @@
 import { renderHook } from "@testing-library/react-hooks";
 import { List } from "immutable";
 import { useState } from "react";
-import { setContext } from "../../../dist";
 import { getCollection } from "../../../dist/getFunctions";
+import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
 import db from "../firestore";
 
 const useTest = ({ path, onGet, options }) => {
-  setContext(db);
+  useSetContext(db);
   const [finished, setFinished] = useState(false);
   const onError = err => {
     throw new Error(err);
@@ -29,7 +29,7 @@ const useTest = ({ path, onGet, options }) => {
   return finished;
 };
 
-const expected = [
+const cities = [
   {
     data: backup.cities.MexicoCity,
     id: "MexicoCity",
@@ -54,13 +54,10 @@ const expected = [
 
 describe("Get Collection", () => {
   it("should handle a simple query", async () => {
-    const onGet = collectionData => {
-      expect(collectionData).toEqual(
-        List(expected)
-          .sortBy(e => e.data.name)
-          .toJS(),
-      );
-    };
+    const expected = List(cities)
+      .sortBy(city => city.data.name)
+      .toJS();
+    const onGet = collectionData => expect(collectionData).toEqual(expected);
     const options = {
       order: {
         by: "name",
@@ -71,9 +68,11 @@ describe("Get Collection", () => {
   });
 
   it('should handle "where" option', async () => {
-    const onGet = collectionData => {
-      collectionData.forEach(coll => expect(coll.data.population).toBeGreaterThanOrEqual(19354922));
-    };
+    const expected = List(cities)
+      .sortBy(city => city.data.name)
+      .filter(city => city.data.population >= 19354922)
+      .toJS();
+    const onGet = collectionData => expect(collectionData).toEqual(expected);
     const options = {
       where: {
         field: "population",
@@ -86,12 +85,11 @@ describe("Get Collection", () => {
   });
 
   it('should handle multiple "where" option', async () => {
-    const onGet = collectionData => {
-      collectionData.forEach(coll => {
-        expect(coll.data.population).toBeGreaterThanOrEqual(19354922);
-        expect(coll.data.population).toBeLessThan(20000000);
-      });
-    };
+    const expected = List(cities)
+      .sortBy(city => city.data.name)
+      .filter(city => city.data.population >= 19354922 && city.data.population < 20000000)
+      .toJS();
+    const onGet = collectionData => expect(collectionData).toEqual(expected);
     const options = {
       where: [
         {
@@ -111,20 +109,11 @@ describe("Get Collection", () => {
   });
 
   it('should handle "limit" option', async () => {
-    const onGet = collectionData => {
-      expect(collectionData.length).toBe(3);
-    };
-    const options = {
-      limit: 3,
-    };
-    const { waitForNextUpdate } = renderHook(() => useTest({ path: "/cities", onGet, options }));
-    await waitForNextUpdate();
-  });
-
-  it('should handle "limit" option', async () => {
-    const onGet = collectionData => {
-      expect(collectionData.length).toBe(3);
-    };
+    const expected = List(cities)
+      .sortBy(city => city.data.name)
+      .slice(0, 3)
+      .toJS();
+    const onGet = collectionData => expect(collectionData).toEqual(expected);
     const options = {
       limit: 3,
     };
@@ -133,15 +122,10 @@ describe("Get Collection", () => {
   });
 
   it('should handle "order" option (no direction)', async () => {
-    const onGet = collectionData => {
-      let p = null;
-      collectionData.forEach(coll => {
-        if (p != null) {
-          expect(coll.data.population).toBeGreaterThanOrEqual(p);
-        }
-        p = coll.data.population;
-      });
-    };
+    const expected = List(cities)
+      .sortBy(city => city.data.population)
+      .toJS();
+    const onGet = collectionData => expect(collectionData).toEqual(expected);
     const options = {
       order: {
         by: "population",
@@ -152,15 +136,10 @@ describe("Get Collection", () => {
   });
 
   it('should handle "order" option (asc)', async () => {
-    const onGet = collectionData => {
-      let p = null;
-      collectionData.forEach(coll => {
-        if (p != null) {
-          expect(coll.data.population).toBeGreaterThanOrEqual(p);
-        }
-        p = coll.data.population;
-      });
-    };
+    const expected = List(cities)
+      .sortBy(city => city.data.population)
+      .toJS();
+    const onGet = collectionData => expect(collectionData).toEqual(expected);
     const options = {
       order: {
         by: "population",
@@ -172,15 +151,11 @@ describe("Get Collection", () => {
   });
 
   it('should handle "order" option (desc)', async () => {
-    const onGet = collectionData => {
-      let p = null;
-      collectionData.forEach(coll => {
-        if (p != null) {
-          expect(coll.data.population).toBeLessThanOrEqual(p);
-        }
-        p = coll.data.population;
-      });
-    };
+    const expected = List(cities)
+      .sortBy(city => city.data.population)
+      .reverse()
+      .toJS();
+    const onGet = collectionData => expect(collectionData).toEqual(expected);
     const options = {
       order: {
         by: "population",
@@ -192,20 +167,11 @@ describe("Get Collection", () => {
   });
 
   it('should handle multiple "order" option', async () => {
-    const onGet = collectionData => {
-      let p = null;
-      let f = null;
-      collectionData.forEach(coll => {
-        if (p != null) {
-          expect(coll.data.population).toBeGreaterThanOrEqual(p);
-          if (coll.data.population === p) {
-            expect(coll.data.foo).toBeGreaterThanOrEqual(f);
-          }
-        }
-        p = coll.data.population;
-        f = coll.data.foo;
-      });
-    };
+    const expected = List(cities)
+      .sortBy(city => city.data.foo)
+      .sortBy(city => city.data.population)
+      .toJS();
+    const onGet = collectionData => expect(collectionData).toEqual(expected);
     const options = {
       order: [
         {
@@ -221,12 +187,12 @@ describe("Get Collection", () => {
   });
 
   it('should handle multiple "cursor" option (startAt)', async () => {
-    const onGet = collectionData => {
-      expect(collectionData.length).toBe(2);
-      collectionData.forEach(coll => {
-        expect(coll.data.population).toBeGreaterThanOrEqual(19028000);
-      });
-    };
+    const expected = List(cities)
+      .sortBy(city => city.data.population)
+      .filter(city => city.data.population >= 19028000)
+      .slice(0, 2)
+      .toJS();
+    const onGet = collectionData => expect(collectionData).toEqual(expected);
     const options = {
       order: {
         by: "population",
@@ -242,12 +208,12 @@ describe("Get Collection", () => {
   });
 
   it('should handle multiple "cursor" option (startAfter)', async () => {
-    const onGet = collectionData => {
-      expect(collectionData.length).toBe(2);
-      collectionData.forEach(coll => {
-        expect(coll.data.population).toBeGreaterThan(19028000);
-      });
-    };
+    const expected = List(cities)
+      .sortBy(city => city.data.population)
+      .filter(city => city.data.population > 19028000)
+      .slice(0, 2)
+      .toJS();
+    const onGet = collectionData => expect(collectionData).toEqual(expected);
     const options = {
       order: {
         by: "population",
@@ -263,21 +229,17 @@ describe("Get Collection", () => {
   });
 
   it('should handle multiple "cursor" option (multiple fields)', async () => {
-    const onGet = collectionData => {
-      expect(collectionData.length).toBe(2);
-      let p = null;
-      let f = null;
-      collectionData.forEach(coll => {
-        if (p != null) {
-          expect(coll.data.population).toBeGreaterThanOrEqual(p);
-          if (coll.data.population === p) {
-            expect(coll.data.foo).toBeGreaterThanOrEqual(f);
-          }
-        }
-        p = coll.data.population;
-        f = coll.data.foo;
-      });
-    };
+    const expected = List(cities)
+      .sortBy(city => city.data.foo)
+      .sortBy(city => city.data.population)
+      .filter(
+        city =>
+          city.data.population > 18845000 ||
+          (city.data.population === 18845000 && city.data.foo >= 2),
+      )
+      .slice(0, 2)
+      .toJS();
+    const onGet = collectionData => expect(collectionData).toEqual(expected);
     const options = {
       order: [
         {
@@ -290,8 +252,8 @@ describe("Get Collection", () => {
       limit: 2,
       cursor: {
         multipleFields: true,
-        origin: [2, 18845000],
-        direction: "startAfter",
+        origin: [18845000, 2],
+        direction: "startAt",
       },
     };
     const { waitForNextUpdate } = renderHook(() => useTest({ path: "/cities", onGet, options }));

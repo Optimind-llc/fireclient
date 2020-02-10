@@ -1,13 +1,13 @@
 import { renderHook } from "@testing-library/react-hooks";
 import * as pathlib from "path";
 import { useState } from "react";
-import { setContext } from "../../../dist";
 import { getDoc } from "../../../dist/getFunctions";
+import { useSetContext } from "../../../dist/provider";
 import { setDoc, updateDoc } from "../../../dist/setFunctions";
 import db from "../firestore";
 
 const useTestFn = (fn, { path, fql, onSet, options = {} }) => {
-  setContext(db);
+  useSetContext(db);
   const [finished, setFinished] = useState(false);
   const onError = err => {
     throw new Error(err);
@@ -29,7 +29,7 @@ const useTestFn = (fn, { path, fql, onSet, options = {} }) => {
 };
 
 const useCheckResult = ({ path, onGet }) => {
-  setContext(db);
+  useSetContext(db);
   const [finished, setFinished] = useState(false);
   const onError = err => {
     throw new Error(err);

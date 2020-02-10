@@ -20,7 +20,8 @@ var initialState = immutable_1.Map({
     doc: immutable_1.Map(),
     collection: immutable_1.Map(),
 });
-function setContext(firestoreDB, onAccess) {
+// for testing
+function useSetContext(firestoreDB, onAccess) {
     typeCheck_1.assert(firestoreDB !== undefined, "firestoreDB props of Provider is undefined");
     typeCheck_1.assert(firestoreDB !== null, "firestoreDB props of Provider is null");
     var _a = react_1.default.useReducer(reducer_1.default, initialState), state = _a[0], dispatch = _a[1];
@@ -32,7 +33,7 @@ function setContext(firestoreDB, onAccess) {
         exports.providerContext.onAccess = onAccess;
     }
 }
-exports.setContext = setContext;
+exports.useSetContext = useSetContext;
 function getContext() {
     var state = exports.providerContext.state, dispatch = exports.providerContext.dispatch, firestoreDB = exports.providerContext.firestoreDB, onAccess = exports.providerContext.onAccess;
     if (state === null || dispatch === null || firestoreDB === null) {
@@ -57,7 +58,7 @@ function convertStateToJson(state) {
 exports.convertStateToJson = convertStateToJson;
 function Provider(_a) {
     var children = _a.children, firestoreDB = _a.firestoreDB, onAccess = _a.onAccess;
-    setContext(firestoreDB);
+    useSetContext(firestoreDB);
     var state = exports.providerContext.state, dispatch = exports.providerContext.dispatch;
     return (react_1.default.createElement(exports.Context.Provider, { value: {
             state: state,

@@ -1,14 +1,13 @@
 import { renderHook } from "@testing-library/react-hooks";
 import { fromJS } from "immutable";
-import * as pathlib from "path";
 import { useState } from "react";
-import { setContext } from "../../../dist";
 import { getCollection } from "../../../dist/getFunctions";
+import { useSetContext } from "../../../dist/provider";
 import { setCollection } from "../../../dist/setFunctions";
 import db from "../firestore";
 
 const useTestFn = (fn, { path, fql, onSet, options = {} }) => {
-  setContext(db);
+  useSetContext(db);
   const [finished, setFinished] = useState(false);
   const onError = err => {
     throw new Error(err);
@@ -30,7 +29,7 @@ const useTestFn = (fn, { path, fql, onSet, options = {} }) => {
 };
 
 const useCheckResult = ({ path, onGet }) => {
-  setContext(db);
+  useSetContext(db);
   const [finished, setFinished] = useState(false);
   const onError = err => {
     throw new Error(err);
@@ -90,9 +89,7 @@ describe("setCollection", () => {
       }))
       .sortBy(f => f.data.get("field1"))
       .toJS();
-    const onGet = collectionData => {
-      expect(collectionData).toEqual(expected);
-    };
+    const onGet = collectionData => expect(collectionData).toEqual(expected);
     const hooks2 = renderHook(() => useCheckResult({ path, onGet }));
     await hooks2.waitForNextUpdate();
   });
