@@ -5,11 +5,11 @@ export declare function useSetDoc(docPath: string, query: SetFql, options?: {
     mergeFields?: string[];
     callback?: () => void;
     saveToState?: boolean;
-}): (boolean | ((...args: any[]) => void) | null)[];
+}): [(...args: any) => void, boolean, boolean, any];
 export declare function useUpdateDoc(docPath: string, query: SetFql, options?: {
     callback?: () => void;
     saveToState?: boolean;
-}): (boolean | ((...args: any[]) => void) | null)[];
+}): [(...args: any) => void, boolean, boolean, any];
 export declare function useSetDocs(queries: {
     [key: string]: SetFql;
 }, options?: {
@@ -17,16 +17,16 @@ export declare function useSetDocs(queries: {
     mergeFields?: string[];
     callback?: () => void;
     saveToState?: boolean;
-}): (boolean | ((...args: any[]) => void) | null)[];
+}): [(...args: any) => void, boolean, boolean, any];
 export declare function useUpdateDocs(queries: {
     [key: string]: SetFql;
 }, options?: {
     callback?: () => void;
     saveToState?: boolean;
-}): (boolean | ((...args: any[]) => void) | null)[];
+}): [(...args: any) => void, boolean, boolean, any];
 export declare function useSetCollection(collectionPath: string, query: SetCollectionFql, options?: {
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
     saveToState?: boolean;
-}): (boolean | ((...args: any[]) => void) | null)[];
+}): [(...args: any) => void, boolean, boolean, any];

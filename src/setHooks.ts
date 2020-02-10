@@ -32,7 +32,7 @@ function useSetDocBase(
     callback?: () => void;
     saveToState?: boolean;
   },
-) {
+): [(...args: any) => void, boolean, boolean, any] {
   // Argument typeCheck
   typeCheck.assertSetFql(query);
   assertRule([
@@ -89,7 +89,7 @@ function useSetDocsBase(
     callback?: () => void;
     saveToState?: boolean;
   },
-) {
+): [(...args: any) => void, boolean, boolean, any] {
   // Argument typeCheck
   assertRule([
     {
@@ -150,7 +150,7 @@ function useSetCollectionBase(
     callback?: () => void;
     saveToState?: boolean;
   },
-) {
+): [(...args: any) => void, boolean, boolean, any] {
   // Argument typeCheck
   typeCheck.assertSetCollectionFql(queries);
   matches([
@@ -211,7 +211,7 @@ export function useSetDoc(
     callback?: () => void;
     saveToState?: boolean;
   },
-) {
+): [(...args: any) => void, boolean, boolean, any] {
   return useSetDocBase(docPath, query, setDoc, options);
 }
 export function useUpdateDoc(
@@ -221,7 +221,7 @@ export function useUpdateDoc(
     callback?: () => void;
     saveToState?: boolean;
   },
-) {
+): [(...args: any) => void, boolean, boolean, any] {
   return useSetDocBase(docPath, query, updateDoc, options);
 }
 
@@ -237,7 +237,7 @@ export function useSetDocs(
     callback?: () => void;
     saveToState?: boolean;
   },
-) {
+): [(...args: any) => void, boolean, boolean, any] {
   return useSetDocsBase(queries, setDoc, options);
 }
 export function useUpdateDocs(
@@ -246,7 +246,7 @@ export function useUpdateDocs(
     callback?: () => void;
     saveToState?: boolean;
   },
-) {
+): [(...args: any) => void, boolean, boolean, any] {
   return useSetDocsBase(queries, updateDoc, options);
 }
 
@@ -263,6 +263,6 @@ export function useSetCollection(
     callback?: () => void;
     saveToState?: boolean;
   },
-) {
+): [(...args: any) => void, boolean, boolean, any] {
   return useSetCollectionBase(collectionPath, query, setCollection, options);
 }

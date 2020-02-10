@@ -27,7 +27,7 @@ const expected = [
   },
 ];
 
-describe("Get Collection", () => {
+describe("useSubscribeCollection", () => {
   it("should handle a simple query", async () => {
     const { result, waitForNextUpdate } = renderHook(() => {
       setContext(db);
@@ -41,15 +41,15 @@ describe("Get Collection", () => {
     });
 
     expect(result.current[0].length).toBe(0);
-    expect(result.current[1]).toBeTruthy();
-    expect(result.current[2]).toBeNull();
+    expect(result.current[1]).toBeTruthy(); // loading
+    expect(result.current[2]).toBeNull(); // error
     await waitForNextUpdate();
     expect(result.current[0]).toEqual(
       List(expected)
         .sortBy(e => e.data.name)
         .toJS(),
     );
-    expect(result.current[1]).toBeFalsy();
-    expect(result.current[2]).toBeNull();
+    expect(result.current[1]).toBeFalsy(); // loading
+    expect(result.current[2]).toBeNull(); // error
   });
 });

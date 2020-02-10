@@ -6,7 +6,7 @@ import { getDoc } from "../../../dist/getFunctions";
 import { setDoc, updateDoc } from "../../../dist/setFunctions";
 import db from "../firestore";
 
-const useTestFn = (fn, { path, fql, onSet }) => {
+const useTestFn = (fn, { path, fql, onSet, options = {} }) => {
   setContext(db);
   const [finished, setFinished] = useState(false);
   const onError = err => {
@@ -23,7 +23,7 @@ const useTestFn = (fn, { path, fql, onSet }) => {
       setFinished(true);
       onError(err);
     },
-    { saveToState: false },
+    { saveToState: false, ...options },
   );
   return finished;
 };
@@ -50,7 +50,8 @@ const useCheckResult = ({ path, onGet }) => {
   return finished;
 };
 
-describe("should handle a simple query", () => {
+describe("setDoc", () => {
+  const path = "/setDocTest/doc1";
   const fql = {
     fields: {
       field1: Math.random(),
@@ -65,49 +66,109 @@ describe("should handle a simple query", () => {
       field3: Math.random(),
     },
   };
-  it("setDoc", async () => {
+  it("should handle a simple query", async () => {
     const onSet = () => {};
     // set doc
-    const hooks1 = renderHook(() =>
-      useTestFn(setDoc, { path: "/setFunctionsTest/setDoc", onSet, fql }),
-    );
+    const hooks1 = renderHook(() => useTestFn(setDoc, { path, onSet, fql }));
     await hooks1.waitForNextUpdate();
 
     // check written doc
     const expected = {
       data: fql.fields,
-      id: pathlib.basename("/setFunctionsTest/setDoc"),
+      id: pathlib.basename(path),
     };
     const onGet = docData => {
       expect(docData).toEqual(expected);
     };
-    const hooks2 = renderHook(() => useCheckResult({ path: "/setFunctionsTest/setDoc", onGet }));
+    const hooks2 = renderHook(() => useCheckResult({ path, onGet }));
     await hooks2.waitForNextUpdate();
   });
-  it("updateDoc", async () => {
+  it("setDoc merge option", async () => {
     // set doc (create doc)
     const onSet = () => {};
-    const hooks1 = renderHook(() =>
-      useTestFn(setDoc, { path: "/setFunctionsTest/updateDoc", onSet, fql }),
-    );
+    const hooks1 = renderHook(() => useTestFn(setDoc, { path, onSet, fql }));
     await hooks1.waitForNextUpdate();
 
-    // update doc
+    // set doc (merge true)
     const onUpdate = () => {};
     const hooks2 = renderHook(() =>
-      useTestFn(updateDoc, { path: "/setFunctionsTest/updateDoc", onSet: onUpdate, fql: fql2 }),
+      useTestFn(setDoc, {
+        path,
+        onSet: onUpdate,
+        fql: fql2,
+        options: {
+          merge: true,
+        },
+      }),
     );
     await hooks2.waitForNextUpdate();
 
     // check updated doc
     const expected = {
       data: Object.assign(fql.fields, fql2.fields),
-      id: pathlib.basename("/setFunctionsTest/updateDoc"),
+      id: pathlib.basename(path),
     };
     const onGet = docData => {
       expect(docData).toEqual(expected);
     };
-    const hooks3 = renderHook(() => useCheckResult({ path: "/setFunctionsTest/updateDoc", onGet }));
+    const hooks3 = renderHook(() => useCheckResult({ path, onGet }));
+    await hooks3.waitForNextUpdate();
+  });
+  it("setDoc mergeFields option", async () => {
+    // https://firebase.google.com/docs/reference/js/firebase.firestore.SetOptions.html
+    // Changes the behavior of set() calls to only replace the specified field paths.
+    // Any field path that is not specified is ignored and remains untouched.
+
+    // set doc (create doc)
+    const onSet = () => {};
+    const hooks1 = renderHook(() => useTestFn(setDoc, { path, onSet, fql }));
+    await hooks1.waitForNextUpdate();
+
+    // set doc (mergeFields specified)
+    const onUpdate = () => {};
+    const hooks2 = renderHook(() =>
+      useTestFn(setDoc, {
+        path,
+        onSet: onUpdate,
+        fql: fql2,
+        options: {
+          mergeFields: ["field2"],
+        },
+      }),
+    );
+    await hooks2.waitForNextUpdate();
+
+    // check updated doc
+    const expected = {
+      data: { ...fql.fields, field2: fql2.fields.field2 },
+      id: pathlib.basename(path),
+    };
+    const onGet = docData => {
+      expect(docData).toEqual(expected);
+    };
+    const hooks3 = renderHook(() => useCheckResult({ path, onGet }));
+    await hooks3.waitForNextUpdate();
+  });
+  it("updateDoc", async () => {
+    // set doc (create doc)
+    const onSet = () => {};
+    const hooks1 = renderHook(() => useTestFn(setDoc, { path, onSet, fql }));
+    await hooks1.waitForNextUpdate();
+
+    // update doc
+    const onUpdate = () => {};
+    const hooks2 = renderHook(() => useTestFn(updateDoc, { path, onSet: onUpdate, fql: fql2 }));
+    await hooks2.waitForNextUpdate();
+
+    // check updated doc
+    const expected = {
+      data: Object.assign(fql.fields, fql2.fields),
+      id: pathlib.basename(path),
+    };
+    const onGet = docData => {
+      expect(docData).toEqual(expected);
+    };
+    const hooks3 = renderHook(() => useCheckResult({ path, onGet }));
     await hooks3.waitForNextUpdate();
   });
 });

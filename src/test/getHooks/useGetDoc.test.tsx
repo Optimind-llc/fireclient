@@ -5,7 +5,7 @@ import backup from "../backup1.json";
 import db from "../firestore";
 
 const testGettingDoc = path => {
-  it(`Get Doc "${path}"`, async () => {
+  it(`should handle a simple query "${path}"`, async () => {
     const pathSplitted = pathlib
       .resolve(path)
       .split("/")
@@ -22,16 +22,16 @@ const testGettingDoc = path => {
 
     expect(result.current[0].id).toBeNull();
     expect(result.current[0].data).toBeNull();
-    expect(result.current[1]).toBeTruthy();
-    expect(result.current[2]).toBeNull();
+    expect(result.current[1]).toBeTruthy(); // loading
+    expect(result.current[2]).toBeNull(); // error
     await waitForNextUpdate();
     expect(result.current[0]).toEqual(expected);
-    expect(result.current[1]).toBeFalsy();
-    expect(result.current[2]).toBeNull();
+    expect(result.current[1]).toBeFalsy(); // loading
+    expect(result.current[2]).toBeNull(); // error
   });
 };
 
-describe("should handle a simple query", () => {
+describe("useGetDoc", () => {
   const docPaths = [
     "/test/array",
     "/test/boolean",
