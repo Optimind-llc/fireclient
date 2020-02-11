@@ -1,6 +1,8 @@
 import { firestore } from "firebase";
 import { List, Map, Set } from "immutable";
-import * as advancedHooks from "./advancedHooks";
+import * as _useQuery from "./advancedHooks/useQuery";
+import * as _useGetSubCollection from "./advancedHooks/useGetSubCollection";
+import * as _usePaginateCollection from "./advancedHooks/usePaginateCollection";
 import * as getHooks from "./getHooks";
 import * as provider from "./provider";
 import * as reducer from "./reducer";
@@ -276,7 +278,7 @@ export const useSetDocs = setHooks.useSetDocs;
 export const useUpdateDocs = setHooks.useUpdateDocs;
 export const useSetCollection = setHooks.useSetCollection;
 
-export const useArrayQuery = advancedHooks.useArrayQuery;
-export const useQuery = advancedHooks.useQuery;
-export const usePaginateCollection = advancedHooks.usePaginateCollection;
-export const useGetSubCollection = advancedHooks.useGetSubCollection;
+export const useArrayQuery = _useQuery.useArrayQuery;
+export const useQuery = _useQuery.useQuery;
+export const usePaginateCollection = _usePaginateCollection.usePaginateCollection;
+export const useGetSubCollection = _useGetSubCollection.useGetSubCollection;
