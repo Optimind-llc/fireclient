@@ -29,6 +29,7 @@ describe("useQuery", () => {
     },
   };
   it(`should handle a simple query`, async () => {
+    let accessCount = 0;
     const expected = {
       number: {
         data: backup.test.number,
@@ -44,11 +45,10 @@ describe("useQuery", () => {
         .toJS(),
     };
     const { result, waitForNextUpdate } = renderHook(() => {
-      useSetContext(db);
+      useSetContext(db, () => accessCount++);
       // @ts-ignore
       return useQuery(fql);
     });
-
     expect(result.current[0]).toEqual({
       number: {
         data: null,
@@ -67,5 +67,6 @@ describe("useQuery", () => {
     expect(result.current[0]).toEqual(expected);
     expect(result.current[1]).toBeFalsy();
     expect(result.current[2]).toBeNull();
+    expect(accessCount).toBe(Object.keys(expected).length);
   });
 });

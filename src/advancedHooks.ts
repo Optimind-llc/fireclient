@@ -127,11 +127,7 @@ export function useArrayQuery(
         setError(err);
       });
   };
-  useEffect(() => {
-    loadQuery();
-    // loadQueryをexhaustive-depsから除外
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getHashCode(getFql)]);
+  useEffect(loadQuery, [getHashCode(getFql)]);
 
   return [queryData, loading, error, unsubscribe];
 }

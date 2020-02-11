@@ -32,8 +32,9 @@ const expected = [
 
 describe("useSubscribeDoc", () => {
   it("should handle a simple query", async () => {
+    let accessCount = 0;
     const { result, waitForNextUpdate } = renderHook(() => {
-      useSetContext(db);
+      useSetContext(db, () => accessCount++);
       const options = {
         order: {
           by: "name",
@@ -54,5 +55,6 @@ describe("useSubscribeDoc", () => {
     );
     expect(result.current[1]).toBeFalsy(); // loading
     expect(result.current[2]).toBeNull(); // error
+    expect(accessCount).toBe(1);
   });
 });

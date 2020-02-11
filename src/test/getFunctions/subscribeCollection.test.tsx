@@ -1,6 +1,6 @@
 import { renderHook } from "@testing-library/react-hooks";
 import { List } from "immutable";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { subscribeCollection } from "../../../dist/getFunctions";
 import { useSetContext } from "../../../dist/provider";
 import { generateHooksId } from "../../../dist/utils";
@@ -15,20 +15,24 @@ const useTest = ({ path, onGet, options }) => {
     throw new Error(err);
   };
   const onListen = () => {};
-  subscribeCollection(
-    uuid,
-    path,
-    doc => {
-      onGet(doc);
-      setFinished(true);
-    },
-    err => {
-      onError(err);
-      setFinished(true);
-    },
-    onListen,
-    options,
-    false,
+  useEffect(
+    () =>
+      subscribeCollection(
+        uuid,
+        path,
+        doc => {
+          onGet(doc);
+          setFinished(true);
+        },
+        err => {
+          onError(err);
+          setFinished(true);
+        },
+        onListen,
+        options,
+        false,
+      ),
+    [],
   );
   return finished;
 };

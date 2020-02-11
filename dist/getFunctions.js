@@ -32,6 +32,7 @@ function getDocSnapshot(path, onGet, onError, acceptOutdated, saveToState) {
         });
     }
     catch (err) {
+        console.error(err);
         onError(err);
     }
 }
@@ -66,13 +67,17 @@ function subscribeDocSnapshot(uuid, path, onChange, onError, onListen, saveToSta
                 utils_1.connectDocToState(dispatch, docId, uuid);
             }
             onChange(doc);
-        }, onError);
+        }, function (err) {
+            console.log(err);
+            onError(err);
+        });
         return function () {
             unsubscribe_1();
             utils_1.disconnectDocFromState(dispatch, docId, uuid);
         };
     }
     catch (err) {
+        console.error(err);
         onError(err);
         return function () { };
     }
@@ -104,6 +109,7 @@ function getCollectionSnapshot(path, onGet, onError, options, acceptOutdated, sa
         });
     }
     catch (err) {
+        console.error(err);
         onError(err);
     }
 }
@@ -155,13 +161,17 @@ function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, op
                 utils_1.connectCollectionToState(dispatch, collectionId, uuid, docIds);
             }
             onChange(collection.docs);
-        }, onError);
+        }, function (err) {
+            console.error(err);
+            onError(err);
+        });
         return function () {
             unsubscribe_2();
             utils_1.disconnectCollectionFromState(dispatch, collectionId, uuid, docIds);
         };
     }
     catch (err) {
+        console.error(err);
         onError(err);
         return function () { };
     }

@@ -1,6 +1,6 @@
 import { renderHook } from "@testing-library/react-hooks";
 import { List } from "immutable";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getCollection } from "../../../dist/getFunctions";
 import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
@@ -12,19 +12,23 @@ const useTest = ({ path, onGet, options }) => {
   const onError = err => {
     throw new Error(err);
   };
-  getCollection(
-    path,
-    doc => {
-      onGet(doc);
-      setFinished(true);
-    },
-    err => {
-      onError(err);
-      setFinished(true);
-    },
-    options,
-    false,
-    false,
+  useEffect(
+    () =>
+      getCollection(
+        path,
+        doc => {
+          onGet(doc);
+          setFinished(true);
+        },
+        err => {
+          onError(err);
+          setFinished(true);
+        },
+        options,
+        false,
+        false,
+      ),
+    [],
   );
   return finished;
 };

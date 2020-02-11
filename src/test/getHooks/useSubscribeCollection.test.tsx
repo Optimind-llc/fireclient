@@ -30,8 +30,9 @@ const expected = [
 
 describe("useSubscribeCollection", () => {
   it("should handle a simple query", async () => {
+    let accessCount = 0;
     const { result, waitForNextUpdate } = renderHook(() => {
-      useSetContext(db);
+      useSetContext(db, () => accessCount++);
       const options = {
         order: {
           by: "name",
@@ -44,6 +45,7 @@ describe("useSubscribeCollection", () => {
     expect(result.current[0].length).toBe(0);
     expect(result.current[1]).toBeTruthy(); // loading
     expect(result.current[2]).toBeNull(); // error
+
     await waitForNextUpdate();
     expect(result.current[0]).toEqual(
       List(expected)
@@ -52,5 +54,6 @@ describe("useSubscribeCollection", () => {
     );
     expect(result.current[1]).toBeFalsy(); // loading
     expect(result.current[2]).toBeNull(); // error
+    expect(accessCount).toBe(1);
   });
 });

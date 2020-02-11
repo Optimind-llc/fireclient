@@ -7,6 +7,7 @@ import db from "../firestore";
 describe("useSetDoc", () => {
   const path = "/useSetDocTest/doc1";
   it("should handle a simple query", async () => {
+    let accessCount = 0;
     const fql = {
       fields: {
         field1: Math.random(),
@@ -21,24 +22,25 @@ describe("useSetDoc", () => {
     };
 
     const hooks1 = renderHook(() => {
-      useSetContext(db);
+      useSetContext(db, () => accessCount++);
       return useSetDoc(path, fql, { saveToState: false });
     });
     const result1 = hooks1.result;
     const waitForNextUpdate1 = hooks1.waitForNextUpdate;
 
-    console.log(result1.current[1]);
     expect(result1.current[1]).toBeFalsy(); // writing
     expect(result1.current[2]).toBeFalsy(); // called
     expect(result1.current[3]).toBeNull(); // error
+    expect(accessCount).toBe(0);
     result1.current[0](); // setFn()
     await waitForNextUpdate1();
     expect(result1.current[1]).toBeFalsy(); // writing
     expect(result1.current[2]).toBeTruthy(); // called
     expect(result1.current[3]).toBeNull(); // error
+    expect(accessCount).toBe(1);
 
     const hooks2 = renderHook(() => {
-      useSetContext(db);
+      useSetContext(db, () => accessCount++);
       return useGetDoc(path, { saveToState: false });
     });
     const result2 = hooks2.result;
@@ -46,5 +48,6 @@ describe("useSetDoc", () => {
 
     await waitForNextUpdate2();
     expect(result2.current[0]).toEqual(expected);
+    expect(accessCount).toBe(2);
   });
 });

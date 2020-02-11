@@ -53,9 +53,10 @@ type SubscribeCollectionFunction<State> = (
   saveToState?: boolean,
 ) => () => void;
 
-function useLazyGetDocBase<State, InitialState = State>(
+function useGetDocBase<State, InitialState = State>(
   path: string,
   initialValue: State | InitialState,
+  lazy: boolean,
   getFunction: GetDocFunction<State>,
   options?: {
     callback?: (snapshot: State) => void;
@@ -81,7 +82,7 @@ function useLazyGetDocBase<State, InitialState = State>(
 
   const [error, setError] = useState(null);
   const [doc, setDoc] = useState<State | InitialState>(initialValue);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!lazy);
 
   const loadDoc = () => {
     setLoading(true);
@@ -99,6 +100,8 @@ function useLazyGetDocBase<State, InitialState = State>(
       },
     );
   };
+  if (!lazy) useEffect(() => loadDoc(), [path, getHashCode(options)]);
+
   return [doc, loading, error, loadDoc];
 }
 
@@ -124,7 +127,7 @@ export function useSubscribeDocBase<State, InitialState = State>(
   const [hooksId] = useState(generateHooksId());
   const [error, setError] = useState(null);
   const [doc, setDoc] = useState<State | InitialState>(initialValue);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [unsubscribe, setUnsubscribe] = useState<{
     fn: () => void;
   }>({ fn: () => {} });
@@ -156,9 +159,10 @@ export function useSubscribeDocBase<State, InitialState = State>(
 //  Get Collection Hooks Base
 // ------------------------------------------
 
-export function useLazyGetCollectionBase<State, InitialState = State>(
+export function useGetCollectionBase<State, InitialState = State>(
   path: string,
   initialValue: State | InitialState,
+  lazy: boolean,
   getFunction: GetCollectionFunction<State>,
   options?: {
     callback?: (data: State) => void;
@@ -185,7 +189,7 @@ export function useLazyGetCollectionBase<State, InitialState = State>(
 
   const [error, setError] = useState(null);
   const [collection, setCollection] = useState<State | InitialState>(initialValue);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!lazy);
   const loadCollection = () => {
     setLoading(true);
     getFunction(
@@ -204,6 +208,8 @@ export function useLazyGetCollectionBase<State, InitialState = State>(
       options?.acceptOutdated,
     );
   };
+  if (!lazy) useEffect(() => loadCollection(), [path, getHashCode(options)]);
+
   return [collection, loading, error, loadCollection];
 }
 
@@ -234,7 +240,7 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
   const [hooksId] = useState(generateHooksId());
   const [error, setError] = useState(null);
   const [collection, setCollection] = useState<State | InitialState>(initialValue);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [unsubscribe, setUnsubscribe] = useState<{
     fn: () => void;
   }>({ fn: () => {} });
@@ -275,7 +281,7 @@ export function useLazyGetDocSnapshot(
     saveToState?: boolean;
   },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
-  return useLazyGetDocBase<firestore.DocumentSnapshot, null>(path, null, getDocSnapshot, options);
+  return useGetDocBase<firestore.DocumentSnapshot, null>(path, null, true, getDocSnapshot, options);
 }
 
 export function useGetDocSnapshot(
@@ -286,11 +292,13 @@ export function useGetDocSnapshot(
     saveToState?: boolean;
   },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
-  const [doc, loading, error, reloadDoc] = useLazyGetDocSnapshot(path, options);
-  // reloadDocを除去
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => reloadDoc(), [path, getHashCode(options)]);
-  return [doc, loading, error, reloadDoc];
+  return useGetDocBase<firestore.DocumentSnapshot, null>(
+    path,
+    null,
+    false,
+    getDocSnapshot,
+    options,
+  );
 }
 
 export function useSubscribeDocSnapshot(
@@ -315,9 +323,10 @@ export function useLazyGetCollectionSnapshot(
     saveToState?: boolean;
   } & QueryOptions,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
-  return useLazyGetCollectionBase<firestore.DocumentSnapshot[], null>(
+  return useGetCollectionBase<firestore.DocumentSnapshot[], null>(
     path,
     null,
+    true,
     getCollectionSnapshot,
     options,
   );
@@ -331,14 +340,13 @@ export function useGetCollectionSnapshot(
     saveToState?: boolean;
   } & QueryOptions,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
-  const [collection, loading, error, reloadCollection] = useLazyGetCollectionSnapshot(
+  return useGetCollectionBase<firestore.DocumentSnapshot[], null>(
     path,
+    null,
+    false,
+    getCollectionSnapshot,
     options,
   );
-  // reloadCollectionを除去
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => reloadCollection(), [path, getHashCode(options)]);
-  return [collection, loading, error, reloadCollection];
 }
 
 export function useSubscribeCollectionSnapshot(
@@ -369,7 +377,7 @@ export function useLazyGetDoc(
     saveToState?: boolean;
   },
 ): [DocData, boolean, any, () => void] {
-  return useLazyGetDocBase(path, initialDocData, getDoc, options);
+  return useGetDocBase(path, initialDocData, true, getDoc, options);
 }
 
 export function useGetDoc(
@@ -380,11 +388,7 @@ export function useGetDoc(
     saveToState?: boolean;
   },
 ): [DocData, boolean, any, () => void] {
-  const [doc, loading, error, reloadDoc] = useLazyGetDoc(path, options);
-  // reloadDocを除去
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => reloadDoc(), [path, getHashCode(options)]);
-  return [doc, loading, error, reloadDoc];
+  return useGetDocBase(path, initialDocData, false, getDoc, options);
 }
 
 export function useSubscribeDoc(
@@ -410,7 +414,7 @@ export function useLazyGetCollection(
     saveToState?: boolean;
   } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
-  return useLazyGetCollectionBase(path, initialCollectionData, getCollection, options);
+  return useGetCollectionBase(path, initialCollectionData, true, getCollection, options);
 }
 
 export function useGetCollection(
@@ -421,11 +425,7 @@ export function useGetCollection(
     saveToState?: boolean;
   } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
-  const [collection, loading, error, reloadCollection] = useLazyGetCollection(path, options);
-  // reloadCollectionを除去
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => reloadCollection(), [path, getHashCode(options)]);
-  return [collection, loading, error, reloadCollection];
+  return useGetCollectionBase(path, initialCollectionData, false, getCollection, options);
 }
 
 export function useSubscribeCollection(

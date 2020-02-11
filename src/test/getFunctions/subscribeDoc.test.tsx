@@ -1,6 +1,6 @@
 import { renderHook } from "@testing-library/react-hooks";
 import * as pathlib from "path";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { subscribeDoc } from "../../../dist/getFunctions";
 import { useSetContext } from "../../../dist/provider";
 import { generateHooksId } from "../../../dist/utils";
@@ -15,19 +15,23 @@ const useTest = ({ path, onGet }) => {
     throw new Error(err);
   };
   const onListen = () => {};
-  subscribeDoc(
-    uuid,
-    path,
-    doc => {
-      onGet(doc);
-      setFinished(true);
-    },
-    err => {
-      onError(err);
-      setFinished(true);
-    },
-    onListen,
-    false,
+  useEffect(
+    () =>
+      subscribeDoc(
+        uuid,
+        path,
+        doc => {
+          onGet(doc);
+          setFinished(true);
+        },
+        err => {
+          onError(err);
+          setFinished(true);
+        },
+        onListen,
+        false,
+      ),
+    [],
   );
   return finished;
 };

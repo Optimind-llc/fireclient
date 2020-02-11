@@ -7,6 +7,7 @@ import db from "../firestore";
 
 const testGettingDoc = path => {
   it(`should handle a simple query "${path}"`, async () => {
+    let accessCount = 0;
     const pathSplitted = pathlib
       .resolve(path)
       .split("/")
@@ -17,7 +18,7 @@ const testGettingDoc = path => {
     };
 
     const { result, waitForNextUpdate } = renderHook(() => {
-      useSetContext(db);
+      useSetContext(db, () => accessCount++);
       return useGetDoc(path, { saveToState: false });
     });
 
@@ -29,6 +30,7 @@ const testGettingDoc = path => {
     expect(result.current[0]).toEqual(expected);
     expect(result.current[1]).toBeFalsy(); // loading
     expect(result.current[2]).toBeNull(); // error
+    expect(accessCount).toBe(1);
   });
 };
 

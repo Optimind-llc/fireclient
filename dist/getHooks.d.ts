@@ -8,7 +8,7 @@ export declare function useSubscribeDocBase<State, InitialState = State>(path: s
     callback?: (snapshot: State) => void;
     saveToState?: boolean;
 }): [State | InitialState, boolean, any, () => void];
-export declare function useLazyGetCollectionBase<State, InitialState = State>(path: string, initialValue: State | InitialState, getFunction: GetCollectionFunction<State>, options?: {
+export declare function useGetCollectionBase<State, InitialState = State>(path: string, initialValue: State | InitialState, lazy: boolean, getFunction: GetCollectionFunction<State>, options?: {
     callback?: (data: State) => void;
     acceptOutdated?: boolean;
     saveToState?: boolean;

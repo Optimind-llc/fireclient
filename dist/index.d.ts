@@ -237,7 +237,7 @@ export declare type ProviderContext = {
 };
 export declare const deleteField: firestore.FieldValue;
 export declare const convertStateToJson: typeof provider.convertStateToJson;
-export declare const Provider: typeof provider.default;
+export declare const FireclientProvider: typeof provider.default;
 export declare const Context: import("react").Context<any>;
 export declare const getContext: typeof provider.getContext;
 export declare const getHashCode: typeof utils.getHashCode;
