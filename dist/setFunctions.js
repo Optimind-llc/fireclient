@@ -11,11 +11,15 @@ var pathlib = __importStar(require("path"));
 var provider_1 = require("./provider");
 var utils_1 = require("./utils");
 // 書き込み完了時のCallback
-var setDocCallback = function (dispatch, onSet, onError, docPath, fields, subCollection, options) {
+var setDocCallback = function (dispatch, onSet, onError, docPath, fields, options, subCollection) {
+    var _a;
     // 書き込んだ内容をStateに保存する
-    var docId = pathlib.basename(docPath);
-    var data = utils_1.createData(docId, fields);
-    utils_1.saveDoc(dispatch, docPath, data);
+    // options.saveToState can be undefined
+    if (((_a = options) === null || _a === void 0 ? void 0 : _a.saveToState) !== false) {
+        var docId = pathlib.basename(docPath);
+        var data = utils_1.createData(docId, fields);
+        utils_1.saveDoc(dispatch, docPath, data);
+    }
     if (subCollection === undefined) {
         // subCollectionがなければ終了
         onSet();
@@ -40,6 +44,7 @@ function setDoc(path, query, onSet, onError, options) {
     if (options === void 0) { options = {}; }
     var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch, onAccess = _a.onAccess;
     var id = query.id, subCollection = query.subCollection;
+    var merge = options.merge, mergeFields = options.mergeFields;
     var fields = query.fields !== undefined ? query.fields : {};
     var isDoc = utils_1.isDocPath(path);
     var idExists = id !== undefined;
@@ -49,8 +54,8 @@ function setDoc(path, query, onSet, onError, options) {
             // doc path が渡された時
             var ref = firestoreDB.doc(path);
             ref
-                .set(fields, options)
-                .then(function () { return setDocCallback(dispatch, onSet, onError, path, fields, subCollection); })
+                .set(fields, { merge: merge, mergeFields: mergeFields })
+                .then(function () { return setDocCallback(dispatch, onSet, onError, path, fields, options, subCollection); })
                 .catch(function (err) {
                 console.error(err);
                 onError(err);
@@ -61,8 +66,8 @@ function setDoc(path, query, onSet, onError, options) {
             var docPath = pathlib.resolve(path, id);
             var ref = firestoreDB.doc(docPath);
             ref
-                .set(fields, options)
-                .then(function () { return setDocCallback(dispatch, onSet, onError, path, fields, subCollection); })
+                .set(fields, { merge: merge, mergeFields: mergeFields })
+                .then(function () { return setDocCallback(dispatch, onSet, onError, path, fields, options, subCollection); })
                 .catch(function (err) {
                 console.error(err);
                 onError(err);
@@ -74,7 +79,7 @@ function setDoc(path, query, onSet, onError, options) {
             ref
                 .add(fields)
                 .then(function (doc) {
-                return setDocCallback(dispatch, onSet, onError, pathlib.resolve(path, doc.id), fields, subCollection);
+                return setDocCallback(dispatch, onSet, onError, pathlib.resolve(path, doc.id), fields, options, subCollection);
             })
                 .catch(function (err) {
                 console.error(err);
@@ -88,7 +93,7 @@ function setDoc(path, query, onSet, onError, options) {
 }
 exports.setDoc = setDoc;
 // subCollectionを扱わない
-function updateDoc(docPath, query, onUpdate, onError) {
+function updateDoc(docPath, query, onUpdate, onError, options) {
     var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch, onAccess = _a.onAccess;
     var fields = query.fields !== undefined ? query.fields : {};
     try {
@@ -97,7 +102,7 @@ function updateDoc(docPath, query, onUpdate, onError) {
         ref
             .update(fields)
             .then(function () {
-            setDocCallback(dispatch, onUpdate, onError, docPath, fields);
+            setDocCallback(dispatch, onUpdate, onError, docPath, fields, options);
         })
             .catch(function (err) {
             console.error(err);

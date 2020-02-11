@@ -12,18 +12,15 @@ var react_1 = require("react");
 var setFunctions_1 = require("./setFunctions");
 var typeCheck = __importStar(require("./typeCheck"));
 var typeCheck_1 = require("./typeCheck");
-// ------------------------------------------
-//  Set Hooks Base
-// ------------------------------------------
 function useSetDocBase(path, query, setFunction, options) {
-    // Arg typeCheck
+    // Argument typeCheck
     typeCheck.assertSetFql(query);
     typeCheck_1.assertRule([
         { key: "path", fn: typeCheck.isString },
         {
             key: "options",
             optional: true,
-            fn: typeCheck_1.matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
+            fn: typeCheck_1.matches(typeCheck.concatRule(typeCheck.mergeRule, typeCheck.callbackRule, typeCheck.saveToStateRule)),
         },
     ])({ path: path, options: options }, "Argument");
     var _a = react_1.useState(false), writing = _a[0], setWriting = _a[1];
@@ -54,12 +51,12 @@ function useSetDocBase(path, query, setFunction, options) {
     return [writeFn, writing, called, error];
 }
 function useSetDocsBase(queries, setFunction, options) {
-    // Arg typeCheck
+    // Argument typeCheck
     typeCheck_1.assertRule([
         {
             key: "options",
             optional: true,
-            fn: typeCheck_1.matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
+            fn: typeCheck_1.matches(typeCheck.concatRule(typeCheck.mergeRule, typeCheck.callbackRule, typeCheck.saveToStateRule)),
         },
     ])({ options: options }, "Argument");
     typeCheck.assertSetDocsFql(queries);
@@ -98,14 +95,14 @@ function useSetDocsBase(queries, setFunction, options) {
     return [writeFn, writing, called, error];
 }
 function useSetCollectionBase(path, queries, setFunction, options) {
-    // Arg typeCheck
+    // Argument typeCheck
     typeCheck.assertSetCollectionFql(queries);
     typeCheck_1.matches([
         { key: "path", fn: typeCheck.isString },
         {
             key: "options",
             optional: true,
-            fn: typeCheck_1.matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
+            fn: typeCheck_1.matches(typeCheck.concatRule(typeCheck.mergeRule, typeCheck.callbackRule, typeCheck.saveToStateRule)),
         },
     ])({ path: path, options: options }, "Argument");
     var _a = react_1.useState(false), writing = _a[0], setWriting = _a[1];

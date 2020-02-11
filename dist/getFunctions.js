@@ -11,7 +11,9 @@ var immutable_1 = require("immutable");
 var pathlib = __importStar(require("path"));
 var provider_1 = require("./provider");
 var utils_1 = require("./utils");
-function getDocSnapshot(path, onGet, onError) {
+function getDocSnapshot(path, onGet, onError, acceptOutdated, saveToState) {
+    if (acceptOutdated === void 0) { acceptOutdated = false; }
+    if (saveToState === void 0) { saveToState = true; }
     var docId = pathlib.resolve(path);
     var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB, onAccess = _a.onAccess;
     try {
@@ -20,7 +22,8 @@ function getDocSnapshot(path, onGet, onError) {
         ref
             .get()
             .then(function (doc) {
-            utils_1.saveDoc(dispatch, docId, utils_1.createDataFromDoc(doc));
+            if (saveToState)
+                utils_1.saveDoc(dispatch, docId, utils_1.createDataFromDoc(doc));
             onGet(doc);
         })
             .catch(function (err) {
@@ -33,7 +36,7 @@ function getDocSnapshot(path, onGet, onError) {
     }
 }
 exports.getDocSnapshot = getDocSnapshot;
-function getDoc(path, onGet, onError, acceptOutdated) {
+function getDoc(path, onGet, onError, acceptOutdated, saveToState) {
     if (acceptOutdated === void 0) { acceptOutdated = false; }
     var _a, _b;
     var docId = pathlib.resolve(path);
@@ -45,11 +48,12 @@ function getDoc(path, onGet, onError, acceptOutdated) {
         onGet(docCache);
         return;
     }
-    getDocSnapshot(path, function (doc) { return onGet(utils_1.createDataFromDoc(doc)); }, onError);
+    getDocSnapshot(path, function (doc) { return onGet(utils_1.createDataFromDoc(doc)); }, onError, acceptOutdated, saveToState);
 }
 exports.getDoc = getDoc;
-function subscribeDocSnapshot(uuid, path, onChange, onError, onListen) {
+function subscribeDocSnapshot(uuid, path, onChange, onError, onListen, saveToState) {
     if (onListen === void 0) { onListen = function () { }; }
+    if (saveToState === void 0) { saveToState = true; }
     var docId = pathlib.resolve(path);
     var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB, onAccess = _a.onAccess;
     try {
@@ -57,8 +61,10 @@ function subscribeDocSnapshot(uuid, path, onChange, onError, onListen) {
         var ref = firestoreDB.doc(path);
         var unsubscribe_1 = ref.onSnapshot(function (doc) {
             onListen();
-            utils_1.saveDoc(dispatch, docId, utils_1.createDataFromDoc(doc));
-            utils_1.connectDocToState(dispatch, docId, uuid);
+            if (saveToState) {
+                utils_1.saveDoc(dispatch, docId, utils_1.createDataFromDoc(doc));
+                utils_1.connectDocToState(dispatch, docId, uuid);
+            }
             onChange(doc);
         }, onError);
         return function () {
@@ -72,14 +78,15 @@ function subscribeDocSnapshot(uuid, path, onChange, onError, onListen) {
     }
 }
 exports.subscribeDocSnapshot = subscribeDocSnapshot;
-function subscribeDoc(uuid, path, onChange, onError, onListen) {
+function subscribeDoc(uuid, path, onChange, onError, onListen, saveToState) {
     if (onListen === void 0) { onListen = function () { }; }
-    return subscribeDocSnapshot(uuid, path, function (doc) { return onChange(utils_1.createDataFromDoc(doc)); }, onError, onListen);
+    return subscribeDocSnapshot(uuid, path, function (doc) { return onChange(utils_1.createDataFromDoc(doc)); }, onError, onListen, saveToState);
 }
 exports.subscribeDoc = subscribeDoc;
-function getCollectionSnapshot(path, onGet, onError, options, acceptOutdated) {
+function getCollectionSnapshot(path, onGet, onError, options, acceptOutdated, saveToState) {
     if (options === void 0) { options = {}; }
     if (acceptOutdated === void 0) { acceptOutdated = false; }
+    if (saveToState === void 0) { saveToState = true; }
     var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB, onAccess = _a.onAccess;
     try {
         onAccess();
@@ -87,7 +94,8 @@ function getCollectionSnapshot(path, onGet, onError, options, acceptOutdated) {
         ref
             .get()
             .then(function (collection) {
-            utils_1.saveCollection(dispatch, path, options, utils_1.createDataFromCollection(collection.docs));
+            if (saveToState)
+                utils_1.saveCollection(dispatch, path, options, utils_1.createDataFromCollection(collection.docs));
             onGet(collection.docs);
         })
             .catch(function (err) {
@@ -100,7 +108,7 @@ function getCollectionSnapshot(path, onGet, onError, options, acceptOutdated) {
     }
 }
 exports.getCollectionSnapshot = getCollectionSnapshot;
-function getCollection(path, onGet, onError, options, acceptOutdated) {
+function getCollection(path, onGet, onError, options, acceptOutdated, saveToState) {
     if (options === void 0) { options = {}; }
     if (acceptOutdated === void 0) { acceptOutdated = false; }
     var _a, _b;
@@ -121,12 +129,13 @@ function getCollection(path, onGet, onError, options, acceptOutdated) {
         onGet(collectionCache);
         return;
     }
-    getCollectionSnapshot(path, function (collection) { return onGet(utils_1.createDataFromCollection(collection)); }, onError, options);
+    getCollectionSnapshot(path, function (collection) { return onGet(utils_1.createDataFromCollection(collection)); }, onError, options, acceptOutdated, saveToState);
 }
 exports.getCollection = getCollection;
-function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, options) {
+function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, options, saveToState) {
     if (onListen === void 0) { onListen = function () { }; }
     if (options === void 0) { options = {}; }
+    if (saveToState === void 0) { saveToState = true; }
     var collectionId = utils_1.getQueryId(path, options);
     var _a = provider_1.getContext(), dispatch = _a.dispatch, firestoreDB = _a.firestoreDB, onAccess = _a.onAccess;
     var docIds = immutable_1.List();
@@ -141,8 +150,10 @@ function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, op
             var decreased = docIds.filter(function (id) { return nextDocIds.indexOf(id) === -1; });
             decreased.forEach(function (docId) { return utils_1.disconnectDocFromState(dispatch, docId, uuid); });
             docIds = nextDocIds;
-            utils_1.saveCollection(dispatch, path, options, utils_1.createDataFromCollection(collection.docs));
-            utils_1.connectCollectionToState(dispatch, collectionId, uuid, docIds);
+            if (saveToState) {
+                utils_1.saveCollection(dispatch, path, options, utils_1.createDataFromCollection(collection.docs));
+                utils_1.connectCollectionToState(dispatch, collectionId, uuid, docIds);
+            }
             onChange(collection.docs);
         }, onError);
         return function () {
@@ -156,9 +167,9 @@ function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, op
     }
 }
 exports.subscribeCollectionSnapshot = subscribeCollectionSnapshot;
-function subscribeCollection(uuid, path, onChange, onError, onListen, options) {
+function subscribeCollection(uuid, path, onChange, onError, onListen, options, saveToState) {
     if (onListen === void 0) { onListen = function () { }; }
     if (options === void 0) { options = {}; }
-    return subscribeCollectionSnapshot(uuid, path, function (collection) { return onChange(utils_1.createDataFromCollection(collection)); }, onError, onListen, options);
+    return subscribeCollectionSnapshot(uuid, path, function (collection) { return onChange(utils_1.createDataFromCollection(collection)); }, onError, onListen, options, saveToState);
 }
 exports.subscribeCollection = subscribeCollection;

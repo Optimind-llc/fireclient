@@ -16,16 +16,20 @@ const setDocCallback = (
   onError: (error: any) => void,
   docPath: string,
   fields: Fields,
-  subCollection?: SubCollection,
   options?: {
     merge?: boolean;
     mergeFields?: string[];
+    saveToState?: boolean;
   },
+  subCollection?: SubCollection,
 ) => {
   // 書き込んだ内容をStateに保存する
-  const docId = pathlib.basename(docPath);
-  const data = createData(docId, fields);
-  saveDoc(dispatch, docPath, data);
+  // options.saveToState can be undefined
+  if (options?.saveToState !== false) {
+    const docId = pathlib.basename(docPath);
+    const data = createData(docId, fields);
+    saveDoc(dispatch, docPath, data);
+  }
 
   if (subCollection === undefined) {
     // subCollectionがなければ終了
@@ -63,10 +67,12 @@ export function setDoc(
   options: {
     merge?: boolean;
     mergeFields?: string[];
+    saveToState?: boolean;
   } = {},
 ) {
   const { firestoreDB, dispatch, onAccess } = getContext();
   const { id, subCollection } = query;
+  const { merge, mergeFields } = options;
 
   const fields = query.fields !== undefined ? query.fields : {};
 
@@ -79,8 +85,8 @@ export function setDoc(
       // doc path が渡された時
       const ref = firestoreDB.doc(path);
       ref
-        .set(fields, options)
-        .then(() => setDocCallback(dispatch, onSet, onError, path, fields, subCollection))
+        .set(fields, { merge, mergeFields })
+        .then(() => setDocCallback(dispatch, onSet, onError, path, fields, options, subCollection))
         .catch(err => {
           console.error(err);
           onError(err);
@@ -90,8 +96,8 @@ export function setDoc(
       const docPath = pathlib.resolve(path, id!);
       const ref = firestoreDB.doc(docPath);
       ref
-        .set(fields, options)
-        .then(() => setDocCallback(dispatch, onSet, onError, path, fields, subCollection))
+        .set(fields, { merge, mergeFields })
+        .then(() => setDocCallback(dispatch, onSet, onError, path, fields, options, subCollection))
         .catch(err => {
           console.error(err);
           onError(err);
@@ -108,6 +114,7 @@ export function setDoc(
             onError,
             pathlib.resolve(path, doc.id),
             fields,
+            options,
             subCollection,
           ),
         )
@@ -117,6 +124,7 @@ export function setDoc(
         });
     }
   } catch (err) {
+    console.error(err);
     onError(err);
   }
 }
@@ -126,6 +134,9 @@ export function updateDoc(
   query: StaticSetFql,
   onUpdate: () => void,
   onError: (error: any) => void,
+  options?: {
+    saveToState?: boolean;
+  },
 ) {
   const { firestoreDB, dispatch, onAccess } = getContext();
   const fields = query.fields !== undefined ? query.fields : {};
@@ -136,13 +147,14 @@ export function updateDoc(
     ref
       .update(fields)
       .then(() => {
-        setDocCallback(dispatch, onUpdate, onError, docPath, fields);
+        setDocCallback(dispatch, onUpdate, onError, docPath, fields, options);
       })
       .catch(err => {
         console.error(err);
         onError(err);
       });
   } catch (err) {
+    console.error(err);
     onError(err);
   }
 }
@@ -168,6 +180,7 @@ export function setCollection(
   options?: {
     merge?: boolean;
     mergeFields?: string[];
+    saveToState?: boolean;
   },
 ) {
   Promise.all(

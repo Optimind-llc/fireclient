@@ -10,12 +10,9 @@
     "pretty": true,
     "newLine": "lf",
     "jsx": "react",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "src/test"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["src/test"]
 }

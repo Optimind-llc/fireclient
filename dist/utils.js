@@ -32,6 +32,12 @@ function sortedFromJS(object) {
                 .sortBy(function (v, k) { return k; });
     }
 }
+function generateHooksId() {
+    return Math.random()
+        .toString(32)
+        .substring(2);
+}
+exports.generateHooksId = generateHooksId;
 function getHashCode(obj) {
     if (obj === undefined) {
         return sortedFromJS({}).hashCode();

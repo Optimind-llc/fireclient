@@ -10,26 +10,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("firebase/firestore");
 var react_1 = require("react");
 var getFunctions_1 = require("./getFunctions");
+var utils_1 = require("./utils");
 var typeCheck = __importStar(require("./typeCheck"));
 var typeCheck_1 = require("./typeCheck");
-var utils_1 = require("./utils");
-function generateHooksId() {
-    return Math.random()
-        .toString(32)
-        .substring(2);
-}
-exports.generateHooksId = generateHooksId;
-// ------------------------------------------
-//  Get Doc Hooks Base
-// ------------------------------------------
 function useLazyGetDocBase(path, initialValue, getFunction, options) {
-    // Arg typeCheck
+    // Argument typeCheck
     typeCheck_1.assertRule([
         { key: "path", fn: typeCheck.isString },
         {
             key: "options",
             optional: true,
-            fn: typeCheck.matches(typeCheck.callbackRule.concat(typeCheck.acceptOutdatedRule)),
+            fn: typeCheck.matches(typeCheck.concatRule(typeCheck.callbackRule, typeCheck.acceptOutdatedRule, typeCheck.saveToStateRule)),
         },
     ])({ path: path, options: options }, "Argument");
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
@@ -52,16 +43,16 @@ function useLazyGetDocBase(path, initialValue, getFunction, options) {
     return [doc, loading, error, loadDoc];
 }
 function useSubscribeDocBase(path, initialValue, subscribeFunction, options) {
-    // Arg typeCheck
+    // Argument typeCheck
     typeCheck_1.assertRule([
         { key: "path", fn: typeCheck.isString },
         {
             key: "options",
             optional: true,
-            fn: typeCheck_1.matches(typeCheck.callbackRule),
+            fn: typeCheck_1.matches(typeCheck.concatRule(typeCheck.callbackRule, typeCheck.saveToStateRule)),
         },
     ])({ path: path, options: options }, "Argument");
-    var hooksId = react_1.useState(generateHooksId())[0];
+    var hooksId = react_1.useState(utils_1.generateHooksId())[0];
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), doc = _b[0], setDoc = _b[1];
     var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
@@ -89,13 +80,13 @@ exports.useSubscribeDocBase = useSubscribeDocBase;
 //  Get Collection Hooks Base
 // ------------------------------------------
 function useLazyGetCollectionBase(path, initialValue, getFunction, options) {
-    // Arg typeCheck
+    // Argument typeCheck
     typeCheck_1.assertRule([
         { key: "path", fn: typeCheck.isString },
         {
             key: "options",
             optional: true,
-            fn: typeCheck_1.matches(typeCheck.queryOptionRule.concat(typeCheck.callbackRule, typeCheck.acceptOutdatedRule)),
+            fn: typeCheck_1.matches(typeCheck.concatRule(typeCheck.queryOptionRule, typeCheck.callbackRule, typeCheck.acceptOutdatedRule, typeCheck.saveToStateRule)),
         },
     ])({ path: path, options: options }, "Argument");
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
@@ -120,14 +111,15 @@ function useLazyGetCollectionBase(path, initialValue, getFunction, options) {
 }
 exports.useLazyGetCollectionBase = useLazyGetCollectionBase;
 function useSubscribeCollectionBase(path, initialValue, subscribeFunction, options) {
+    // Argument typeCheck
     typeCheck_1.assertRule([
         { key: "path", fn: typeCheck.isString },
         {
             key: "options",
-            fn: typeCheck_1.matches(typeCheck.queryOptionRule.concat(typeCheck.callbackRule)),
+            fn: typeCheck_1.matches(typeCheck.concatRule(typeCheck.queryOptionRule, typeCheck.callbackRule, typeCheck.saveToStateRule)),
         },
     ])({ path: path, options: options }, "Argument");
-    var hooksId = react_1.useState(generateHooksId())[0];
+    var hooksId = react_1.useState(utils_1.generateHooksId())[0];
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), collection = _b[0], setCollection = _b[1];
     var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];

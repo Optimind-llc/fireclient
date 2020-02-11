@@ -8,6 +8,7 @@ import SubscribeDoc from "./container/SubscribeDoc";
 import LazyGetDoc from "./container/LazyGetDoc";
 import SetDoc from "./container/SetDoc";
 import UpdateDoc from "./container/UpdateDoc";
+import GetSubCollection from "./container/GetSubCollection";
 
 import Playground from "./container/Playground";
 
@@ -94,37 +95,7 @@ const App = () => {
   const [queryCache, setQueryCache] = useState("");
   const [docPath, setDocPath] = useState("");
   const [collectionPath, setCollectionPath] = useState("");
-  const pages = [
-    {
-      title: "useGetDoc",
-      path: "/",
-      component: (docPath, collectionPath) =>
-        docPath.length > 0 ? <GetDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
-    },
-    {
-      title: "useGetCollection",
-      component: (docPath, collectionPath) =>
-        collectionPath.length > 0 ? (
-          <GetCollection collectionPath={collectionPath} />
-        ) : (
-          <h2>Collection path is required.</h2>
-        ),
-    },
-    {
-      title: "useSubscribeDoc",
-      component: (docPath, collectionPath) =>
-        docPath.length > 0 ? <SubscribeDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
-    },
-    {
-      title: "useLazyGetDoc",
-      component: (docPath, collectionPath) =>
-        docPath.length > 0 ? <LazyGetDoc docPath={docPath} /> : <h2>Doc path is required.</h2>,
-    },
-    {
-      title: "useGetSubCollection",
-      component: () => <GetSubCollection />,
-    },
-  ];
+  const pages = pagesTemplate(docPath, collectionPath, {});
   return (
     <>
       <BrowserRouter>
@@ -148,33 +119,6 @@ const App = () => {
         />
         <StyledButton onClick={() => setCollectionPath(collectionPathCache)}>Apply</StyledButton>
         <pre>Collection Path : {collectionPath}</pre>
-
-        <h2>Query Object</h2>
-        <StyledTextArea
-          type="text"
-          placeholder={queryExample}
-          onChange={e => setQueryCache(e.target.value)}
-        />
-        <StyledButton
-          onClick={() => {
-            try {
-              const obj = new Function("return " + queryCache)();
-              if (obj === undefined) {
-                return;
-              }
-              setQuery(obj);
-              setParseError(false);
-            } catch (err) {
-              setParseError(true);
-            }
-          }}
-        >
-          Apply
-        </StyledButton>
-        <pre>
-          Query Object : <br />
-          {!parseError ? JSON.stringify(query) : "Object parsing fails."}
-        </pre>
 
         <h1>2. Select Hooks and check results 🥳</h1>
 

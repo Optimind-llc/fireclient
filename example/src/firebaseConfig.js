@@ -11,6 +11,8 @@ const config = {
   measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 
+console.log(config);
+
 // const config = {
 //   apiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 //   authDomain: "xxxxxxxxxxxxxxxxxxxxxxx.firebaseapp.com",

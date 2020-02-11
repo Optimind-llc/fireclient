@@ -4,6 +4,7 @@ import { List } from "immutable";
 import { CollectionId, DocId, HooksId, QueryOptions } from ".";
 import { CollectionData, DocData } from "./";
 import { Actions } from "./reducer";
+export declare function generateHooksId(): HooksId;
 export declare function getHashCode(obj: any): number;
 export declare function getQueryId(path: string, options: QueryOptions): CollectionId;
 export declare function isDocPath(path: string): boolean;

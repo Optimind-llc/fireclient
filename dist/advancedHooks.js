@@ -40,7 +40,7 @@ function useArrayQuery(getFql) {
         return utils_1.isDocPath(query.location) ? getHooks_1.initialDocData : getHooks_1.initialCollectionData;
     });
     // Subscribeする場合があるので、HooksのIdを持っておく
-    var hooksId = react_1.useState(getHooks_1.generateHooksId())[0];
+    var hooksId = react_1.useState(utils_1.generateHooksId())[0];
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialQueryData), queryData = _b[0], setQueryData = _b[1];
     var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
@@ -61,9 +61,9 @@ function useArrayQuery(getFql) {
                 var onChange = function (data) {
                     resolve({ data: data, key: i });
                     if (callback !== undefined)
-                        callback();
+                        callback(data);
                     if (queryCallback !== undefined)
-                        queryCallback();
+                        queryCallback(data);
                 };
                 var onError = reject;
                 var onListen = function () { };

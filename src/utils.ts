@@ -31,6 +31,12 @@ function sortedFromJS(object: any): any {
   }
 }
 
+export function generateHooksId(): HooksId {
+  return Math.random()
+    .toString(32)
+    .substring(2);
+}
+
 export function getHashCode(obj: any): number {
   if (obj === undefined) {
     return sortedFromJS({}).hashCode();

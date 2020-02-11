@@ -1,44 +1,55 @@
 import "firebase/firestore";
 import { useState } from "react";
-import { SetCollectionFql, SetFql, StaticSetFql, StaticSetCollectionFql } from ".";
+import { SetCollectionFql, SetFql, StaticSetCollectionFql, StaticSetFql } from ".";
 import { setCollection, setDoc, updateDoc } from "./setFunctions";
 import * as typeCheck from "./typeCheck";
-import { assertRule, matches, assertStaticSetFql } from "./typeCheck";
+import { assertRule, assertStaticSetFql, matches } from "./typeCheck";
 
 // ------------------------------------------
 //  Set Hooks Base
 // ------------------------------------------
 
-function useSetDocBase(
+type SetFunction<Fql> = (
   path: string,
-  query: SetFql,
-  setFunction: (
-    path: string,
-    query: StaticSetFql,
-    onWrite: () => void,
-    onError: (error: any) => void,
-    options?: {
-      merge?: boolean;
-      mergeFields?: string[];
-      callback?: () => void;
-    },
-  ) => void,
+  query: Fql,
+  onWrite: () => void,
+  onError: (error: any) => void,
   options?: {
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
+    saveToState?: boolean;
   },
-) {
-  // Arg typeCheck
+) => void;
+
+function useSetDocBase(
+  path: string,
+  query: SetFql,
+  setFunction: SetFunction<StaticSetFql>,
+  options?: {
+    merge?: boolean;
+    mergeFields?: string[];
+    callback?: () => void;
+    saveToState?: boolean;
+  },
+): [(...args: any) => void, boolean, boolean, any] {
+  // Argument typeCheck
   typeCheck.assertSetFql(query);
   assertRule([
     { key: "path", fn: typeCheck.isString },
     {
       key: "options",
       optional: true,
-      fn: matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
+      fn: matches(
+        typeCheck.concatRule(
+          typeCheck.mergeRule,
+          typeCheck.callbackRule,
+          typeCheck.saveToStateRule,
+        ),
+      ),
     },
   ])({ path, options }, "Argument");
+
   const [writing, setWriting] = useState(false);
   const [called, setCalled] = useState(false);
   const [error, setError] = useState(null);
@@ -71,29 +82,26 @@ function useSetDocBase(
 
 function useSetDocsBase(
   queries: { [key: string]: SetFql },
-  setFunction: (
-    path: string,
-    query: StaticSetFql,
-    onWrite: () => void,
-    onError: (error: any) => void,
-    options?: {
-      merge?: boolean;
-      mergeFields?: string[];
-      callback?: () => void;
-    },
-  ) => void,
+  setFunction: SetFunction<StaticSetFql>,
   options?: {
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
+    saveToState?: boolean;
   },
-) {
-  // Arg typeCheck
+): [(...args: any) => void, boolean, boolean, any] {
+  // Argument typeCheck
   assertRule([
     {
       key: "options",
       optional: true,
-      fn: matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
+      fn: matches(
+        typeCheck.concatRule(
+          typeCheck.mergeRule,
+          typeCheck.callbackRule,
+          typeCheck.saveToStateRule,
+        ),
+      ),
     },
   ])({ options }, "Argument");
   typeCheck.assertSetDocsFql(queries);
@@ -135,30 +143,28 @@ function useSetDocsBase(
 function useSetCollectionBase(
   path: string,
   queries: SetCollectionFql,
-  setFunction: (
-    path: string,
-    queries: StaticSetCollectionFql,
-    onWrite: () => void,
-    onError: (error: any) => void,
-    options?: {
-      merge?: boolean;
-      mergeFields?: string[];
-    },
-  ) => void,
+  setFunction: SetFunction<StaticSetCollectionFql>,
   options?: {
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
+    saveToState?: boolean;
   },
-) {
-  // Arg typeCheck
+): [(...args: any) => void, boolean, boolean, any] {
+  // Argument typeCheck
   typeCheck.assertSetCollectionFql(queries);
   matches([
     { key: "path", fn: typeCheck.isString },
     {
       key: "options",
       optional: true,
-      fn: matches(typeCheck.mergeRule.concat(typeCheck.callbackRule)),
+      fn: matches(
+        typeCheck.concatRule(
+          typeCheck.mergeRule,
+          typeCheck.callbackRule,
+          typeCheck.saveToStateRule,
+        ),
+      ),
     },
   ])({ path, options }, "Argument");
 
@@ -203,8 +209,9 @@ export function useSetDoc(
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
+    saveToState?: boolean;
   },
-) {
+): [(...args: any) => void, boolean, boolean, any] {
   return useSetDocBase(docPath, query, setDoc, options);
 }
 export function useUpdateDoc(
@@ -212,8 +219,9 @@ export function useUpdateDoc(
   query: SetFql,
   options?: {
     callback?: () => void;
+    saveToState?: boolean;
   },
-) {
+): [(...args: any) => void, boolean, boolean, any] {
   return useSetDocBase(docPath, query, updateDoc, options);
 }
 
@@ -227,16 +235,18 @@ export function useSetDocs(
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
+    saveToState?: boolean;
   },
-) {
+): [(...args: any) => void, boolean, boolean, any] {
   return useSetDocsBase(queries, setDoc, options);
 }
 export function useUpdateDocs(
   queries: { [key: string]: SetFql },
   options?: {
     callback?: () => void;
+    saveToState?: boolean;
   },
-) {
+): [(...args: any) => void, boolean, boolean, any] {
   return useSetDocsBase(queries, updateDoc, options);
 }
 
@@ -251,7 +261,8 @@ export function useSetCollection(
     merge?: boolean;
     mergeFields?: string[];
     callback?: () => void;
+    saveToState?: boolean;
   },
-) {
+): [(...args: any) => void, boolean, boolean, any] {
   return useSetCollectionBase(collectionPath, query, setCollection, options);
 }
