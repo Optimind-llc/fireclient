@@ -184,9 +184,9 @@ Firestore 上の複数の ドキュメント / コレクション を取得す�
 
   これは `queries` 全体に反映されますが、クエリ側にも指定されていた場合クエリ側の値が優先されます。
 
-- *`optional`*　**callback**: `(`[`DocData`](misc-type.md#docdata)`|`[`CollectionData`](misc-type.md#collectiondata)`) => void`
+- *`optional`*　**callback**: `() => void`
 
-  データを取得する際に実行される関数を指定することができます。
+  全てのクエリを取得した際に実行される関数を指定することができます。
 
 ### 例
 
