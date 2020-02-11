@@ -80,9 +80,9 @@ yarn add react-fireclient
 
 # Provider の設置
 
-Fireclient が提供する `Provider` というコンポーネントにより、子コンポーネントが Fireclient の機能にアクセスすることができるようになります。
+Fireclient が提供する `FireclientProvider` というコンポーネントにより、子コンポーネントが Fireclient の機能にアクセスすることができるようになります。
 
-また、`Provider`には Firestore のデータベースを渡す必要もあるので、Firebase の初期化も合わせて行います。
+また、`FireclientProvider`には Firestore のデータベースを渡す必要もあるので、Firebase の初期化も合わせて行います。
 
 ```js
 // src/index.js
@@ -91,7 +91,7 @@ import ReactDOM from "react-dom";
 import App from "./App";
 
 import firebase from "firebase";
-import { Provider } from "react-fireclient";
+import { FireclientProvider } from "react-fireclient";
 
 const firebaseConfig = {
   apiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
@@ -106,9 +106,9 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 ReactDOM.render(
-  <Provider firestoreDB={db}>
+  <FireclientProvider firestoreDB={db}>
     <App />
-  </Provider>,
+  </FireclientProvider>,
   document.getElementById("root")
 );
 ```
