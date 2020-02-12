@@ -17,11 +17,6 @@ describe("useQuery", () => {
       },
       cities: {
         location: "/cities",
-        // where: {
-        //   field: "population",
-        //   operator: ">=",
-        //   value: 19354922,
-        // },
         order: {
           by: "name",
         },

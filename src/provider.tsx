@@ -69,7 +69,7 @@ function Provider({
   firestoreDB: firestore.Firestore;
   onAccess?: () => void;
 }) {
-  useSetContext(firestoreDB);
+  useSetContext(firestoreDB, onAccess);
   const { state, dispatch } = providerContext;
 
   return (
