@@ -1,30 +1,19 @@
-import { firestore } from "firebase";
 import "firebase/firestore";
 import { Map } from "immutable";
-import * as pathlib from "path";
 import { useEffect, useState } from "react";
 import {
   ArrayQuery,
   CollectionData,
-  createDataFromCollection,
-  CursorDirection,
   DocData,
   GetFql,
-  ObjectQuery,
-  Order,
-  OrderDirection,
-  Query,
-  QueryOptions,
-} from "..";
-import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "../getFunctions";
-import {
   initialCollectionData,
   initialDocData,
-  useGetCollection,
-  useGetCollectionSnapshot,
-} from "../getHooks";
+  ObjectQuery,
+  Query,
+} from "..";
+import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "../getFunctions";
 import * as typeCheck from "../typeCheck";
-import { assertRule, matches } from "../typeCheck";
+import { assertRule } from "../typeCheck";
 import { generateHooksId, getHashCode, isDocPath } from "../utils";
 
 type ArrayQueryData = (DocData | CollectionData)[];

@@ -58,7 +58,7 @@ function convertStateToJson(state) {
 exports.convertStateToJson = convertStateToJson;
 function Provider(_a) {
     var children = _a.children, firestoreDB = _a.firestoreDB, onAccess = _a.onAccess;
-    useSetContext(firestoreDB);
+    useSetContext(firestoreDB, onAccess);
     var state = exports.providerContext.state, dispatch = exports.providerContext.dispatch;
     return (react_1.default.createElement(exports.Context.Provider, { value: {
             state: state,

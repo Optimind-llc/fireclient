@@ -1,7 +1,7 @@
 import "firebase/firestore";
 import * as pathlib from "path";
 import { CollectionData } from "..";
-import { useGetCollection } from "../getHooks";
+import { useGetCollection } from "../getHooks/useGetCollection";
 import * as typeCheck from "../typeCheck";
 import { useArrayQuery } from "./useQuery";
 

@@ -9,7 +9,7 @@ import {
   OrderDirection,
   QueryOptions,
 } from "..";
-import { useGetCollectionSnapshot } from "../getHooks";
+import { useGetCollectionSnapshot } from "../getHooks/useGetCollection";
 import * as typeCheck from "../typeCheck";
 import { assertRule, matches } from "../typeCheck";
 
