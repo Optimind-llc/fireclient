@@ -41,7 +41,6 @@ describe("useQuery", () => {
     };
     const { result, waitForNextUpdate } = renderHook(() => {
       useSetContext(db, () => accessCount++);
-      // @ts-ignore
       return useQuery(fql);
     });
     expect(result.current[0]).toEqual({
@@ -57,7 +56,6 @@ describe("useQuery", () => {
     });
     expect(result.current[1]).toBeTruthy();
     expect(result.current[2]).toBeNull();
-    await waitForNextUpdate();
     await waitForNextUpdate();
     expect(result.current[0]).toEqual(expected);
     expect(result.current[1]).toBeFalsy();
