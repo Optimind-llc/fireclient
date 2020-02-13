@@ -8,38 +8,14 @@ declare type Rule = {
     fn: ValidateFunction;
     optional?: boolean;
 }[];
-export declare const isObject: (obj: any, target: string) => {
-    valid: boolean;
-    message: string;
-};
-export declare const isAnyOf: (candidate: any[]) => (obj: any, target: string) => {
-    valid: boolean;
-    message: string;
-};
-export declare const isArrayOf: (rule: ValidateFunction) => (obj: any, target: string) => {
-    valid: boolean;
-    message: string;
-};
-export declare const isString: (obj: any, target: string) => {
-    valid: boolean;
-    message: string;
-};
-export declare const isNumber: (obj: any, target: string) => {
-    valid: boolean;
-    message: string;
-};
-export declare const isBoolean: (obj: any, target: string) => {
-    valid: boolean;
-    message: string;
-};
-export declare const isNotNull: (obj: any, target: string) => {
-    valid: boolean;
-    message: string;
-};
-export declare const isFunction: (obj: any, target: string) => {
-    valid: boolean;
-    message: string;
-};
+export declare const isObject: (obj: any, target: string) => ValidateResult;
+export declare const isAnyOf: (candidate: any[]) => (obj: any, target: string) => ValidateResult;
+export declare const isArrayOf: (rule: ValidateFunction) => (obj: any, target: string) => ValidateResult;
+export declare const isString: (obj: any, target: string) => ValidateResult;
+export declare const isNumber: (obj: any, target: string) => ValidateResult;
+export declare const isBoolean: (obj: any, target: string) => ValidateResult;
+export declare const isNotNull: (obj: any, target: string) => ValidateResult;
+export declare const isFunction: (obj: any, target: string) => ValidateResult;
 export declare const condition: (condition: (obj: any) => boolean, fn1: ValidateFunction, fn2: ValidateFunction) => (obj: any, target: string) => ValidateResult;
 export declare const concatRule: (...otherRules: Rule[]) => Rule;
 export declare const matches: (rule: Rule) => (obj: any, target: string) => ValidateResult;

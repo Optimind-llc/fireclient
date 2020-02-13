@@ -87,7 +87,7 @@ describe("setCollection", () => {
   ];
   it("should handle a simple query", async () => {
     let accessCount = 0;
-    const onSet = (): void => {
+    const onSet = () => {
       /* do nothing */
     };
     // set doc

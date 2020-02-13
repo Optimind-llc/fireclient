@@ -28,7 +28,7 @@ function useGetCollectionBase(path, initialValue, lazy, getFunction, options) {
     var _b = react_1.useState(initialValue), collection = _b[0], setCollection = _b[1];
     var _c = react_1.useState(!lazy), loading = _c[0], setLoading = _c[1];
     var loadCollection = function () {
-        var _a;
+        var _a, _b;
         setLoading(true);
         getFunction(path, function (data) {
             var _a;
@@ -40,8 +40,9 @@ function useGetCollectionBase(path, initialValue, lazy, getFunction, options) {
         }, function (err) {
             setError(err);
             setLoading(false);
-        }, options, (_a = options) === null || _a === void 0 ? void 0 : _a.acceptOutdated);
+        }, options, (_a = options) === null || _a === void 0 ? void 0 : _a.saveToState, (_b = options) === null || _b === void 0 ? void 0 : _b.acceptOutdated);
     };
+    // Automatically excecute loadCollection() if lazy
     if (!lazy)
         react_1.useEffect(function () { return loadCollection(); }, [path, utils_1.getHashCode(options)]);
     return [collection, loading, error, loadCollection];

@@ -42,7 +42,14 @@ function useArrayQuery(getFql) {
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialQueryData), queryData = _b[0], setQueryData = _b[1];
     var _c = react_1.useState(true), loading = _c[0], setLoading = _c[1];
-    var _d = react_1.useState({ unsubscribe: function () { }, reload: function () { } }), unsubscribe = _d[0], setUnsubscribe = _d[1];
+    var _d = react_1.useState({
+        unsubscribe: function () {
+            /* do nothing */
+        },
+        reload: function () {
+            /* do nothing */
+        },
+    }), unsubscribe = _d[0], setUnsubscribe = _d[1];
     var loadQuery = function () {
         setLoading(true);
         var reloadFns = [];
@@ -64,7 +71,9 @@ function useArrayQuery(getFql) {
                         queryCallback(data);
                 };
                 var onError = reject;
-                var onListen = function () { };
+                var onListen = function () {
+                    /* do nothing */
+                };
                 if (isDocQuery && !queryConnects) {
                     var load = function () { return getFunctions_1.getDoc(location, onChange, onError, queryAcceptOutdated); };
                     load();

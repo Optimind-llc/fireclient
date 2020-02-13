@@ -76,7 +76,7 @@ describe("setDoc", () => {
   };
   it("should handle a simple query", async () => {
     let accessCount = 0;
-    const onSet = (): void => {
+    const onSet = () => {
       /* do nothing */
     };
     // set doc
@@ -101,7 +101,7 @@ describe("setDoc", () => {
   it("setDoc merge option", async () => {
     let accessCount = 0;
     // set doc (create doc)
-    const onSet = (): void => {
+    const onSet = () => {
       /* do nothing */
     };
     const hooks1 = renderHook(() =>
@@ -111,7 +111,7 @@ describe("setDoc", () => {
     expect(accessCount).toBe(1);
 
     // set doc (merge true)
-    const onUpdate = (): void => {
+    const onUpdate = () => {
       /* do nothing */
     };
     const hooks2 = renderHook(() =>
@@ -146,7 +146,7 @@ describe("setDoc", () => {
     // Any field path that is not specified is ignored and remains untouched.
 
     // set doc (create doc)
-    const onSet = (): void => {
+    const onSet = () => {
       /* do nothing */
     };
     const hooks1 = renderHook(() =>
@@ -156,7 +156,7 @@ describe("setDoc", () => {
     expect(accessCount).toBe(1);
 
     // set doc (mergeFields specified)
-    const onUpdate = (): void => {
+    const onUpdate = () => {
       /* do nothing */
     };
     const hooks2 = renderHook(() =>
@@ -187,7 +187,7 @@ describe("setDoc", () => {
   it("updateDoc", async () => {
     let accessCount = 0;
     // set doc (create doc)
-    const onSet = (): void => {
+    const onSet = () => {
       /* do nothing */
     };
     const hooks1 = renderHook(() =>
@@ -197,7 +197,7 @@ describe("setDoc", () => {
     expect(accessCount).toBe(1);
 
     // update doc
-    const onUpdate = (): void => {
+    const onUpdate = () => {
       /* do nothing */
     };
     const hooks2 = renderHook(() => useTestFn(updateDoc, { path, onSet: onUpdate, fql: fql2 }));

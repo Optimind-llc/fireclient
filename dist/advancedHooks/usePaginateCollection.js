@@ -95,7 +95,9 @@ function usePaginateCollection(path, options) {
                 setQueryReversed(true);
                 reloadMin();
             }
-            : function () { },
+            : function () {
+                /* do nothing */
+            },
         enabled: remainsPrev,
     };
     // last,maxは同じCollectionに含まれる
@@ -107,7 +109,9 @@ function usePaginateCollection(path, options) {
                 setQueryReversed(false);
                 reloadMax();
             }
-            : function () { },
+            : function () {
+                /* do nothing */
+            },
         enabled: remainsNext,
     };
     var _g = useGetCollection_1.useGetCollectionSnapshot(path, optionsWithCursor), collection = _g[0], loading = _g[1], error = _g[2];
@@ -118,8 +122,6 @@ function usePaginateCollection(path, options) {
     react_1.useEffect(function () {
         setFirst(!queryReversed ? nextFirst : nextLast);
         setLast(!queryReversed ? nextLast : nextFirst);
-        // [nextFirst, nextLast]の代わりに[nextFirstId, nextLastId]を使用
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [nextFirstId, nextLastId]);
     var collectionData = collection !== null ? __1.createDataFromCollection(collection) : [];
     return [

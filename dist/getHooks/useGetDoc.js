@@ -28,6 +28,7 @@ function useGetDocBase(path, initialValue, lazy, getFunction, options) {
     var _b = react_1.useState(initialValue), doc = _b[0], setDoc = _b[1];
     var _c = react_1.useState(!lazy), loading = _c[0], setLoading = _c[1];
     var loadDoc = function () {
+        var _a, _b;
         setLoading(true);
         getFunction(path, function (data) {
             var _a;
@@ -39,8 +40,9 @@ function useGetDocBase(path, initialValue, lazy, getFunction, options) {
         }, function (err) {
             setError(err);
             setLoading(false);
-        });
+        }, (_a = options) === null || _a === void 0 ? void 0 : _a.saveToState, (_b = options) === null || _b === void 0 ? void 0 : _b.acceptOutdated);
     };
+    // Automatically excecute loadDoc() if lazy
     if (!lazy)
         react_1.useEffect(function () { return loadDoc(); }, [path, utils_1.getHashCode(options)]);
     return [doc, loading, error, loadDoc];

@@ -27,7 +27,11 @@ function useSubscribeCollectionBase(path, initialValue, subscribeFunction, optio
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), collection = _b[0], setCollection = _b[1];
     var _c = react_1.useState(true), loading = _c[0], setLoading = _c[1];
-    var _d = react_1.useState({ fn: function () { } }), unsubscribe = _d[0], setUnsubscribe = _d[1];
+    var _d = react_1.useState({
+        fn: function () {
+            /* do nothing */
+        },
+    }), unsubscribe = _d[0], setUnsubscribe = _d[1];
     react_1.useEffect(function () {
         var unsub = subscribeFunction(hooksId, path, function (snapshot) {
             var _a;
@@ -41,8 +45,6 @@ function useSubscribeCollectionBase(path, initialValue, subscribeFunction, optio
             setLoading(false);
         }, function () { return setLoading(true); }, options);
         setUnsubscribe({ fn: unsub });
-        // subscribeFunctionを除去
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [path, hooksId, utils_1.getHashCode(options)]);
     return [collection, loading, error, unsubscribe.fn];
 }

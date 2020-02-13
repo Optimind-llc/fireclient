@@ -14,7 +14,9 @@ exports.providerContext = {
     state: null,
     dispatch: null,
     firestoreDB: null,
-    onAccess: function () { },
+    onAccess: function () {
+        /* do nothing */
+    },
 };
 var initialState = immutable_1.Map({
     doc: immutable_1.Map(),
