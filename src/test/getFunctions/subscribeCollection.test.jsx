@@ -5,7 +5,7 @@ import { subscribeCollection } from "../../../dist/getFunctions";
 import { useSetContext } from "../../../dist/provider";
 import { generateHooksId } from "../../../dist/utils";
 import backup from "../backup1.json";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 const useTest = ({ path, onGet, options }) => {
   useSetContext(db);
@@ -63,6 +63,7 @@ const expected = [
 ];
 
 describe("Get Collection", () => {
+  afterAll(async () => await app.delete());
   it("should handle a simple query", async () => {
     const onGet = collectionData => {
       expect(collectionData).toEqual(

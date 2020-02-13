@@ -2,10 +2,11 @@ import { renderHook } from "@testing-library/react-hooks";
 import * as pathlib from "path";
 import { useGetDoc, useSetDoc } from "../../../dist";
 import { useSetContext } from "../../../dist/provider";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 describe("useSetDoc", () => {
   const path = "/useSetDocTest/doc1";
+  afterAll(async () => await app.delete());
   it("should handle a simple query", async () => {
     let accessCount = 0;
     const fql = {

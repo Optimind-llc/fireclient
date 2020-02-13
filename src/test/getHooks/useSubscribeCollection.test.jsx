@@ -3,7 +3,7 @@ import { List } from "immutable";
 import { useSubscribeCollection } from "../../../dist";
 import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 const expected = [
   {
@@ -29,6 +29,7 @@ const expected = [
 ];
 
 describe("useSubscribeCollection", () => {
+  afterAll(async () => await app.delete());
   it("should handle a simple query", async () => {
     let accessCount = 0;
     const { result, waitForNextUpdate } = renderHook(() => {

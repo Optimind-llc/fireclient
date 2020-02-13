@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { getCollection } from "../../../dist/getFunctions";
 import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 const useTest = ({ path, onGet, options }) => {
   useSetContext(db);
@@ -57,6 +57,7 @@ const cities = [
 ];
 
 describe("Get Collection", () => {
+  afterAll(async () => await app.delete());
   it("should handle a simple query", async () => {
     const expected = List(cities)
       .sortBy(city => city.data.name)

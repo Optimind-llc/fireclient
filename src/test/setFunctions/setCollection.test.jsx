@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { getCollection } from "../../../dist/getFunctions";
 import { useSetContext } from "../../../dist/provider";
 import { setCollection } from "../../../dist/setFunctions";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 const useTestFn = (fn, { path, fql, onSet, options = {}, onAccess }) => {
   useSetContext(db, onAccess);
@@ -85,6 +85,7 @@ describe("setCollection", () => {
       },
     },
   ];
+  afterAll(async () => await app.delete());
   it("should handle a simple query", async () => {
     let accessCount = 0;
     const onSet = () => {

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { getDoc } from "../../../dist/getFunctions";
 import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 const useTest = ({ path, onGet }) => {
   useSetContext(db);
@@ -60,5 +60,6 @@ describe("should handle a simple query", () => {
     "/test/number",
     "/test/string",
   ];
+  afterAll(async () => await app.delete());
   docPaths.forEach(docPath => testGettingDoc(docPath));
 });

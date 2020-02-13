@@ -2,10 +2,11 @@ import { renderHook } from "@testing-library/react-hooks";
 import { fromJS } from "immutable";
 import { useGetCollection, useSetCollection } from "../../../dist";
 import { useSetContext } from "../../../dist/provider";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 describe("useSetCollection", () => {
   const path = "/useSetCollectionTest";
+  afterAll(async () => await app.delete());
   it("should handle a simple query", async () => {
     let accessCount = 0;
     const fql = [
