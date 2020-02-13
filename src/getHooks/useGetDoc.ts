@@ -9,7 +9,7 @@ import { getHashCode } from "../utils";
 type GetDocFunction<State> = (
   path: string,
   onGet: (data: State) => void,
-  onError: (err: any) => void,
+  onError: (err: Error) => void,
   saveToState?: boolean,
   acceptOutdated?: boolean,
 ) => void;
@@ -41,7 +41,7 @@ function useGetDocBase<State, InitialState = State>(
     },
   ])({ path, options }, "Argument");
 
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
   const [doc, setDoc] = useState<State | InitialState>(initialValue);
   const [loading, setLoading] = useState(!lazy);
 

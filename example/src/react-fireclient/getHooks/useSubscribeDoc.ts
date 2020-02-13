@@ -10,7 +10,7 @@ type SubscribeDocFunction<State> = (
   hooksId: HooksId,
   path: string,
   onChange: (doc: State) => void,
-  onError: (err: any) => void,
+  onError: (err: Error) => void,
   onListen?: () => void,
   saveToState?: boolean,
 ) => () => void;
@@ -35,7 +35,7 @@ export function useSubscribeDocBase<State, InitialState = State>(
   ])({ path, options }, "Argument");
 
   const [hooksId] = useState(generateHooksId());
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
   const [doc, setDoc] = useState<State | InitialState>(initialValue);
   const [loading, setLoading] = useState(true);
   const [unsubscribe, setUnsubscribe] = useState<{

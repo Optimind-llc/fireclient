@@ -8,7 +8,7 @@ type SetFunction<Fql> = (
   path: string,
   query: Fql,
   onWrite: () => void,
-  onError: (error: any) => void,
+  onError: (err: Error) => void,
   options?: {
     merge?: boolean;
     mergeFields?: string[];

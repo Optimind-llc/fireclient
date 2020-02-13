@@ -24,7 +24,8 @@ function View(props) {
       },
     },
   };
-  const [d] = useQuery(fql);
+  const [d, loading, error] = useQuery(fql);
+  console.log("error type", typeof error);
   return (
     <>
       {/* <button onClick={handleClick}>asdf</button>

@@ -13,7 +13,7 @@ type SubCollection = {
 const setDocCallback = (
   dispatch: React.Dispatch<Actions>,
   onSet: () => void,
-  onError: (error: any) => void,
+  onError: (err: Error) => void,
   docPath: string,
   fields: Fields,
   options?: {
@@ -63,7 +63,7 @@ export function setDoc(
   path: string,
   query: StaticSetFql,
   onSet: () => void,
-  onError: (error: any) => void,
+  onError: (err: Error) => void,
   options: {
     merge?: boolean;
     mergeFields?: string[];
@@ -132,7 +132,7 @@ export function updateDoc(
   docPath: string,
   query: StaticSetFql,
   onUpdate: () => void,
-  onError: (error: any) => void,
+  onError: (err: Error) => void,
   options?: {
     saveToState?: boolean;
   },
@@ -160,7 +160,7 @@ export function setCollection(
   collectionPath: string,
   queries: StaticSetCollectionFql,
   onSet: () => void,
-  onError: (error: any) => void,
+  onError: (err: Error) => void,
   options?: {
     merge?: boolean;
     mergeFields?: string[];
@@ -187,7 +187,7 @@ export function setCollection(
 export function deleteDoc(
   path: string,
   onDelete: () => void,
-  onError: (error: any) => void,
+  onError: (err: Error) => void,
   options: {
     saveToState?: boolean;
   } = {},

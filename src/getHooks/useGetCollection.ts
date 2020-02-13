@@ -9,7 +9,7 @@ import { getHashCode } from "../utils";
 type GetCollectionFunction<State> = (
   path: string,
   onGet: (data: State) => void,
-  onError: (err: any) => void,
+  onError: (err: Error) => void,
   options?: QueryOptions,
   saveToState?: boolean,
   acceptOutdated?: boolean,
@@ -43,7 +43,7 @@ export function useGetCollectionBase<State, InitialState = State>(
     },
   ])({ path, options }, "Argument");
 
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
   const [collection, setCollection] = useState<State | InitialState>(initialValue);
   const [loading, setLoading] = useState(!lazy);
   const loadCollection = () => {

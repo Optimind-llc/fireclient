@@ -19,7 +19,7 @@ import {
 export function getDocSnapshot(
   path: string,
   onGet: (doc: firestore.DocumentSnapshot) => void,
-  onError: (err: any) => void,
+  onError: (err: Error) => void,
   saveToState = true,
 ): void {
   const docId = pathlib.resolve(path);
@@ -47,7 +47,7 @@ export function getDocSnapshot(
 export function getDoc(
   path: string,
   onGet: (doc: DocData) => void,
-  onError: (err: any) => void,
+  onError: (err: Error) => void,
   saveToState?: boolean,
   acceptOutdated = false,
 ): void {
@@ -69,7 +69,7 @@ export function subscribeDocSnapshot(
   uuid: HooksId,
   path: string,
   onChange: (doc: firestore.DocumentSnapshot) => void,
-  onError: (err: any) => void,
+  onError: (err: Error) => void,
   onListen: () => void = (): void => {
     /* do nothing */
   },
@@ -112,7 +112,7 @@ export function subscribeDoc(
   uuid: HooksId,
   path: string,
   onChange: (doc: DocData) => void,
-  onError: (err: any) => void,
+  onError: (err: Error) => void,
   onListen: () => void = (): void => {
     /* do nothing */
   },
@@ -131,7 +131,7 @@ export function subscribeDoc(
 export function getCollectionSnapshot(
   path: string,
   onGet: (collection: firestore.DocumentSnapshot[]) => void,
-  onError: (err: any) => void,
+  onError: (err: Error) => void,
   options: QueryOptions = {},
   saveToState = true,
 ): void {
@@ -159,7 +159,7 @@ export function getCollectionSnapshot(
 export function getCollection(
   path: string,
   onGet: (collection: CollectionData) => void,
-  onError: (err: any) => void,
+  onError: (err: Error) => void,
   options: QueryOptions = {},
   saveToState?: boolean,
   acceptOutdated = false,
@@ -196,7 +196,7 @@ export function subscribeCollectionSnapshot(
   uuid: HooksId,
   path: string,
   onChange: (collection: firestore.DocumentSnapshot[]) => void,
-  onError: (err: any) => void,
+  onError: (err: Error) => void,
   onListen: () => void = (): void => {
     /* do nothing */
   },
@@ -248,7 +248,7 @@ export function subscribeCollection(
   uuid: HooksId,
   path: string,
   onChange: (collection: CollectionData) => void,
-  onError: (err: any) => void,
+  onError: (err: Error) => void,
   onListen: () => void = (): void => {
     /* do nothing */
   },

@@ -10,7 +10,7 @@ type SubscribeCollectionFunction<State> = (
   hooksId: HooksId,
   path: string,
   onChange: (doc: State) => void,
-  onError: (err: any) => void,
+  onError: (err: Error) => void,
   onListen?: () => void,
   options?: QueryOptions,
   saveToState?: boolean,
@@ -41,7 +41,7 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
   ])({ path, options }, "Argument");
 
   const [hooksId] = useState(generateHooksId());
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
   const [collection, setCollection] = useState<State | InitialState>(initialValue);
   const [loading, setLoading] = useState(true);
   const [unsubscribe, setUnsubscribe] = useState<{
