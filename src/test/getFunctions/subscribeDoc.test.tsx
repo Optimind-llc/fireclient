@@ -14,7 +14,9 @@ const useTest = ({ path, onGet }) => {
   const onError = err => {
     throw new Error(err);
   };
-  const onListen = () => {};
+  const onListen = (): void => {
+    /* do nothing */
+  };
   useEffect(
     () =>
       subscribeDoc(

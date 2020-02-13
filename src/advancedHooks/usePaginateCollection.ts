@@ -63,6 +63,7 @@ type PageHandler = {
   fn: () => void;
   enabled: boolean;
 };
+type OptionalSnapshot = firestore.DocumentSnapshot<firestore.DocumentData> | null;
 export function usePaginateCollection(
   path: string,
   options: {
@@ -82,14 +83,14 @@ export function usePaginateCollection(
   ])({ path, options }, "Argument");
   const order = options.order as Order;
   const [min, max, reloadMin, reloadMax] = useGetMinMax(path, options);
-  const [first, setFirst] = useState<any>(null);
-  const [last, setLast] = useState<any>(null);
+  const [first, setFirst] = useState<OptionalSnapshot>(null);
+  const [last, setLast] = useState<OptionalSnapshot>(null);
 
   // 前のページに戻る際、 orderを反転させてクエリする必要がある
   // クエリ実行とデータ取得には遅延があるため、reversedを分ける
   const [queryReversed, setQueryReversed] = useState<boolean>(false);
   const [dataReversed, setDataReversed] = useState<boolean>(false);
-  const [origin, setOrigin] = useState<any>(null);
+  const [origin, setOrigin] = useState<OptionalSnapshot>(null);
 
   const optionsWithCursor =
     origin === null
@@ -117,7 +118,9 @@ export function usePaginateCollection(
           setQueryReversed(true);
           reloadMin();
         }
-      : () => {},
+      : (): void => {
+          /* do nothing */
+        },
     enabled: remainsPrev,
   };
   // last,maxは同じCollectionに含まれる
@@ -129,7 +132,9 @@ export function usePaginateCollection(
           setQueryReversed(false);
           reloadMax();
         }
-      : () => {},
+      : (): void => {
+          /* do nothing */
+        },
     enabled: remainsNext,
   };
 
@@ -143,8 +148,6 @@ export function usePaginateCollection(
   useEffect(() => {
     setFirst(!queryReversed ? nextFirst : nextLast);
     setLast(!queryReversed ? nextLast : nextFirst);
-    // [nextFirst, nextLast]の代わりに[nextFirstId, nextLastId]を使用
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextFirstId, nextLastId]);
 
   const collectionData = collection !== null ? createDataFromCollection(collection) : [];

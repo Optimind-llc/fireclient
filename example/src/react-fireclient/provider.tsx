@@ -12,7 +12,9 @@ export const providerContext: ProviderContext = {
   state: null,
   dispatch: null,
   firestoreDB: null,
-  onAccess: () => {},
+  onAccess: (): void => {
+    /* do nothing */
+  },
 };
 const initialState: FireclientState = Map({
   doc: Map(),

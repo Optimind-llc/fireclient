@@ -76,7 +76,9 @@ describe("setDoc", () => {
   };
   it("should handle a simple query", async () => {
     let accessCount = 0;
-    const onSet = () => {};
+    const onSet = (): void => {
+      /* do nothing */
+    };
     // set doc
     const hooks1 = renderHook(() =>
       useTestFn(setDoc, { path, onSet, fql, onAccess: () => accessCount++ }),
@@ -99,7 +101,9 @@ describe("setDoc", () => {
   it("setDoc merge option", async () => {
     let accessCount = 0;
     // set doc (create doc)
-    const onSet = () => {};
+    const onSet = (): void => {
+      /* do nothing */
+    };
     const hooks1 = renderHook(() =>
       useTestFn(setDoc, { path, onSet, fql, onAccess: () => accessCount++ }),
     );
@@ -107,7 +111,9 @@ describe("setDoc", () => {
     expect(accessCount).toBe(1);
 
     // set doc (merge true)
-    const onUpdate = () => {};
+    const onUpdate = (): void => {
+      /* do nothing */
+    };
     const hooks2 = renderHook(() =>
       useTestFn(setDoc, {
         path,
@@ -140,7 +146,9 @@ describe("setDoc", () => {
     // Any field path that is not specified is ignored and remains untouched.
 
     // set doc (create doc)
-    const onSet = () => {};
+    const onSet = (): void => {
+      /* do nothing */
+    };
     const hooks1 = renderHook(() =>
       useTestFn(setDoc, { path, onSet, fql, onAccess: () => accessCount++ }),
     );
@@ -148,7 +156,9 @@ describe("setDoc", () => {
     expect(accessCount).toBe(1);
 
     // set doc (mergeFields specified)
-    const onUpdate = () => {};
+    const onUpdate = (): void => {
+      /* do nothing */
+    };
     const hooks2 = renderHook(() =>
       useTestFn(setDoc, {
         path,
@@ -177,7 +187,9 @@ describe("setDoc", () => {
   it("updateDoc", async () => {
     let accessCount = 0;
     // set doc (create doc)
-    const onSet = () => {};
+    const onSet = (): void => {
+      /* do nothing */
+    };
     const hooks1 = renderHook(() =>
       useTestFn(setDoc, { path, onSet, fql, onAccess: () => accessCount++ }),
     );
@@ -185,7 +197,9 @@ describe("setDoc", () => {
     expect(accessCount).toBe(1);
 
     // update doc
-    const onUpdate = () => {};
+    const onUpdate = (): void => {
+      /* do nothing */
+    };
     const hooks2 = renderHook(() => useTestFn(updateDoc, { path, onSet: onUpdate, fql: fql2 }));
     await hooks2.waitForNextUpdate();
     expect(accessCount).toBe(2);

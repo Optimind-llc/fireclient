@@ -22,7 +22,7 @@ const setDocCallback = (
     saveToState?: boolean;
   },
   subCollection?: SubCollection,
-) => {
+): void => {
   // 書き込んだ内容をStateに保存する
   // options.saveToState can be undefined
   if (options?.saveToState !== false) {
@@ -69,7 +69,7 @@ export function setDoc(
     mergeFields?: string[];
     saveToState?: boolean;
   } = {},
-) {
+): void {
   const { firestoreDB, dispatch, onAccess } = getContext();
   const { id, subCollection } = query;
   const { merge, mergeFields } = options;
@@ -137,7 +137,7 @@ export function updateDoc(
   options?: {
     saveToState?: boolean;
   },
-) {
+): void {
   const { firestoreDB, dispatch, onAccess } = getContext();
   const fields = query.fields !== undefined ? query.fields : {};
 
@@ -182,7 +182,7 @@ export function setCollection(
     mergeFields?: string[];
     saveToState?: boolean;
   },
-) {
+): void {
   Promise.all(
     queries.map(
       query =>

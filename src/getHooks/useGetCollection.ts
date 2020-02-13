@@ -12,8 +12,8 @@ type GetCollectionFunction<State> = (
   onGet: (data: State) => void,
   onError: (err: any) => void,
   options?: QueryOptions,
-  acceptOutdated?: boolean,
   saveToState?: boolean,
+  acceptOutdated?: boolean,
 ) => void;
 
 export function useGetCollectionBase<State, InitialState = State>(
@@ -23,8 +23,8 @@ export function useGetCollectionBase<State, InitialState = State>(
   getFunction: GetCollectionFunction<State>,
   options?: {
     callback?: (data: State) => void;
-    acceptOutdated?: boolean;
     saveToState?: boolean;
+    acceptOutdated?: boolean;
   } & QueryOptions,
 ): [State | InitialState, boolean, any, () => void] {
   // Argument typeCheck
@@ -62,9 +62,11 @@ export function useGetCollectionBase<State, InitialState = State>(
         setLoading(false);
       },
       options,
+      options?.saveToState,
       options?.acceptOutdated,
     );
   };
+  // Automatically excecute loadCollection() if lazy
   if (!lazy) useEffect(() => loadCollection(), [path, getHashCode(options)]);
 
   return [collection, loading, error, loadCollection];
@@ -74,8 +76,8 @@ export function useLazyGetCollectionSnapshot(
   path: string,
   options?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
-    acceptOutdated?: boolean;
     saveToState?: boolean;
+    acceptOutdated?: boolean;
   } & QueryOptions,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
   return useGetCollectionBase<firestore.DocumentSnapshot[], null>(
@@ -91,8 +93,8 @@ export function useGetCollectionSnapshot(
   path: string,
   options?: {
     callback?: (snapshot: firestore.DocumentSnapshot[]) => void;
-    acceptOutdated?: boolean;
     saveToState?: boolean;
+    acceptOutdated?: boolean;
   } & QueryOptions,
 ): [firestore.DocumentSnapshot[] | null, boolean, any, () => void] {
   return useGetCollectionBase<firestore.DocumentSnapshot[], null>(
@@ -108,8 +110,8 @@ export function useLazyGetCollection(
   path: string,
   options?: {
     callback?: (collection: CollectionData) => void;
-    acceptOutdated?: boolean;
     saveToState?: boolean;
+    acceptOutdated?: boolean;
   } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
   return useGetCollectionBase(path, initialCollectionData, true, getCollection, options);
@@ -119,8 +121,8 @@ export function useGetCollection(
   path: string,
   options?: {
     callback?: (collection: CollectionData) => void;
-    acceptOutdated?: boolean;
     saveToState?: boolean;
+    acceptOutdated?: boolean;
   } & QueryOptions,
 ): [CollectionData, boolean, any, () => void] {
   return useGetCollectionBase(path, initialCollectionData, false, getCollection, options);

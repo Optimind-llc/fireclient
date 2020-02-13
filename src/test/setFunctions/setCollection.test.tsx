@@ -87,7 +87,9 @@ describe("setCollection", () => {
   ];
   it("should handle a simple query", async () => {
     let accessCount = 0;
-    const onSet = () => {};
+    const onSet = (): void => {
+      /* do nothing */
+    };
     // set doc
     const hooks1 = renderHook(() =>
       useTestFn(setCollection, {

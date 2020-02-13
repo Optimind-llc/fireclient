@@ -41,7 +41,11 @@ export function useSubscribeDocBase<State, InitialState = State>(
   const [loading, setLoading] = useState(true);
   const [unsubscribe, setUnsubscribe] = useState<{
     fn: () => void;
-  }>({ fn: () => {} });
+  }>({
+    fn: (): void => {
+      /* do nothing */
+    },
+  });
 
   useEffect(() => {
     const unsub = subscribeFunction(
@@ -60,8 +64,6 @@ export function useSubscribeDocBase<State, InitialState = State>(
       () => setLoading(true),
     );
     setUnsubscribe({ fn: unsub });
-    // subscribeFunctionを除去
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [path, hooksId, getHashCode(options)]);
   return [doc, loading, error, unsubscribe.fn];
 }

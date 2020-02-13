@@ -102,7 +102,7 @@ export function saveCollection(
   path: string,
   options: QueryOptions,
   collection: CollectionData,
-) {
+): void {
   collection.forEach(doc => {
     if (doc.id === null) {
       return;
@@ -123,7 +123,11 @@ export function saveCollection(
 }
 
 // state.docにsubscribe元を登録
-export function connectDocToState(dispatch: React.Dispatch<Actions>, docId: DocId, uuid: HooksId) {
+export function connectDocToState(
+  dispatch: React.Dispatch<Actions>,
+  docId: DocId,
+  uuid: HooksId,
+): void {
   dispatch({
     type: "connectDoc",
     payload: {
@@ -138,7 +142,7 @@ export function connectCollectionToState(
   collectionId: CollectionId,
   uuid: HooksId,
   docIds: List<DocId>,
-) {
+): void {
   dispatch({
     type: "connectCollection",
     payload: {
@@ -154,7 +158,7 @@ export function disconnectDocFromState(
   dispatch: React.Dispatch<Actions>,
   docId: DocId,
   uuid: HooksId,
-) {
+): void {
   dispatch({
     type: "disconnectDoc",
     payload: {
@@ -169,7 +173,7 @@ export function disconnectCollectionFromState(
   collectionId: CollectionId,
   uuid: HooksId,
   docIds: List<DocId>,
-) {
+): void {
   dispatch({
     type: "disconnectCollection",
     payload: {

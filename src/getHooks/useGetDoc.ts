@@ -11,8 +11,8 @@ type GetDocFunction<State> = (
   path: string,
   onGet: (data: State) => void,
   onError: (err: any) => void,
-  acceptOutdated?: boolean,
   saveToState?: boolean,
+  acceptOutdated?: boolean,
 ) => void;
 
 function useGetDocBase<State, InitialState = State>(
@@ -22,8 +22,8 @@ function useGetDocBase<State, InitialState = State>(
   getFunction: GetDocFunction<State>,
   options?: {
     callback?: (snapshot: State) => void;
-    acceptOutdated?: boolean;
     saveToState?: boolean;
+    acceptOutdated?: boolean;
   },
 ): [State | InitialState, boolean, any, () => void] {
   // Argument typeCheck
@@ -60,8 +60,11 @@ function useGetDocBase<State, InitialState = State>(
         setError(err);
         setLoading(false);
       },
+      options?.saveToState,
+      options?.acceptOutdated,
     );
   };
+  // Automatically excecute loadDoc() if lazy
   if (!lazy) useEffect(() => loadDoc(), [path, getHashCode(options)]);
 
   return [doc, loading, error, loadDoc];
@@ -71,8 +74,8 @@ export function useLazyGetDocSnapshot(
   path: string,
   options?: {
     callback?: (snapshot: firestore.DocumentSnapshot) => void;
-    acceptOutdated?: boolean;
     saveToState?: boolean;
+    acceptOutdated?: boolean;
   },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
   return useGetDocBase<firestore.DocumentSnapshot, null>(path, null, true, getDocSnapshot, options);
@@ -82,8 +85,8 @@ export function useGetDocSnapshot(
   path: string,
   options?: {
     callback?: (snapshot: firestore.DocumentSnapshot) => void;
-    acceptOutdated?: boolean;
     saveToState?: boolean;
+    acceptOutdated?: boolean;
   },
 ): [firestore.DocumentSnapshot | null, boolean, any, () => void] {
   return useGetDocBase<firestore.DocumentSnapshot, null>(
@@ -99,8 +102,8 @@ export function useLazyGetDoc(
   path: string,
   options?: {
     callback?: (data: DocData) => void;
-    acceptOutdated?: boolean;
     saveToState?: boolean;
+    acceptOutdated?: boolean;
   },
 ): [DocData, boolean, any, () => void] {
   return useGetDocBase(path, initialDocData, true, getDoc, options);
@@ -110,8 +113,8 @@ export function useGetDoc(
   path: string,
   options?: {
     callback?: (data: DocData) => void;
-    acceptOutdated?: boolean;
     saveToState?: boolean;
+    acceptOutdated?: boolean;
   },
 ): [DocData, boolean, any, () => void] {
   return useGetDocBase(path, initialDocData, false, getDoc, options);

@@ -41,7 +41,14 @@ export function useArrayQuery(
   const [unsubscribe, setUnsubscribe] = useState<{
     unsubscribe: () => void;
     reload: () => void;
-  }>({ unsubscribe: () => {}, reload: () => {} });
+  }>({
+    unsubscribe: (): void => {
+      /* do nothing */
+    },
+    reload: (): void => {
+      /* do nothing */
+    },
+  });
 
   const loadQuery = () => {
     setLoading(true);
@@ -70,7 +77,9 @@ export function useArrayQuery(
               if (queryCallback !== undefined) queryCallback(data);
             };
             const onError = reject;
-            const onListen = () => {};
+            const onListen = (): void => {
+              /* do nothing */
+            };
 
             if (isDocQuery && !queryConnects) {
               const load = () => getDoc(location, onChange, onError, queryAcceptOutdated);
