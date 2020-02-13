@@ -3,7 +3,7 @@ import { List } from "immutable";
 import { useQuery } from "../../../dist";
 import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 describe("useQuery", () => {
   const fql = {
@@ -17,18 +17,15 @@ describe("useQuery", () => {
       },
       cities: {
         location: "/cities",
-        // where: {
-        //   field: "population",
-        //   operator: ">=",
-        //   value: 19354922,
-        // },
         order: {
           by: "name",
         },
       },
     },
   };
+  afterAll(async () => await app.delete());
   it(`should handle a simple query`, async () => {
+    let accessCount = 0;
     const expected = {
       number: {
         data: backup.test.number,
@@ -44,11 +41,9 @@ describe("useQuery", () => {
         .toJS(),
     };
     const { result, waitForNextUpdate } = renderHook(() => {
-      useSetContext(db);
-      // @ts-ignore
+      useSetContext(db, () => accessCount++);
       return useQuery(fql);
     });
-
     expect(result.current[0]).toEqual({
       number: {
         data: null,
@@ -63,9 +58,9 @@ describe("useQuery", () => {
     expect(result.current[1]).toBeTruthy();
     expect(result.current[2]).toBeNull();
     await waitForNextUpdate();
-    await waitForNextUpdate();
     expect(result.current[0]).toEqual(expected);
     expect(result.current[1]).toBeFalsy();
     expect(result.current[2]).toBeNull();
+    expect(accessCount).toBe(Object.keys(expected).length);
   });
 });

@@ -3,10 +3,13 @@ import * as pathlib from "path";
 import { useGetDoc } from "../../../dist";
 import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 const testGettingDoc = path => {
+  afterAll(async () => await app.delete());
+
   it(`should handle a simple query "${path}"`, async () => {
+    let accessCount = 0;
     const pathSplitted = pathlib
       .resolve(path)
       .split("/")
@@ -17,7 +20,7 @@ const testGettingDoc = path => {
     };
 
     const { result, waitForNextUpdate } = renderHook(() => {
-      useSetContext(db);
+      useSetContext(db, () => accessCount++);
       return useGetDoc(path, { saveToState: false });
     });
 
@@ -29,6 +32,7 @@ const testGettingDoc = path => {
     expect(result.current[0]).toEqual(expected);
     expect(result.current[1]).toBeFalsy(); // loading
     expect(result.current[2]).toBeNull(); // error
+    expect(accessCount).toBe(1);
   });
 };
 

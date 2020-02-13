@@ -1,29 +1,33 @@
 import { renderHook } from "@testing-library/react-hooks";
 import * as pathlib from "path";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getDoc } from "../../../dist/getFunctions";
 import { useSetContext } from "../../../dist/provider";
 import { setDoc, updateDoc } from "../../../dist/setFunctions";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
-const useTestFn = (fn, { path, fql, onSet, options = {} }) => {
-  useSetContext(db);
+const useTestFn = (fn, { path, fql, onSet, options = {}, onAccess = undefined }) => {
+  useSetContext(db, onAccess);
   const [finished, setFinished] = useState(false);
   const onError = err => {
     throw new Error(err);
   };
-  fn(
-    path,
-    fql,
-    () => {
-      setFinished(true);
-      onSet();
-    },
-    err => {
-      setFinished(true);
-      onError(err);
-    },
-    { saveToState: false, ...options },
+  useEffect(
+    () =>
+      fn(
+        path,
+        fql,
+        () => {
+          setFinished(true);
+          onSet();
+        },
+        err => {
+          setFinished(true);
+          onError(err);
+        },
+        { saveToState: false, ...options },
+      ),
+    [],
   );
   return finished;
 };
@@ -34,18 +38,22 @@ const useCheckResult = ({ path, onGet }) => {
   const onError = err => {
     throw new Error(err);
   };
-  getDoc(
-    path,
-    doc => {
-      onGet(doc);
-      setFinished(true);
-    },
-    err => {
-      onError(err);
-      setFinished(true);
-    },
-    false,
-    false,
+  useEffect(
+    () =>
+      getDoc(
+        path,
+        doc => {
+          onGet(doc);
+          setFinished(true);
+        },
+        err => {
+          onError(err);
+          setFinished(true);
+        },
+        false,
+        false,
+      ),
+    [],
   );
   return finished;
 };
@@ -66,11 +74,18 @@ describe("setDoc", () => {
       field3: Math.random(),
     },
   };
+  afterAll(async () => await app.delete());
   it("should handle a simple query", async () => {
-    const onSet = () => {};
+    let accessCount = 0;
+    const onSet = () => {
+      /* do nothing */
+    };
     // set doc
-    const hooks1 = renderHook(() => useTestFn(setDoc, { path, onSet, fql }));
+    const hooks1 = renderHook(() =>
+      useTestFn(setDoc, { path, onSet, fql, onAccess: () => accessCount++ }),
+    );
     await hooks1.waitForNextUpdate();
+    expect(accessCount).toBe(1);
 
     // check written doc
     const expected = {
@@ -82,15 +97,24 @@ describe("setDoc", () => {
     };
     const hooks2 = renderHook(() => useCheckResult({ path, onGet }));
     await hooks2.waitForNextUpdate();
+    expect(accessCount).toBe(2);
   });
   it("setDoc merge option", async () => {
+    let accessCount = 0;
     // set doc (create doc)
-    const onSet = () => {};
-    const hooks1 = renderHook(() => useTestFn(setDoc, { path, onSet, fql }));
+    const onSet = () => {
+      /* do nothing */
+    };
+    const hooks1 = renderHook(() =>
+      useTestFn(setDoc, { path, onSet, fql, onAccess: () => accessCount++ }),
+    );
     await hooks1.waitForNextUpdate();
+    expect(accessCount).toBe(1);
 
     // set doc (merge true)
-    const onUpdate = () => {};
+    const onUpdate = () => {
+      /* do nothing */
+    };
     const hooks2 = renderHook(() =>
       useTestFn(setDoc, {
         path,
@@ -102,6 +126,7 @@ describe("setDoc", () => {
       }),
     );
     await hooks2.waitForNextUpdate();
+    expect(accessCount).toBe(2);
 
     // check updated doc
     const expected = {
@@ -113,19 +138,28 @@ describe("setDoc", () => {
     };
     const hooks3 = renderHook(() => useCheckResult({ path, onGet }));
     await hooks3.waitForNextUpdate();
+    expect(accessCount).toBe(3);
   });
   it("setDoc mergeFields option", async () => {
+    let accessCount = 0;
     // https://firebase.google.com/docs/reference/js/firebase.firestore.SetOptions.html
     // Changes the behavior of set() calls to only replace the specified field paths.
     // Any field path that is not specified is ignored and remains untouched.
 
     // set doc (create doc)
-    const onSet = () => {};
-    const hooks1 = renderHook(() => useTestFn(setDoc, { path, onSet, fql }));
+    const onSet = () => {
+      /* do nothing */
+    };
+    const hooks1 = renderHook(() =>
+      useTestFn(setDoc, { path, onSet, fql, onAccess: () => accessCount++ }),
+    );
     await hooks1.waitForNextUpdate();
+    expect(accessCount).toBe(1);
 
     // set doc (mergeFields specified)
-    const onUpdate = () => {};
+    const onUpdate = () => {
+      /* do nothing */
+    };
     const hooks2 = renderHook(() =>
       useTestFn(setDoc, {
         path,
@@ -137,6 +171,7 @@ describe("setDoc", () => {
       }),
     );
     await hooks2.waitForNextUpdate();
+    expect(accessCount).toBe(2);
 
     // check updated doc
     const expected = {
@@ -148,17 +183,27 @@ describe("setDoc", () => {
     };
     const hooks3 = renderHook(() => useCheckResult({ path, onGet }));
     await hooks3.waitForNextUpdate();
+    expect(accessCount).toBe(3);
   });
   it("updateDoc", async () => {
+    let accessCount = 0;
     // set doc (create doc)
-    const onSet = () => {};
-    const hooks1 = renderHook(() => useTestFn(setDoc, { path, onSet, fql }));
+    const onSet = () => {
+      /* do nothing */
+    };
+    const hooks1 = renderHook(() =>
+      useTestFn(setDoc, { path, onSet, fql, onAccess: () => accessCount++ }),
+    );
     await hooks1.waitForNextUpdate();
+    expect(accessCount).toBe(1);
 
     // update doc
-    const onUpdate = () => {};
+    const onUpdate = () => {
+      /* do nothing */
+    };
     const hooks2 = renderHook(() => useTestFn(updateDoc, { path, onSet: onUpdate, fql: fql2 }));
     await hooks2.waitForNextUpdate();
+    expect(accessCount).toBe(2);
 
     // check updated doc
     const expected = {
@@ -170,5 +215,6 @@ describe("setDoc", () => {
     };
     const hooks3 = renderHook(() => useCheckResult({ path, onGet }));
     await hooks3.waitForNextUpdate();
+    expect(accessCount).toBe(3);
   });
 });

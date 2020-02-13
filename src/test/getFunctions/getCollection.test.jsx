@@ -1,10 +1,10 @@
 import { renderHook } from "@testing-library/react-hooks";
 import { List } from "immutable";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getCollection } from "../../../dist/getFunctions";
 import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 const useTest = ({ path, onGet, options }) => {
   useSetContext(db);
@@ -12,19 +12,23 @@ const useTest = ({ path, onGet, options }) => {
   const onError = err => {
     throw new Error(err);
   };
-  getCollection(
-    path,
-    doc => {
-      onGet(doc);
-      setFinished(true);
-    },
-    err => {
-      onError(err);
-      setFinished(true);
-    },
-    options,
-    false,
-    false,
+  useEffect(
+    () =>
+      getCollection(
+        path,
+        doc => {
+          onGet(doc);
+          setFinished(true);
+        },
+        err => {
+          onError(err);
+          setFinished(true);
+        },
+        options,
+        false,
+        false,
+      ),
+    [],
   );
   return finished;
 };
@@ -53,6 +57,7 @@ const cities = [
 ];
 
 describe("Get Collection", () => {
+  afterAll(async () => await app.delete());
   it("should handle a simple query", async () => {
     const expected = List(cities)
       .sortBy(city => city.data.name)

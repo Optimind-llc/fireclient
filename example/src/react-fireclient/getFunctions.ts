@@ -71,7 +71,9 @@ export function subscribeDocSnapshot(
   path: string,
   onChange: (doc: firestore.DocumentSnapshot) => void,
   onError: (err: any) => void,
-  onListen: () => void = () => {},
+  onListen: () => void = (): void => {
+    /* do nothing */
+  },
   saveToState: boolean = true,
 ): () => void {
   const docId = pathlib.resolve(path);
@@ -101,7 +103,9 @@ export function subscribeDocSnapshot(
   } catch (err) {
     console.error(err);
     onError(err);
-    return () => {};
+    return (): void => {
+      /* do nothing */
+    };
   }
 }
 
@@ -110,7 +114,9 @@ export function subscribeDoc(
   path: string,
   onChange: (doc: DocData) => void,
   onError: (err: any) => void,
-  onListen: () => void = () => {},
+  onListen: () => void = (): void => {
+    /* do nothing */
+  },
   saveToState?: boolean,
 ): () => void {
   return subscribeDocSnapshot(
@@ -194,7 +200,9 @@ export function subscribeCollectionSnapshot(
   path: string,
   onChange: (collection: firestore.DocumentSnapshot[]) => void,
   onError: (err: any) => void,
-  onListen: () => void = () => {},
+  onListen: () => void = (): void => {
+    /* do nothing */
+  },
   options: QueryOptions = {},
   saveToState: boolean = true,
 ): () => void {
@@ -233,7 +241,9 @@ export function subscribeCollectionSnapshot(
   } catch (err) {
     console.error(err);
     onError(err);
-    return () => {};
+    return (): void => {
+      /* do nothing */
+    };
   }
 }
 
@@ -242,7 +252,9 @@ export function subscribeCollection(
   path: string,
   onChange: (collection: CollectionData) => void,
   onError: (err: any) => void,
-  onListen: () => void = () => {},
+  onListen: () => void = (): void => {
+    /* do nothing */
+  },
   options: QueryOptions = {},
   saveToState?: boolean,
 ): () => void {

@@ -20,9 +20,8 @@ export function getDocSnapshot(
   path: string,
   onGet: (doc: firestore.DocumentSnapshot) => void,
   onError: (err: any) => void,
-  acceptOutdated = false,
   saveToState = true,
-) {
+): void {
   const docId = pathlib.resolve(path);
   const { dispatch, firestoreDB, onAccess } = getContext();
 
@@ -49,9 +48,9 @@ export function getDoc(
   path: string,
   onGet: (doc: DocData) => void,
   onError: (err: any) => void,
-  acceptOutdated = false,
   saveToState?: boolean,
-) {
+  acceptOutdated = false,
+): void {
   const docId = pathlib.resolve(path);
   const { state } = getContext();
 
@@ -63,7 +62,7 @@ export function getDoc(
     return;
   }
 
-  getDocSnapshot(path, doc => onGet(createDataFromDoc(doc)), onError, acceptOutdated, saveToState);
+  getDocSnapshot(path, doc => onGet(createDataFromDoc(doc)), onError, saveToState);
 }
 
 export function subscribeDocSnapshot(
@@ -71,8 +70,10 @@ export function subscribeDocSnapshot(
   path: string,
   onChange: (doc: firestore.DocumentSnapshot) => void,
   onError: (err: any) => void,
-  onListen: () => void = () => {},
-  saveToState: boolean = true,
+  onListen: () => void = (): void => {
+    /* do nothing */
+  },
+  saveToState = true,
 ): () => void {
   const docId = pathlib.resolve(path);
   const { dispatch, firestoreDB, onAccess } = getContext();
@@ -94,14 +95,16 @@ export function subscribeDocSnapshot(
         onError(err);
       },
     );
-    return () => {
+    return (): void => {
       unsubscribe();
       disconnectDocFromState(dispatch, docId, uuid);
     };
   } catch (err) {
     console.error(err);
     onError(err);
-    return () => {};
+    return (): void => {
+      /* do nothing */
+    };
   }
 }
 
@@ -110,7 +113,9 @@ export function subscribeDoc(
   path: string,
   onChange: (doc: DocData) => void,
   onError: (err: any) => void,
-  onListen: () => void = () => {},
+  onListen: () => void = (): void => {
+    /* do nothing */
+  },
   saveToState?: boolean,
 ): () => void {
   return subscribeDocSnapshot(
@@ -128,7 +133,6 @@ export function getCollectionSnapshot(
   onGet: (collection: firestore.DocumentSnapshot[]) => void,
   onError: (err: any) => void,
   options: QueryOptions = {},
-  acceptOutdated = false,
   saveToState = true,
 ): void {
   const { dispatch, firestoreDB, onAccess } = getContext();
@@ -157,8 +161,8 @@ export function getCollection(
   onGet: (collection: CollectionData) => void,
   onError: (err: any) => void,
   options: QueryOptions = {},
-  acceptOutdated = false,
   saveToState?: boolean,
+  acceptOutdated = false,
 ): void {
   const collectionId = getQueryId(path, options);
   const { state } = getContext();
@@ -166,7 +170,7 @@ export function getCollection(
   // state内でsubscribeされているかチェック
   const cache = state.get("collection").get(collectionId);
   if (cache !== undefined && (acceptOutdated || cache?.get("connectedFrom")?.size > 0)) {
-    const docIds = cache.get("docIds").map(id => pathlib.resolve(path, id!));
+    const docIds = cache.get("docIds").map(id => pathlib.resolve(path, id));
     const collectionCache: CollectionData = docIds
       .map(docId =>
         state
@@ -184,7 +188,6 @@ export function getCollection(
     collection => onGet(createDataFromCollection(collection)),
     onError,
     options,
-    acceptOutdated,
     saveToState,
   );
 }
@@ -194,9 +197,11 @@ export function subscribeCollectionSnapshot(
   path: string,
   onChange: (collection: firestore.DocumentSnapshot[]) => void,
   onError: (err: any) => void,
-  onListen: () => void = () => {},
+  onListen: () => void = (): void => {
+    /* do nothing */
+  },
   options: QueryOptions = {},
-  saveToState: boolean = true,
+  saveToState = true,
 ): () => void {
   const collectionId = getQueryId(path, options);
   const { dispatch, firestoreDB, onAccess } = getContext();
@@ -226,14 +231,16 @@ export function subscribeCollectionSnapshot(
         onError(err);
       },
     );
-    return () => {
+    return (): void => {
       unsubscribe();
       disconnectCollectionFromState(dispatch, collectionId, uuid, docIds);
     };
   } catch (err) {
     console.error(err);
     onError(err);
-    return () => {};
+    return (): void => {
+      /* do nothing */
+    };
   }
 }
 
@@ -242,7 +249,9 @@ export function subscribeCollection(
   path: string,
   onChange: (collection: CollectionData) => void,
   onError: (err: any) => void,
-  onListen: () => void = () => {},
+  onListen: () => void = (): void => {
+    /* do nothing */
+  },
   options: QueryOptions = {},
   saveToState?: boolean,
 ): () => void {

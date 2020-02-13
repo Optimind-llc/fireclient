@@ -1,6 +1,6 @@
 import { firestore } from "firebase";
 import "firebase/firestore";
-import React from "react";
+import React, { ReactElement } from "react";
 import { FireclientState, ProviderContext } from ".";
 import { Actions } from "./reducer";
 export declare const Context: React.Context<any>;
@@ -27,5 +27,5 @@ declare function Provider({ children, firestoreDB, onAccess, }: {
     children: any;
     firestoreDB: firestore.Firestore;
     onAccess?: () => void;
-}): JSX.Element;
+}): ReactElement;
 export default Provider;

@@ -1,11 +1,11 @@
 import { renderHook } from "@testing-library/react-hooks";
 import { List } from "immutable";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { subscribeCollection } from "../../../dist/getFunctions";
 import { useSetContext } from "../../../dist/provider";
 import { generateHooksId } from "../../../dist/utils";
 import backup from "../backup1.json";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 const useTest = ({ path, onGet, options }) => {
   useSetContext(db);
@@ -14,21 +14,27 @@ const useTest = ({ path, onGet, options }) => {
   const onError = err => {
     throw new Error(err);
   };
-  const onListen = () => {};
-  subscribeCollection(
-    uuid,
-    path,
-    doc => {
-      onGet(doc);
-      setFinished(true);
-    },
-    err => {
-      onError(err);
-      setFinished(true);
-    },
-    onListen,
-    options,
-    false,
+  const onListen = () => {
+    /* do nothing */
+  };
+  useEffect(
+    () =>
+      subscribeCollection(
+        uuid,
+        path,
+        doc => {
+          onGet(doc);
+          setFinished(true);
+        },
+        err => {
+          onError(err);
+          setFinished(true);
+        },
+        onListen,
+        options,
+        false,
+      ),
+    [],
   );
   return finished;
 };
@@ -57,6 +63,7 @@ const expected = [
 ];
 
 describe("Get Collection", () => {
+  afterAll(async () => await app.delete());
   it("should handle a simple query", async () => {
     const onGet = collectionData => {
       expect(collectionData).toEqual(

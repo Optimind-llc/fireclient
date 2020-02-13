@@ -1,10 +1,10 @@
 import { renderHook } from "@testing-library/react-hooks";
 import * as pathlib from "path";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getDoc } from "../../../dist/getFunctions";
 import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 const useTest = ({ path, onGet }) => {
   useSetContext(db);
@@ -12,18 +12,22 @@ const useTest = ({ path, onGet }) => {
   const onError = err => {
     throw new Error(err);
   };
-  getDoc(
-    path,
-    doc => {
-      onGet(doc);
-      setFinished(true);
-    },
-    err => {
-      onError(err);
-      setFinished(true);
-    },
-    false,
-    false,
+  useEffect(
+    () =>
+      getDoc(
+        path,
+        doc => {
+          onGet(doc);
+          setFinished(true);
+        },
+        err => {
+          onError(err);
+          setFinished(true);
+        },
+        false,
+        false,
+      ),
+    [],
   );
   return finished;
 };
@@ -56,5 +60,6 @@ describe("should handle a simple query", () => {
     "/test/number",
     "/test/string",
   ];
+  afterAll(async () => await app.delete());
   docPaths.forEach(docPath => testGettingDoc(docPath));
 });

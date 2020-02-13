@@ -88,6 +88,7 @@ function setDoc(path, query, onSet, onError, options) {
         }
     }
     catch (err) {
+        console.error(err);
         onError(err);
     }
 }
@@ -110,6 +111,7 @@ function updateDoc(docPath, query, onUpdate, onError, options) {
         });
     }
     catch (err) {
+        console.error(err);
         onError(err);
     }
 }

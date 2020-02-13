@@ -2,11 +2,13 @@ import { renderHook } from "@testing-library/react-hooks";
 import { fromJS } from "immutable";
 import { useGetCollection, useSetCollection } from "../../../dist";
 import { useSetContext } from "../../../dist/provider";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 describe("useSetCollection", () => {
   const path = "/useSetCollectionTest";
+  afterAll(async () => await app.delete());
   it("should handle a simple query", async () => {
+    let accessCount = 0;
     const fql = [
       {
         id: "doc1",
@@ -36,7 +38,7 @@ describe("useSetCollection", () => {
       .toJS();
 
     const hooks1 = renderHook(() => {
-      useSetContext(db);
+      useSetContext(db, () => accessCount++);
       return useSetCollection(path, fql, { saveToState: false });
     });
     const result1 = hooks1.result;
@@ -45,14 +47,16 @@ describe("useSetCollection", () => {
     expect(result1.current[1]).toBeFalsy(); // writing
     expect(result1.current[2]).toBeFalsy(); // called
     expect(result1.current[3]).toBeNull(); // error
+    expect(accessCount).toBe(0);
     result1.current[0](); // setFn()
     await waitForNextUpdate1();
     expect(result1.current[1]).toBeFalsy(); // writing
     expect(result1.current[2]).toBeTruthy(); // called
     expect(result1.current[3]).toBeNull(); // error
+    expect(accessCount).toBe(3);
 
     const hooks2 = renderHook(() => {
-      useSetContext(db);
+      useSetContext(db, () => accessCount++);
       return useGetCollection(path, { order: { by: "field1" }, saveToState: false });
     });
     const result2 = hooks2.result;
@@ -60,5 +64,6 @@ describe("useSetCollection", () => {
 
     await waitForNextUpdate2();
     expect(result2.current[0]).toEqual(expected);
+    expect(accessCount).toBe(4);
   });
 });

@@ -3,7 +3,7 @@ import { List } from "immutable";
 import { useGetCollection } from "../../../dist";
 import { useSetContext } from "../../../dist/provider";
 import backup from "../backup1.json";
-import db from "../firestore";
+import { app, db } from "../firestore";
 
 const expected = [
   {
@@ -29,9 +29,11 @@ const expected = [
 ];
 
 describe("useGetCollection", () => {
+  afterAll(async () => await app.delete());
   it("should handle a simple query", async () => {
+    let accessCount = 0;
     const { result, waitForNextUpdate } = renderHook(() => {
-      useSetContext(db);
+      useSetContext(db, () => accessCount++);
       const options = {
         order: {
           by: "name",
@@ -52,5 +54,6 @@ describe("useGetCollection", () => {
     );
     expect(result.current[1]).toBeFalsy(); // loading
     expect(result.current[2]).toBeNull(); // error
+    expect(accessCount).toBe(1);
   });
 });
