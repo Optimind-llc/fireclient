@@ -47,7 +47,7 @@ function useSetDocBase(
 
   const [writing, setWriting] = useState(false);
   const [called, setCalled] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   // ObjectでQueryを指定していた場合Functionに変換する
   const queryGenerator = query instanceof Function ? query : () => query;

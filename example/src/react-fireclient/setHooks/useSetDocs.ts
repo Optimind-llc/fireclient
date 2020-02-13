@@ -45,7 +45,7 @@ function useSetDocsBase(
 
   const [writing, setWriting] = useState(false);
   const [called, setCalled] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const queryEntries = Object.entries(queries);
 

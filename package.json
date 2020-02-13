@@ -7,7 +7,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc --jsx react",
+    "build": "tsc --jsx react && cp -r src/* example/src/react-fireclient",
     "test": "jest src/test/*"
   },
   "peerDependencies": {

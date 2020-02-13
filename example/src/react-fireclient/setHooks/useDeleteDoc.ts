@@ -23,7 +23,7 @@ export function useDeleteDoc(
 
   const [deleting, setDeleting] = useState(false);
   const [called, setCalled] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const deleteFn = (): void => {
     setDeleting(true);
@@ -65,7 +65,7 @@ export function useDeleteDocs(
 
   const [deleting, setDeleting] = useState(false);
   const [called, setCalled] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const deleteFn = (): void => {
     setDeleting(true);

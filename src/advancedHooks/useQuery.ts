@@ -34,7 +34,7 @@ export function useArrayQuery(
   // Subscribeする場合があるので、HooksのIdを持っておく
   const [hooksId] = useState(generateHooksId());
 
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
   const [queryData, setQueryData] = useState<ArrayQueryData>(initialQueryData);
   const [loading, setLoading] = useState(true);
   const [unsubscribe, setUnsubscribe] = useState<{
@@ -49,10 +49,10 @@ export function useArrayQuery(
     },
   });
 
-  const loadQuery = () => {
+  const loadQuery = (): void => {
     setLoading(true);
-    let reloadFns: (() => void)[] = [];
-    let unsubFns: (() => void)[] = [];
+    const reloadFns: (() => void)[] = [];
+    const unsubFns: (() => void)[] = [];
 
     // React HooksはCallback内で呼び出せないので、
     // fetchFunctionsの関数を直接呼び出す
@@ -70,7 +70,7 @@ export function useArrayQuery(
             const queryCallback = query.callback;
             const isDocQuery = isDocPath(location);
 
-            const onChange = (data: DocData | CollectionData) => {
+            const onChange = (data: DocData | CollectionData): void => {
               resolve({ data: data, key: i });
               if (callback !== undefined) callback(data);
               if (queryCallback !== undefined) queryCallback(data);
@@ -81,14 +81,14 @@ export function useArrayQuery(
             };
 
             if (isDocQuery && !queryConnects) {
-              const load = () => getDoc(location, onChange, onError, queryAcceptOutdated);
+              const load = (): void => getDoc(location, onChange, onError, queryAcceptOutdated);
               load();
               reloadFns.push(load);
             } else if (isDocQuery && queryConnects) {
               const unsub = subscribeDoc(hooksId, location, onChange, onError, onListen);
               unsubFns.push(unsub);
             } else if (!isDocQuery && !queryConnects) {
-              const load = () =>
+              const load = (): void =>
                 getCollection(
                   location,
                   onChange,
