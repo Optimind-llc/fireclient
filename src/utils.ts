@@ -49,13 +49,15 @@ const withoutDot = (s: string): boolean => s !== ".";
 const withoutEmpty = (s: string): boolean => s.length > 0;
 const computeLevel = (acc: number, s: string): number => (s === ".." ? acc - 1 : acc + 1);
 
-export const isDocPath = (path: string): boolean =>
-  pathlib
+export const isDocPath = (path: string): boolean => {
+  const depth = pathlib
     .normalize(path)
     .split(pathlib.sep)
     .filter(withoutDot)
     .filter(withoutEmpty)
-    .reduce(computeLevel, 0) === 1;
+    .reduce(computeLevel, 0);
+  return depth % 2 === 0;
+};
 
 export const createData = (id: string, fields: { [fields: string]: any }): DocData => ({
   data: fields,

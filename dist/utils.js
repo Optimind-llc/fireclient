@@ -50,12 +50,13 @@ var withoutDot = function (s) { return s !== "."; };
 var withoutEmpty = function (s) { return s.length > 0; };
 var computeLevel = function (acc, s) { return (s === ".." ? acc - 1 : acc + 1); };
 exports.isDocPath = function (path) {
-    return path_1.default
+    var depth = path_1.default
         .normalize(path)
         .split(path_1.default.sep)
         .filter(withoutDot)
         .filter(withoutEmpty)
-        .reduce(computeLevel, 0) === 1;
+        .reduce(computeLevel, 0);
+    return depth % 2 === 0;
 };
 exports.createData = function (id, fields) { return ({
     data: fields,
