@@ -22,33 +22,29 @@ describe("useSetDoc", () => {
       id: pathlib.basename(path),
     };
 
-    const hooks1 = renderHook(() => {
+    const useSetDocHook = renderHook(() => {
       useSetContext(db, () => accessCount++);
       return useSetDoc(path, fql, { saveToState: false });
     });
-    const result1 = hooks1.result;
-    const waitForNextUpdate1 = hooks1.waitForNextUpdate;
 
-    expect(result1.current[1]).toBeFalsy(); // writing
-    expect(result1.current[2]).toBeFalsy(); // called
-    expect(result1.current[3]).toBeNull(); // error
+    expect(useSetDocHook.result.current[1]).toBeFalsy(); // writing
+    expect(useSetDocHook.result.current[2]).toBeFalsy(); // called
+    expect(useSetDocHook.result.current[3]).toBeNull(); // error
     expect(accessCount).toBe(0);
-    result1.current[0](); // setFn()
-    await waitForNextUpdate1();
-    expect(result1.current[1]).toBeFalsy(); // writing
-    expect(result1.current[2]).toBeTruthy(); // called
-    expect(result1.current[3]).toBeNull(); // error
+    useSetDocHook.result.current[0](); // setFn()
+    await useSetDocHook.waitForNextUpdate();
+    expect(useSetDocHook.result.current[1]).toBeFalsy(); // writing
+    expect(useSetDocHook.result.current[2]).toBeTruthy(); // called
+    expect(useSetDocHook.result.current[3]).toBeNull(); // error
     expect(accessCount).toBe(1);
 
-    const hooks2 = renderHook(() => {
+    const useGetDocHook = renderHook(() => {
       useSetContext(db, () => accessCount++);
       return useGetDoc(path, { saveToState: false });
     });
-    const result2 = hooks2.result;
-    const waitForNextUpdate2 = hooks2.waitForNextUpdate;
 
-    await waitForNextUpdate2();
-    expect(result2.current[0]).toEqual(expected);
+    await useGetDocHook.waitForNextUpdate();
+    expect(useGetDocHook.result.current[0]).toEqual(expected);
     expect(accessCount).toBe(2);
   });
 });

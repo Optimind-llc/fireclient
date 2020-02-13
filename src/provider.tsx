@@ -1,5 +1,4 @@
 import { firestore } from "firebase";
-import "firebase/firestore";
 import { Map } from "immutable";
 import React, { ReactElement } from "react";
 import { FireclientState, ProviderContext } from ".";

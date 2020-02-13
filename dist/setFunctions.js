@@ -13,9 +13,9 @@ var utils_1 = require("./utils");
 // 書き込み完了時のCallback
 var setDocCallback = function (dispatch, onSet, onError, docPath, fields, options, subCollection) {
     var _a;
+    var saveToState = ((_a = options) === null || _a === void 0 ? void 0 : _a.saveToState) !== false; // default true
     // 書き込んだ内容をStateに保存する
-    // options.saveToState can be undefined
-    if (((_a = options) === null || _a === void 0 ? void 0 : _a.saveToState) !== false) {
+    if (saveToState) {
         var docId = pathlib.basename(docPath);
         var data = utils_1.createData(docId, fields);
         utils_1.saveDoc(dispatch, docPath, data);
@@ -47,7 +47,6 @@ function setDoc(path, query, onSet, onError, options) {
     var merge = options.merge, mergeFields = options.mergeFields;
     var fields = query.fields !== undefined ? query.fields : {};
     var isDoc = utils_1.isDocPath(path);
-    var idExists = id !== undefined;
     try {
         onAccess();
         if (isDoc) {
@@ -61,7 +60,7 @@ function setDoc(path, query, onSet, onError, options) {
                 onError(err);
             });
         }
-        else if (idExists) {
+        else if (id !== undefined) {
             // collection path と id が渡された時
             var docPath = pathlib.resolve(path, id);
             var ref = firestoreDB.doc(docPath);
@@ -102,9 +101,7 @@ function updateDoc(docPath, query, onUpdate, onError, options) {
         var ref = firestoreDB.doc(docPath);
         ref
             .update(fields)
-            .then(function () {
-            setDocCallback(dispatch, onUpdate, onError, docPath, fields, options);
-        })
+            .then(function () { return setDocCallback(dispatch, onUpdate, onError, docPath, fields, options); })
             .catch(function (err) {
             console.error(err);
             onError(err);
@@ -116,20 +113,6 @@ function updateDoc(docPath, query, onUpdate, onError, options) {
     }
 }
 exports.updateDoc = updateDoc;
-/**
- * ```js
- * [
- *  {
- *    id: ...,
- *    fields: { ... },
- *  },
- *  {
- *    fields: { ... },
- *    subCollection: { ... }
- *  }
- * ]
- * ```
- */
 function setCollection(collectionPath, queries, onSet, onError, options) {
     Promise.all(queries.map(function (query) {
         return new Promise(function (resolve, reject) {
@@ -145,3 +128,27 @@ function setCollection(collectionPath, queries, onSet, onError, options) {
     });
 }
 exports.setCollection = setCollection;
+function deleteDoc(path, onDelete, onError, options) {
+    if (options === void 0) { options = {}; }
+    var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch, onAccess = _a.onAccess;
+    var saveToState = options.saveToState !== false; // default true
+    try {
+        onAccess();
+        firestoreDB
+            .doc(path)
+            .delete()
+            .then(function () {
+            if (saveToState)
+                utils_1.deleteDocFromState(dispatch, path);
+            onDelete();
+        })
+            .catch(function (err) {
+            console.error(err);
+            onError(err);
+        });
+    }
+    catch (err) {
+        console.error(err);
+    }
+}
+exports.deleteDoc = deleteDoc;

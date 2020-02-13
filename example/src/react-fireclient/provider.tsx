@@ -1,7 +1,6 @@
 import { firestore } from "firebase";
-import "firebase/firestore";
 import { Map } from "immutable";
-import React from "react";
+import React, { ReactElement } from "react";
 import { FireclientState, ProviderContext } from ".";
 import reducer, { Actions } from "./reducer";
 import { assert } from "./typeCheck";
@@ -22,7 +21,7 @@ const initialState: FireclientState = Map({
 });
 
 // for testing
-export function useSetContext(firestoreDB?: firestore.Firestore, onAccess?: () => void) {
+export function useSetContext(firestoreDB?: firestore.Firestore, onAccess?: () => void): void {
   assert(firestoreDB !== undefined, "firestoreDB props of Provider is undefined");
   assert(firestoreDB !== null, "firestoreDB props of Provider is null");
   const [state, dispatch] = React.useReducer(reducer, initialState);
@@ -58,10 +57,9 @@ export function getContext(): {
  *    const { state } = useContext(Context);
  *    const json = convertStateToJson(state);
  */
-export function convertStateToJson(state: FireclientState) {
+export function convertStateToJson(state: FireclientState): string {
   return JSON.stringify(state, null, 4);
 }
-
 function Provider({
   children,
   firestoreDB,
@@ -70,8 +68,8 @@ function Provider({
   children: any;
   firestoreDB: firestore.Firestore;
   onAccess?: () => void;
-}) {
-  useSetContext(firestoreDB);
+}): ReactElement {
+  useSetContext(firestoreDB, onAccess);
   const { state, dispatch } = providerContext;
 
   return (

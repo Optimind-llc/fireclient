@@ -68,7 +68,7 @@ describe("setDoc", () => {
       field4: Math.random(),
     },
   };
-  const fql2 = {
+  const updateFql = {
     fields: {
       field2: Math.random(),
       field3: Math.random(),
@@ -81,10 +81,10 @@ describe("setDoc", () => {
       /* do nothing */
     };
     // set doc
-    const hooks1 = renderHook(() =>
+    const setDocHooks = renderHook(() =>
       useTestFn(setDoc, { path, onSet, fql, onAccess: () => accessCount++ }),
     );
-    await hooks1.waitForNextUpdate();
+    await setDocHooks.waitForNextUpdate();
     expect(accessCount).toBe(1);
 
     // check written doc
@@ -95,8 +95,8 @@ describe("setDoc", () => {
     const onGet = docData => {
       expect(docData).toEqual(expected);
     };
-    const hooks2 = renderHook(() => useCheckResult({ path, onGet }));
-    await hooks2.waitForNextUpdate();
+    const checkDocHook = renderHook(() => useCheckResult({ path, onGet }));
+    await checkDocHook.waitForNextUpdate();
     expect(accessCount).toBe(2);
   });
   it("setDoc merge option", async () => {
@@ -105,39 +105,39 @@ describe("setDoc", () => {
     const onSet = () => {
       /* do nothing */
     };
-    const hooks1 = renderHook(() =>
+    const setDocHooks = renderHook(() =>
       useTestFn(setDoc, { path, onSet, fql, onAccess: () => accessCount++ }),
     );
-    await hooks1.waitForNextUpdate();
+    await setDocHooks.waitForNextUpdate();
     expect(accessCount).toBe(1);
 
     // set doc (merge true)
     const onUpdate = () => {
       /* do nothing */
     };
-    const hooks2 = renderHook(() =>
+    const setDocWithMergeTrueHooks = renderHook(() =>
       useTestFn(setDoc, {
         path,
         onSet: onUpdate,
-        fql: fql2,
+        fql: updateFql,
         options: {
           merge: true,
         },
       }),
     );
-    await hooks2.waitForNextUpdate();
+    await setDocWithMergeTrueHooks.waitForNextUpdate();
     expect(accessCount).toBe(2);
 
     // check updated doc
     const expected = {
-      data: Object.assign(fql.fields, fql2.fields),
+      data: Object.assign(fql.fields, updateFql.fields),
       id: pathlib.basename(path),
     };
     const onGet = docData => {
       expect(docData).toEqual(expected);
     };
-    const hooks3 = renderHook(() => useCheckResult({ path, onGet }));
-    await hooks3.waitForNextUpdate();
+    const checkDocHook = renderHook(() => useCheckResult({ path, onGet }));
+    await checkDocHook.waitForNextUpdate();
     expect(accessCount).toBe(3);
   });
   it("setDoc mergeFields option", async () => {
@@ -150,39 +150,39 @@ describe("setDoc", () => {
     const onSet = () => {
       /* do nothing */
     };
-    const hooks1 = renderHook(() =>
+    const setDocHook = renderHook(() =>
       useTestFn(setDoc, { path, onSet, fql, onAccess: () => accessCount++ }),
     );
-    await hooks1.waitForNextUpdate();
+    await setDocHook.waitForNextUpdate();
     expect(accessCount).toBe(1);
 
     // set doc (mergeFields specified)
     const onUpdate = () => {
       /* do nothing */
     };
-    const hooks2 = renderHook(() =>
+    const setDocWithMergeFieldsHook = renderHook(() =>
       useTestFn(setDoc, {
         path,
         onSet: onUpdate,
-        fql: fql2,
+        fql: updateFql,
         options: {
           mergeFields: ["field2"],
         },
       }),
     );
-    await hooks2.waitForNextUpdate();
+    await setDocWithMergeFieldsHook.waitForNextUpdate();
     expect(accessCount).toBe(2);
 
     // check updated doc
     const expected = {
-      data: { ...fql.fields, field2: fql2.fields.field2 },
+      data: { ...fql.fields, field2: updateFql.fields.field2 },
       id: pathlib.basename(path),
     };
     const onGet = docData => {
       expect(docData).toEqual(expected);
     };
-    const hooks3 = renderHook(() => useCheckResult({ path, onGet }));
-    await hooks3.waitForNextUpdate();
+    const checkDocHook = renderHook(() => useCheckResult({ path, onGet }));
+    await checkDocHook.waitForNextUpdate();
     expect(accessCount).toBe(3);
   });
   it("updateDoc", async () => {
@@ -191,30 +191,32 @@ describe("setDoc", () => {
     const onSet = () => {
       /* do nothing */
     };
-    const hooks1 = renderHook(() =>
+    const setDocHook = renderHook(() =>
       useTestFn(setDoc, { path, onSet, fql, onAccess: () => accessCount++ }),
     );
-    await hooks1.waitForNextUpdate();
+    await setDocHook.waitForNextUpdate();
     expect(accessCount).toBe(1);
 
     // update doc
     const onUpdate = () => {
       /* do nothing */
     };
-    const hooks2 = renderHook(() => useTestFn(updateDoc, { path, onSet: onUpdate, fql: fql2 }));
-    await hooks2.waitForNextUpdate();
+    const updateDocHook = renderHook(() =>
+      useTestFn(updateDoc, { path, onSet: onUpdate, fql: updateFql }),
+    );
+    await updateDocHook.waitForNextUpdate();
     expect(accessCount).toBe(2);
 
     // check updated doc
     const expected = {
-      data: Object.assign(fql.fields, fql2.fields),
+      data: Object.assign(fql.fields, updateFql.fields),
       id: pathlib.basename(path),
     };
     const onGet = docData => {
       expect(docData).toEqual(expected);
     };
-    const hooks3 = renderHook(() => useCheckResult({ path, onGet }));
-    await hooks3.waitForNextUpdate();
+    const checkDocHook = renderHook(() => useCheckResult({ path, onGet }));
+    await checkDocHook.waitForNextUpdate();
     expect(accessCount).toBe(3);
   });
 });

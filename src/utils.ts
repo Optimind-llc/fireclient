@@ -2,7 +2,7 @@ import { firestore } from "firebase";
 import { List, Seq } from "immutable";
 import pathlib from "path";
 import { CollectionId, Cursor, DocId, HooksId, Limit, Order, QueryOptions, Where } from ".";
-import { CollectionData, DocData } from "./";
+import { CollectionData, DocData, FireclientState } from "./";
 import { Actions } from "./reducer";
 import { assert } from "./typeCheck";
 
@@ -39,11 +39,27 @@ export const generateHooksId = (): HooksId =>
 export const getHashCode = (obj: any): number =>
   obj === undefined ? sortedFromJS({}).hashCode() : sortedFromJS(obj).hashCode();
 
-export const getQueryId = (path: string, options: QueryOptions): CollectionId =>
-  getHashCode({
-    path: pathlib.resolve(path),
-    options,
-  });
+export const getQueryId = (path: string, options: QueryOptions = {}): CollectionId => {
+  const optionsId = getHashCode(options);
+  return path + `:${optionsId}`;
+};
+
+const findLastColonIndex = (s: string): number =>
+  s.split("").reduce((acc, val, i) => (acc = val === ":" ? i : acc), -1);
+
+export const getCollectionPathFromId = (collectionId: CollectionId): string =>
+  collectionId.slice(0, findLastColonIndex(collectionId));
+
+export const searchCollectionId = (
+  collectionPath: string,
+  state: FireclientState,
+): CollectionId[] =>
+  Array.from(
+    state
+      .get("collection")
+      .filter((id: CollectionId) => id.startsWith(collectionPath))
+      .keys(),
+  );
 
 const withoutDot = (s: string): boolean => s !== ".";
 const withoutEmpty = (s: string): boolean => s.length > 0;
@@ -97,21 +113,23 @@ export const saveDoc = (dispatch: React.Dispatch<Actions>, docPath: string, doc:
   });
 
 // state.collectionに対象のdocのIdを保存, state.docに各データを保存
-export function saveCollection(
+export const saveCollection = (
   dispatch: React.Dispatch<Actions>,
-  path: string,
+  collectionPath: string,
   options: QueryOptions,
   collection: CollectionData,
-): void {
+): void => {
   collection.forEach(doc => {
     if (doc.id === null) {
       return;
     }
-    saveDoc(dispatch, pathlib.resolve(path, doc.id), doc);
+    saveDoc(dispatch, pathlib.resolve(collectionPath, doc.id), doc);
   });
-  const collectionId = getQueryId(path, options);
+  const collectionId = getQueryId(collectionPath, options);
   const docIds = List(
-    collection.filter(doc => doc.id !== null).map(doc => pathlib.resolve(path, doc.id as string)),
+    collection
+      .filter(doc => doc.id !== null)
+      .map(doc => pathlib.resolve(collectionPath, doc.id as string)),
   );
   dispatch({
     type: "setCollection",
@@ -120,7 +138,26 @@ export function saveCollection(
       docIds,
     },
   });
-}
+};
+
+export const deleteDocFromState = (dispatch: React.Dispatch<Actions>, docPath: string): void =>
+  dispatch({
+    type: "deleteDoc",
+    payload: {
+      docId: pathlib.resolve(docPath),
+    },
+  });
+
+export const deleteCollectionFromState = (
+  dispatch: React.Dispatch<Actions>,
+  collectionPath: string,
+): void =>
+  dispatch({
+    type: "deleteCollection",
+    payload: {
+      collectionId: getQueryId(collectionPath),
+    },
+  });
 
 // state.docにsubscribe元を登録
 export const connectDocToState = (

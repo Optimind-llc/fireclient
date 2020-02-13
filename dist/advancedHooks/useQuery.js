@@ -18,7 +18,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("firebase/firestore");
 var immutable_1 = require("immutable");
 var react_1 = require("react");
 var __1 = require("..");

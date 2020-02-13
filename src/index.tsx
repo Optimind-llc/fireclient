@@ -12,11 +12,12 @@ import * as reducer from "./reducer";
 import * as _useSetCollection from "./setHooks/useSetCollection";
 import * as _useSetDoc from "./setHooks/useSetDoc";
 import * as _useSetDocs from "./setHooks/useSetDocs";
+import * as _useDeleteDoc from "./setHooks/useDeleteDoc";
 import * as utils from "./utils";
 
 export type HooksId = string;
 export type DocId = string;
-export type CollectionId = number;
+export type CollectionId = string;
 export type DocData = {
   data: {
     [field: string]: any;
@@ -292,6 +293,9 @@ export const useUpdateDoc = _useSetDoc.useUpdateDoc;
 export const useSetDocs = _useSetDocs.useSetDocs;
 export const useUpdateDocs = _useSetDocs.useUpdateDocs;
 export const useSetCollection = _useSetCollection.useSetCollection;
+
+export const useDeleteDoc = _useDeleteDoc.useDeleteDoc;
+export const useDeleteDocs = _useDeleteDoc.useDeleteDocs;
 
 export const useArrayQuery = _useQuery.useArrayQuery;
 export const useQuery = _useQuery.useQuery;

@@ -1,5 +1,4 @@
 import { firestore } from "firebase";
-import "firebase/firestore";
 import { CollectionData, QueryOptions } from "..";
 declare type GetCollectionFunction<State> = (path: string, onGet: (data: State) => void, onError: (err: any) => void, options?: QueryOptions, saveToState?: boolean, acceptOutdated?: boolean) => void;
 export declare function useGetCollectionBase<State, InitialState = State>(path: string, initialValue: State | InitialState, lazy: boolean, getFunction: GetCollectionFunction<State>, options?: {

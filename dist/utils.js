@@ -41,10 +41,21 @@ exports.getHashCode = function (obj) {
     return obj === undefined ? sortedFromJS({}).hashCode() : sortedFromJS(obj).hashCode();
 };
 exports.getQueryId = function (path, options) {
-    return exports.getHashCode({
-        path: path_1.default.resolve(path),
-        options: options,
-    });
+    if (options === void 0) { options = {}; }
+    var optionsId = exports.getHashCode(options);
+    return path + (":" + optionsId);
+};
+var findLastColonIndex = function (s) {
+    return s.split("").reduce(function (acc, val, i) { return (acc = val === ":" ? i : acc); }, -1);
+};
+exports.getCollectionPathFromId = function (collectionId) {
+    return collectionId.slice(0, findLastColonIndex(collectionId));
+};
+exports.searchCollectionId = function (collectionPath, state) {
+    return Array.from(state
+        .get("collection")
+        .filter(function (id) { return id.startsWith(collectionPath); })
+        .keys());
 };
 var withoutDot = function (s) { return s !== "."; };
 var withoutEmpty = function (s) { return s.length > 0; };
@@ -93,15 +104,17 @@ exports.saveDoc = function (dispatch, docPath, doc) {
     });
 };
 // state.collectionに対象のdocのIdを保存, state.docに各データを保存
-function saveCollection(dispatch, path, options, collection) {
+exports.saveCollection = function (dispatch, collectionPath, options, collection) {
     collection.forEach(function (doc) {
         if (doc.id === null) {
             return;
         }
-        exports.saveDoc(dispatch, path_1.default.resolve(path, doc.id), doc);
+        exports.saveDoc(dispatch, path_1.default.resolve(collectionPath, doc.id), doc);
     });
-    var collectionId = exports.getQueryId(path, options);
-    var docIds = immutable_1.List(collection.filter(function (doc) { return doc.id !== null; }).map(function (doc) { return path_1.default.resolve(path, doc.id); }));
+    var collectionId = exports.getQueryId(collectionPath, options);
+    var docIds = immutable_1.List(collection
+        .filter(function (doc) { return doc.id !== null; })
+        .map(function (doc) { return path_1.default.resolve(collectionPath, doc.id); }));
     dispatch({
         type: "setCollection",
         payload: {
@@ -109,8 +122,23 @@ function saveCollection(dispatch, path, options, collection) {
             docIds: docIds,
         },
     });
-}
-exports.saveCollection = saveCollection;
+};
+exports.deleteDocFromState = function (dispatch, docPath) {
+    return dispatch({
+        type: "deleteDoc",
+        payload: {
+            docId: path_1.default.resolve(docPath),
+        },
+    });
+};
+exports.deleteCollectionFromState = function (dispatch, collectionPath) {
+    return dispatch({
+        type: "deleteCollection",
+        payload: {
+            collectionId: exports.getQueryId(collectionPath),
+        },
+    });
+};
 // state.docにsubscribe元を登録
 exports.connectDocToState = function (dispatch, docId, uuid) {
     return dispatch({

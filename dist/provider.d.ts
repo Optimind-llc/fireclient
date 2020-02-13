@@ -1,5 +1,4 @@
 import { firestore } from "firebase";
-import "firebase/firestore";
 import React, { ReactElement } from "react";
 import { FireclientState, ProviderContext } from ".";
 import { Actions } from "./reducer";

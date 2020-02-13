@@ -1,4 +1,3 @@
-import "firebase/firestore";
 import { CollectionData } from "..";
 export declare function useGetSubCollection(path: string, subCollectionName: string, options?: {
     acceptOutdated?: boolean;

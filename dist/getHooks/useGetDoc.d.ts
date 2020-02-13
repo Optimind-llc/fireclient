@@ -1,5 +1,4 @@
 import { firestore } from "firebase";
-import "firebase/firestore";
 import { DocData } from "..";
 export declare function useLazyGetDocSnapshot(path: string, options?: {
     callback?: (snapshot: firestore.DocumentSnapshot) => void;

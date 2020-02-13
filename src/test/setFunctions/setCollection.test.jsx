@@ -91,8 +91,8 @@ describe("setCollection", () => {
     const onSet = () => {
       /* do nothing */
     };
-    // set doc
-    const hooks1 = renderHook(() =>
+    // set collection
+    const setCollectionHook = renderHook(() =>
       useTestFn(setCollection, {
         path,
         onSet,
@@ -100,7 +100,7 @@ describe("setCollection", () => {
         onAccess: () => accessCount++,
       }),
     );
-    await hooks1.waitForNextUpdate();
+    await setCollectionHook.waitForNextUpdate();
     expect(accessCount).toBe(3);
     const expected = fromJS(fql)
       .map(f => ({
@@ -113,8 +113,8 @@ describe("setCollection", () => {
       expect(collectionData).toEqual(expected);
     };
 
-    const hooks2 = renderHook(() => useCheckResult({ path, onGet }));
-    await hooks2.waitForNextUpdate();
+    const checkCollectionHook = renderHook(() => useCheckResult({ path, onGet }));
+    await checkCollectionHook.waitForNextUpdate();
     expect(accessCount).toBe(4);
   });
 });

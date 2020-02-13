@@ -37,33 +37,29 @@ describe("useSetCollection", () => {
       .sortBy(f => f.data.get("field1"))
       .toJS();
 
-    const hooks1 = renderHook(() => {
+    const useSetCollectionHook = renderHook(() => {
       useSetContext(db, () => accessCount++);
       return useSetCollection(path, fql, { saveToState: false });
     });
-    const result1 = hooks1.result;
-    const waitForNextUpdate1 = hooks1.waitForNextUpdate;
 
-    expect(result1.current[1]).toBeFalsy(); // writing
-    expect(result1.current[2]).toBeFalsy(); // called
-    expect(result1.current[3]).toBeNull(); // error
+    expect(useSetCollectionHook.result.current[1]).toBeFalsy(); // writing
+    expect(useSetCollectionHook.result.current[2]).toBeFalsy(); // called
+    expect(useSetCollectionHook.result.current[3]).toBeNull(); // error
     expect(accessCount).toBe(0);
-    result1.current[0](); // setFn()
-    await waitForNextUpdate1();
-    expect(result1.current[1]).toBeFalsy(); // writing
-    expect(result1.current[2]).toBeTruthy(); // called
-    expect(result1.current[3]).toBeNull(); // error
+    useSetCollectionHook.result.current[0](); // setFn()
+    await useSetCollectionHook.waitForNextUpdate();
+    expect(useSetCollectionHook.result.current[1]).toBeFalsy(); // writing
+    expect(useSetCollectionHook.result.current[2]).toBeTruthy(); // called
+    expect(useSetCollectionHook.result.current[3]).toBeNull(); // error
     expect(accessCount).toBe(3);
 
-    const hooks2 = renderHook(() => {
+    const useGetCollectionHook = renderHook(() => {
       useSetContext(db, () => accessCount++);
       return useGetCollection(path, { order: { by: "field1" }, saveToState: false });
     });
-    const result2 = hooks2.result;
-    const waitForNextUpdate2 = hooks2.waitForNextUpdate;
 
-    await waitForNextUpdate2();
-    expect(result2.current[0]).toEqual(expected);
+    await useGetCollectionHook.waitForNextUpdate();
+    expect(useGetCollectionHook.result.current[0]).toEqual(expected);
     expect(accessCount).toBe(4);
   });
 });

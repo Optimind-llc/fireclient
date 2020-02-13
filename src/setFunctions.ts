@@ -2,7 +2,7 @@ import * as pathlib from "path";
 import { StaticSetCollectionFql, StaticSetFql } from ".";
 import { getContext } from "./provider";
 import { Actions } from "./reducer";
-import { createData, isDocPath, saveDoc } from "./utils";
+import { createData, deleteDocFromState, isDocPath, saveDoc } from "./utils";
 
 type Fields = { [field: string]: any };
 type SubCollection = {
@@ -23,9 +23,9 @@ const setDocCallback = (
   },
   subCollection?: SubCollection,
 ): void => {
+  const saveToState = options?.saveToState !== false; // default true
   // 書き込んだ内容をStateに保存する
-  // options.saveToState can be undefined
-  if (options?.saveToState !== false) {
+  if (saveToState) {
     const docId = pathlib.basename(docPath);
     const data = createData(docId, fields);
     saveDoc(dispatch, docPath, data);
@@ -77,7 +77,6 @@ export function setDoc(
   const fields = query.fields !== undefined ? query.fields : {};
 
   const isDoc = isDocPath(path);
-  const idExists = id !== undefined;
 
   try {
     onAccess();
@@ -91,9 +90,9 @@ export function setDoc(
           console.error(err);
           onError(err);
         });
-    } else if (idExists) {
+    } else if (id !== undefined) {
       // collection path と id が渡された時
-      const docPath = pathlib.resolve(path, id!);
+      const docPath = pathlib.resolve(path, id);
       const ref = firestoreDB.doc(docPath);
       ref
         .set(fields, { merge, mergeFields })
@@ -146,9 +145,7 @@ export function updateDoc(
     const ref = firestoreDB.doc(docPath);
     ref
       .update(fields)
-      .then(() => {
-        setDocCallback(dispatch, onUpdate, onError, docPath, fields, options);
-      })
+      .then(() => setDocCallback(dispatch, onUpdate, onError, docPath, fields, options))
       .catch(err => {
         console.error(err);
         onError(err);
@@ -158,20 +155,7 @@ export function updateDoc(
     onError(err);
   }
 }
-/**
- * ```js
- * [
- *  {
- *    id: ...,
- *    fields: { ... },
- *  },
- *  {
- *    fields: { ... },
- *    subCollection: { ... }
- *  }
- * ]
- * ```
- */
+
 export function setCollection(
   collectionPath: string,
   queries: StaticSetCollectionFql,
@@ -198,4 +182,32 @@ export function setCollection(
       console.error(err);
       onError(err);
     });
+}
+
+export function deleteDoc(
+  path: string,
+  onDelete: () => void,
+  onError: (error: any) => void,
+  options: {
+    saveToState?: boolean;
+  } = {},
+): void {
+  const { firestoreDB, dispatch, onAccess } = getContext();
+  const saveToState = options.saveToState !== false; // default true
+  try {
+    onAccess();
+    firestoreDB
+      .doc(path)
+      .delete()
+      .then(() => {
+        if (saveToState) deleteDocFromState(dispatch, path);
+        onDelete();
+      })
+      .catch(err => {
+        console.error(err);
+        onError(err);
+      });
+  } catch (err) {
+    console.error(err);
+  }
 }

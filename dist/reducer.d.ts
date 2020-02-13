@@ -1,39 +1,49 @@
 import { List } from "immutable";
-import { DocData, FireclientState, HooksId } from ".";
+import { DocData, CollectionId, FireclientState, HooksId, DocId } from ".";
 export declare type Actions = {
     type: "setDoc";
     payload: {
-        docId: string;
+        docId: DocId;
         data: DocData;
     };
 } | {
     type: "setCollection";
     payload: {
-        collectionId: number;
-        docIds: List<string>;
+        collectionId: CollectionId;
+        docIds: List<DocId>;
+    };
+} | {
+    type: "deleteDoc";
+    payload: {
+        docId: DocId;
+    };
+} | {
+    type: "deleteCollection";
+    payload: {
+        collectionId: CollectionId;
     };
 } | {
     type: "connectDoc";
     payload: {
-        docId: string;
+        docId: DocId;
         uuid: HooksId;
     };
 } | {
     type: "connectCollection";
     payload: {
-        collectionId: number;
+        collectionId: CollectionId;
         uuid: HooksId;
     };
 } | {
     type: "disconnectDoc";
     payload: {
-        docId: string;
+        docId: DocId;
         uuid: HooksId;
     };
 } | {
     type: "disconnectCollection";
     payload: {
-        collectionId: number;
+        collectionId: CollectionId;
         uuid: HooksId;
     };
 };
