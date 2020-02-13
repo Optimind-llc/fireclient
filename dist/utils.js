@@ -32,40 +32,35 @@ function sortedFromJS(object) {
                 .sortBy(function (v, k) { return k; });
     }
 }
-function generateHooksId() {
+exports.generateHooksId = function () {
     return Math.random()
         .toString(32)
         .substring(2);
-}
-exports.generateHooksId = generateHooksId;
-function getHashCode(obj) {
-    if (obj === undefined) {
-        return sortedFromJS({}).hashCode();
-    }
-    else {
-        return sortedFromJS(obj).hashCode();
-    }
-}
-exports.getHashCode = getHashCode;
-function getQueryId(path, options) {
-    return getHashCode({
+};
+exports.getHashCode = function (obj) {
+    return obj === undefined ? sortedFromJS({}).hashCode() : sortedFromJS(obj).hashCode();
+};
+exports.getQueryId = function (path, options) {
+    return exports.getHashCode({
         path: path_1.default.resolve(path),
         options: options,
     });
-}
-exports.getQueryId = getQueryId;
-function isDocPath(path) {
-    var p = path_1.default.resolve(path);
-    return p.split("/").length % 2 === 1;
-}
-exports.isDocPath = isDocPath;
-function createData(id, fields) {
-    return {
-        data: fields,
-        id: id,
-    };
-}
-exports.createData = createData;
+};
+var withoutDot = function (s) { return s !== "."; };
+var withoutEmpty = function (s) { return s.length > 0; };
+var computeLevel = function (acc, s) { return (s === ".." ? acc - 1 : acc + 1); };
+exports.isDocPath = function (path) {
+    return path_1.default
+        .normalize(path)
+        .split(path_1.default.sep)
+        .filter(withoutDot)
+        .filter(withoutEmpty)
+        .reduce(computeLevel, 0) === 1;
+};
+exports.createData = function (id, fields) { return ({
+    data: fields,
+    id: id,
+}); };
 /**
  * Converts Firestore document snapshot into `DocData`.
  * @param {firestore.DocumentData} doc
@@ -73,12 +68,11 @@ exports.createData = createData;
  * const [snapshot] = useGetDocSnapshot("/path/to/doc");
  * const docData = createDataFromDoc(snapshot);
  */
-function createDataFromDoc(doc) {
+exports.createDataFromDoc = function (doc) {
     var id = doc.id;
     var data = doc.data();
-    return createData(id, data !== undefined ? data : null);
-}
-exports.createDataFromDoc = createDataFromDoc;
+    return exports.createData(id, data !== undefined ? data : null);
+};
 /**
  * Converts Firestore collection snapshot into `CollectionData`.
  * @param {firestore.DocumentData} doc
@@ -86,30 +80,26 @@ exports.createDataFromDoc = createDataFromDoc;
  * const [snapshot] = useGetCollectionSnapshot("/path/to/collection");
  * const collectionData = createDataFromCollection(snapshot);
  */
-function createDataFromCollection(collection) {
-    return collection.map(function (coll) { return createDataFromDoc(coll); });
-}
-exports.createDataFromCollection = createDataFromCollection;
+exports.createDataFromCollection = function (collection) { return collection.map(function (coll) { return exports.createDataFromDoc(coll); }); };
 // stateにdocのデータを保存
-function saveDoc(dispatch, docPath, doc) {
-    dispatch({
+exports.saveDoc = function (dispatch, docPath, doc) {
+    return dispatch({
         type: "setDoc",
         payload: {
             docId: path_1.default.resolve(docPath),
             data: doc,
         },
     });
-}
-exports.saveDoc = saveDoc;
+};
 // state.collectionに対象のdocのIdを保存, state.docに各データを保存
 function saveCollection(dispatch, path, options, collection) {
     collection.forEach(function (doc) {
         if (doc.id === null) {
             return;
         }
-        saveDoc(dispatch, path_1.default.resolve(path, doc.id), doc);
+        exports.saveDoc(dispatch, path_1.default.resolve(path, doc.id), doc);
     });
-    var collectionId = getQueryId(path, options);
+    var collectionId = exports.getQueryId(path, options);
     var docIds = immutable_1.List(collection.filter(function (doc) { return doc.id !== null; }).map(function (doc) { return path_1.default.resolve(path, doc.id); }));
     dispatch({
         type: "setCollection",
@@ -121,18 +111,17 @@ function saveCollection(dispatch, path, options, collection) {
 }
 exports.saveCollection = saveCollection;
 // state.docにsubscribe元を登録
-function connectDocToState(dispatch, docId, uuid) {
-    dispatch({
+exports.connectDocToState = function (dispatch, docId, uuid) {
+    return dispatch({
         type: "connectDoc",
         payload: {
             docId: docId,
             uuid: uuid,
         },
     });
-}
-exports.connectDocToState = connectDocToState;
+};
 // state.collectionと各state.docにsubscribe元を登録
-function connectCollectionToState(dispatch, collectionId, uuid, docIds) {
+exports.connectCollectionToState = function (dispatch, collectionId, uuid, docIds) {
     dispatch({
         type: "connectCollection",
         payload: {
@@ -140,22 +129,20 @@ function connectCollectionToState(dispatch, collectionId, uuid, docIds) {
             uuid: uuid,
         },
     });
-    docIds.forEach(function (docId) { return connectDocToState(dispatch, docId, uuid); });
-}
-exports.connectCollectionToState = connectCollectionToState;
+    docIds.forEach(function (docId) { return exports.connectDocToState(dispatch, docId, uuid); });
+};
 // state.docからsubscribe元を削除
-function disconnectDocFromState(dispatch, docId, uuid) {
-    dispatch({
+exports.disconnectDocFromState = function (dispatch, docId, uuid) {
+    return dispatch({
         type: "disconnectDoc",
         payload: {
             docId: docId,
             uuid: uuid,
         },
     });
-}
-exports.disconnectDocFromState = disconnectDocFromState;
+};
 // state.collectionと各state.docからsubscribe元を削除
-function disconnectCollectionFromState(dispatch, collectionId, uuid, docIds) {
+exports.disconnectCollectionFromState = function (dispatch, collectionId, uuid, docIds) {
     dispatch({
         type: "disconnectCollection",
         payload: {
@@ -163,9 +150,8 @@ function disconnectCollectionFromState(dispatch, collectionId, uuid, docIds) {
             uuid: uuid,
         },
     });
-    docIds.forEach(function (docId) { return disconnectDocFromState(dispatch, docId, uuid); });
-}
-exports.disconnectCollectionFromState = disconnectCollectionFromState;
+    docIds.forEach(function (docId) { return exports.disconnectDocFromState(dispatch, docId, uuid); });
+};
 function withWhere(ref, where) {
     if (Array.isArray(where)) {
         return where.reduce(function (acc, cond) { return withWhere(acc, cond); }, ref);

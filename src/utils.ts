@@ -31,37 +31,36 @@ function sortedFromJS(object: any): any {
   }
 }
 
-export function generateHooksId(): HooksId {
-  return Math.random()
+export const generateHooksId = (): HooksId =>
+  Math.random()
     .toString(32)
     .substring(2);
-}
 
-export function getHashCode(obj: any): number {
-  if (obj === undefined) {
-    return sortedFromJS({}).hashCode();
-  } else {
-    return sortedFromJS(obj).hashCode();
-  }
-}
+export const getHashCode = (obj: any): number =>
+  obj === undefined ? sortedFromJS({}).hashCode() : sortedFromJS(obj).hashCode();
 
-export function getQueryId(path: string, options: QueryOptions): CollectionId {
-  return getHashCode({
+export const getQueryId = (path: string, options: QueryOptions): CollectionId =>
+  getHashCode({
     path: pathlib.resolve(path),
     options,
   });
-}
 
-export function isDocPath(path: string): boolean {
-  const p = pathlib.resolve(path);
-  return p.split("/").length % 2 === 1;
-}
-export function createData(id: string, fields: { [fields: string]: any }): DocData {
-  return {
-    data: fields,
-    id,
-  };
-}
+const withoutDot = (s: string): boolean => s !== ".";
+const withoutEmpty = (s: string): boolean => s.length > 0;
+const computeLevel = (acc: number, s: string): number => (s === ".." ? acc - 1 : acc + 1);
+
+export const isDocPath = (path: string): boolean =>
+  pathlib
+    .normalize(path)
+    .split(pathlib.sep)
+    .filter(withoutDot)
+    .filter(withoutEmpty)
+    .reduce(computeLevel, 0) === 1;
+
+export const createData = (id: string, fields: { [fields: string]: any }): DocData => ({
+  data: fields,
+  id,
+});
 /**
  * Converts Firestore document snapshot into `DocData`.
  * @param {firestore.DocumentData} doc
@@ -69,11 +68,11 @@ export function createData(id: string, fields: { [fields: string]: any }): DocDa
  * const [snapshot] = useGetDocSnapshot("/path/to/doc");
  * const docData = createDataFromDoc(snapshot);
  */
-export function createDataFromDoc(doc: firestore.DocumentData): DocData {
+export const createDataFromDoc = (doc: firestore.DocumentData): DocData => {
   const { id } = doc;
   const data = doc.data();
   return createData(id, data !== undefined ? data : null);
-}
+};
 /**
  * Converts Firestore collection snapshot into `CollectionData`.
  * @param {firestore.DocumentData} doc
@@ -81,12 +80,12 @@ export function createDataFromDoc(doc: firestore.DocumentData): DocData {
  * const [snapshot] = useGetCollectionSnapshot("/path/to/collection");
  * const collectionData = createDataFromCollection(snapshot);
  */
-export function createDataFromCollection(collection: firestore.DocumentSnapshot[]): CollectionData {
-  return collection.map(coll => createDataFromDoc(coll));
-}
+export const createDataFromCollection = (
+  collection: firestore.DocumentSnapshot[],
+): CollectionData => collection.map(coll => createDataFromDoc(coll));
 
 // stateにdocのデータを保存
-export function saveDoc(dispatch: React.Dispatch<Actions>, docPath: string, doc: DocData) {
+export const saveDoc = (dispatch: React.Dispatch<Actions>, docPath: string, doc: DocData): void =>
   dispatch({
     type: "setDoc",
     payload: {
@@ -94,7 +93,6 @@ export function saveDoc(dispatch: React.Dispatch<Actions>, docPath: string, doc:
       data: doc,
     },
   });
-}
 
 // state.collectionに対象のdocのIdを保存, state.docに各データを保存
 export function saveCollection(
@@ -123,11 +121,11 @@ export function saveCollection(
 }
 
 // state.docにsubscribe元を登録
-export function connectDocToState(
+export const connectDocToState = (
   dispatch: React.Dispatch<Actions>,
   docId: DocId,
   uuid: HooksId,
-): void {
+): void =>
   dispatch({
     type: "connectDoc",
     payload: {
@@ -135,14 +133,14 @@ export function connectDocToState(
       uuid,
     },
   });
-}
+
 // state.collectionと各state.docにsubscribe元を登録
-export function connectCollectionToState(
+export const connectCollectionToState = (
   dispatch: React.Dispatch<Actions>,
   collectionId: CollectionId,
   uuid: HooksId,
   docIds: List<DocId>,
-): void {
+): void => {
   dispatch({
     type: "connectCollection",
     payload: {
@@ -151,14 +149,14 @@ export function connectCollectionToState(
     },
   });
   docIds.forEach(docId => connectDocToState(dispatch, docId, uuid));
-}
+};
 
 // state.docからsubscribe元を削除
-export function disconnectDocFromState(
+export const disconnectDocFromState = (
   dispatch: React.Dispatch<Actions>,
   docId: DocId,
   uuid: HooksId,
-): void {
+): void =>
   dispatch({
     type: "disconnectDoc",
     payload: {
@@ -166,14 +164,14 @@ export function disconnectDocFromState(
       uuid,
     },
   });
-}
+
 // state.collectionと各state.docからsubscribe元を削除
-export function disconnectCollectionFromState(
+export const disconnectCollectionFromState = (
   dispatch: React.Dispatch<Actions>,
   collectionId: CollectionId,
   uuid: HooksId,
   docIds: List<DocId>,
-): void {
+): void => {
   dispatch({
     type: "disconnectCollection",
     payload: {
@@ -182,7 +180,7 @@ export function disconnectCollectionFromState(
     },
   });
   docIds.forEach(docId => disconnectDocFromState(dispatch, docId, uuid));
-}
+};
 
 function withWhere(ref: firestore.Query, where: Where | [Where]): firestore.Query {
   if (Array.isArray(where)) {
