@@ -19,6 +19,7 @@ var provider = __importStar(require("./provider"));
 var _useSetCollection = __importStar(require("./setHooks/useSetCollection"));
 var _useSetDoc = __importStar(require("./setHooks/useSetDoc"));
 var _useSetDocs = __importStar(require("./setHooks/useSetDocs"));
+var _useDeleteDoc = __importStar(require("./setHooks/useDeleteDoc"));
 var utils = __importStar(require("./utils"));
 exports.initialDocData = {
     data: null,
@@ -51,6 +52,8 @@ exports.useUpdateDoc = _useSetDoc.useUpdateDoc;
 exports.useSetDocs = _useSetDocs.useSetDocs;
 exports.useUpdateDocs = _useSetDocs.useUpdateDocs;
 exports.useSetCollection = _useSetCollection.useSetCollection;
+exports.useDeleteDoc = _useDeleteDoc.useDeleteDoc;
+exports.useDeleteDocs = _useDeleteDoc.useDeleteDocs;
 exports.useArrayQuery = _useQuery.useArrayQuery;
 exports.useQuery = _useQuery.useQuery;
 exports.usePaginateCollection = _usePaginateCollection.usePaginateCollection;

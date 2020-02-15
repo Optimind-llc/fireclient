@@ -1,7 +1,6 @@
 import { firestore } from "firebase";
-import "firebase/firestore";
 import { DocData, HooksId } from "..";
-declare type SubscribeDocFunction<State> = (hooksId: HooksId, path: string, onChange: (doc: State) => void, onError: (err: any) => void, onListen?: () => void, saveToState?: boolean) => () => void;
+declare type SubscribeDocFunction<State> = (hooksId: HooksId, path: string, onChange: (doc: State) => void, onError: (err: Error) => void, onListen?: () => void, saveToState?: boolean) => () => void;
 export declare function useSubscribeDocBase<State, InitialState = State>(path: string, initialValue: State | InitialState, subscribeFunction: SubscribeDocFunction<State>, options?: {
     callback?: (snapshot: State) => void;
     saveToState?: boolean;

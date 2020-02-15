@@ -7,7 +7,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("firebase/firestore");
 var react_1 = require("react");
 var setFunctions_1 = require("../setFunctions");
 var typeCheck = __importStar(require("../typeCheck"));

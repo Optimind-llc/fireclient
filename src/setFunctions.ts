@@ -2,18 +2,27 @@ import * as pathlib from "path";
 import { StaticSetCollectionFql, StaticSetFql } from ".";
 import { getContext } from "./provider";
 import { Actions } from "./reducer";
-import { createData, isDocPath, saveDoc } from "./utils";
+import { createData, deleteDocFromState, isDocPath, saveDoc } from "./utils";
 
 type Fields = { [field: string]: any };
 type SubCollection = {
   [name: string]: StaticSetCollectionFql;
 };
 
-// 書き込み完了時のCallback
+/**
+ * 書き込み完了時のCallback
+ * @param dispatch
+ * @param onSet Setする際のCallback
+ * @param onError エラーが発生した際のCallback
+ * @param docPath Set対象のDocのFirestore上でのPath
+ * @param fields Setする内容
+ * @param options Setする際のOption
+ * @param subCollection Docに持たせるsubCollectionの内容
+ */
 const setDocCallback = (
   dispatch: React.Dispatch<Actions>,
   onSet: () => void,
-  onError: (error: any) => void,
+  onError: (err: Error) => void,
   docPath: string,
   fields: Fields,
   options?: {
@@ -23,9 +32,9 @@ const setDocCallback = (
   },
   subCollection?: SubCollection,
 ): void => {
+  const saveToState = options?.saveToState !== false; // default true
   // 書き込んだ内容をStateに保存する
-  // options.saveToState can be undefined
-  if (options?.saveToState !== false) {
+  if (saveToState) {
     const docId = pathlib.basename(docPath);
     const data = createData(docId, fields);
     saveDoc(dispatch, docPath, data);
@@ -59,11 +68,21 @@ const setDocCallback = (
   }
 };
 
+/**
+ * Docにqueryの内容をsetする
+ * DocPathが確定していれば db.doc(DocPath).set() を実行する
+ * DocPathが確定していなければ db.collection(CollectionPath).add() を実行する
+ * @param path 書込対象のDocのFirestore上でのPath
+ * @param query Setする内容
+ * @param onSet Setする際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Setする際のOption
+ */
 export function setDoc(
   path: string,
   query: StaticSetFql,
   onSet: () => void,
-  onError: (error: any) => void,
+  onError: (err: Error) => void,
   options: {
     merge?: boolean;
     mergeFields?: string[];
@@ -73,11 +92,8 @@ export function setDoc(
   const { firestoreDB, dispatch, onAccess } = getContext();
   const { id, subCollection } = query;
   const { merge, mergeFields } = options;
-
   const fields = query.fields !== undefined ? query.fields : {};
-
   const isDoc = isDocPath(path);
-  const idExists = id !== undefined;
 
   try {
     onAccess();
@@ -91,9 +107,9 @@ export function setDoc(
           console.error(err);
           onError(err);
         });
-    } else if (idExists) {
+    } else if (id !== undefined) {
       // collection path と id が渡された時
-      const docPath = pathlib.resolve(path, id!);
+      const docPath = pathlib.resolve(path, id);
       const ref = firestoreDB.doc(docPath);
       ref
         .set(fields, { merge, mergeFields })
@@ -128,27 +144,39 @@ export function setDoc(
     onError(err);
   }
 }
-// subCollectionを扱わない
+/**
+ * Docをqueryの内容でUpdateする
+ * @param path 書込対象のDocのFirestore上でのPath
+ * @param query Updateする内容
+ * @param onUpdate Updateする際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Updateする際のOption
+ */
 export function updateDoc(
-  docPath: string,
+  path: string,
   query: StaticSetFql,
   onUpdate: () => void,
-  onError: (error: any) => void,
+  onError: (err: Error) => void,
   options?: {
     saveToState?: boolean;
   },
 ): void {
   const { firestoreDB, dispatch, onAccess } = getContext();
+  const { id } = query;
   const fields = query.fields !== undefined ? query.fields : {};
+  const isDoc = isDocPath(path);
+
+  if (!isDoc && id === undefined) {
+    throw new Error("Given path is collection path and doc id is not specified in query.");
+  }
+  const docPath = isDoc ? path : pathlib.resolve(path, id as string);
 
   try {
     onAccess();
     const ref = firestoreDB.doc(docPath);
     ref
       .update(fields)
-      .then(() => {
-        setDocCallback(dispatch, onUpdate, onError, docPath, fields, options);
-      })
+      .then(() => setDocCallback(dispatch, onUpdate, onError, docPath, fields, options))
       .catch(err => {
         console.error(err);
         onError(err);
@@ -159,24 +187,18 @@ export function updateDoc(
   }
 }
 /**
- * ```js
- * [
- *  {
- *    id: ...,
- *    fields: { ... },
- *  },
- *  {
- *    fields: { ... },
- *    subCollection: { ... }
- *  }
- * ]
- * ```
+ * Collectionをqueriesの内容でSetする
+ * @param path 書込対象のDocのFirestore上でのPath
+ * @param queries Setする内容
+ * @param onSet Setする際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Setする際のOption
  */
 export function setCollection(
   collectionPath: string,
   queries: StaticSetCollectionFql,
   onSet: () => void,
-  onError: (error: any) => void,
+  onError: (err: Error) => void,
   options?: {
     merge?: boolean;
     mergeFields?: string[];
@@ -198,4 +220,39 @@ export function setCollection(
       console.error(err);
       onError(err);
     });
+}
+
+/**
+ * DocをDeleteする
+ * @param path 書込対象のDocのFirestore上でのPath
+ * @param onDelete Deleteする際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Setする際のOption
+ */
+export function deleteDoc(
+  path: string,
+  onDelete: () => void,
+  onError: (err: Error) => void,
+  options: {
+    saveToState?: boolean;
+  } = {},
+): void {
+  const { firestoreDB, dispatch, onAccess } = getContext();
+  const saveToState = options.saveToState !== false; // default true
+  try {
+    onAccess();
+    firestoreDB
+      .doc(path)
+      .delete()
+      .then(() => {
+        if (saveToState) deleteDocFromState(dispatch, path);
+        onDelete();
+      })
+      .catch(err => {
+        console.error(err);
+        onError(err);
+      });
+  } catch (err) {
+    console.error(err);
+  }
 }

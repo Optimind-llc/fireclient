@@ -18,7 +18,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("firebase/firestore");
 var immutable_1 = require("immutable");
 var react_1 = require("react");
 var __1 = require("..");
@@ -26,9 +25,6 @@ var getFunctions_1 = require("../getFunctions");
 var typeCheck = __importStar(require("../typeCheck"));
 var typeCheck_1 = require("../typeCheck");
 var utils_1 = require("../utils");
-// TODO:
-// https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
-// トランザクションを使用する
 function useArrayQuery(getFql) {
     typeCheck_1.assertRule(typeCheck.arrayGetFqlRule)(getFql, "getFql");
     var queries = getFql.queries, callback = getFql.callback;

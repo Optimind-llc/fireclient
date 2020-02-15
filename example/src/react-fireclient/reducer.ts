@@ -1,47 +1,60 @@
 import { List, Set } from "immutable";
-import { DocData, FireclientState, HooksId } from ".";
+import { DocData, CollectionId, FireclientState, HooksId, DocId } from ".";
+import { searchCollectionId } from "./utils";
 
 export type Actions =
   | {
       type: "setDoc";
       payload: {
-        docId: string;
+        docId: DocId;
         data: DocData;
       };
     }
   | {
       type: "setCollection";
       payload: {
-        collectionId: number;
-        docIds: List<string>;
+        collectionId: CollectionId;
+        docIds: List<DocId>;
+      };
+    }
+  | {
+      type: "deleteDoc";
+      payload: {
+        docId: DocId;
+      };
+    }
+  | {
+      type: "deleteCollection";
+      payload: {
+        collectionId: CollectionId;
       };
     }
   | {
       type: "connectDoc";
       payload: {
-        docId: string;
-        uuid: HooksId;
+        docId: DocId;
+        hooksId: HooksId;
       };
     }
   | {
       type: "connectCollection";
       payload: {
-        collectionId: number;
-        uuid: HooksId;
+        collectionId: CollectionId;
+        hooksId: HooksId;
       };
     }
   | {
       type: "disconnectDoc";
       payload: {
-        docId: string;
-        uuid: HooksId;
+        docId: DocId;
+        hooksId: HooksId;
       };
     }
   | {
       type: "disconnectCollection";
       payload: {
-        collectionId: number;
-        uuid: HooksId;
+        collectionId: CollectionId;
+        hooksId: HooksId;
       };
     };
 
@@ -56,19 +69,44 @@ function reducer(state: FireclientState, action: Actions): FireclientState {
         action.payload.docIds,
       );
 
+    case "deleteDoc":
+      return state.deleteIn(["doc", action.payload.docId, "data"]);
+
+    case "deleteCollection":
+      const collectionIds = List(searchCollectionId(action.payload.collectionId, state));
+      const docIds: List<DocId> = collectionIds
+        .map(id =>
+          state
+            .get("collection")
+            .get(id)
+            .get("docIds"),
+        )
+        .flatten()
+        .toSet()
+        .toList();
+      const collectionDeleted = collectionIds.reduce(
+        (acc, id) => acc.deleteIn(["collection", id]),
+        state,
+      );
+      const docDeleted = docIds.reduce((acc, id) => acc.deleteIn(["doc", id]), collectionDeleted);
+      return docDeleted;
+
     case "connectDoc":
       return state
         .get("doc")
         .get(action.payload.docId)
         .get("connectedFrom") === undefined
-        ? state.setIn(["doc", action.payload.docId, "connectedFrom"], Set.of(action.payload.uuid))
+        ? state.setIn(
+            ["doc", action.payload.docId, "connectedFrom"],
+            Set.of(action.payload.hooksId),
+          )
         : state.setIn(
             ["doc", action.payload.docId, "connectedFrom"],
             state
               .get("doc")
               .get(action.payload.docId)
               .get("connectedFrom")
-              .add(action.payload.uuid),
+              .add(action.payload.hooksId),
           );
 
     case "connectCollection":
@@ -78,7 +116,7 @@ function reducer(state: FireclientState, action: Actions): FireclientState {
         .get("connectedFrom") === undefined
         ? state.setIn(
             ["collection", action.payload.collectionId, "connectedFrom"],
-            Set.of(action.payload.uuid),
+            Set.of(action.payload.hooksId),
           )
         : state.setIn(
             ["collection", action.payload.collectionId, "connectedFrom"],
@@ -86,7 +124,7 @@ function reducer(state: FireclientState, action: Actions): FireclientState {
               .get("collection")
               .get(action.payload.collectionId)
               .get("connectedFrom")
-              .add(action.payload.uuid),
+              .add(action.payload.hooksId),
           );
 
     case "disconnectDoc":
@@ -101,7 +139,7 @@ function reducer(state: FireclientState, action: Actions): FireclientState {
               .get("doc")
               .get(action.payload.docId)
               .get("connectedFrom")
-              .delete(action.payload.uuid),
+              .delete(action.payload.hooksId),
           );
 
     case "disconnectCollection":
@@ -116,7 +154,7 @@ function reducer(state: FireclientState, action: Actions): FireclientState {
               .get("collection")
               .get(action.payload.collectionId)
               .get("connectedFrom")
-              .delete(action.payload.uuid),
+              .delete(action.payload.hooksId),
           );
 
     default:

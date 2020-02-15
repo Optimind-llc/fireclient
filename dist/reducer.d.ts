@@ -1,40 +1,50 @@
 import { List } from "immutable";
-import { DocData, FireclientState, HooksId } from ".";
+import { DocData, CollectionId, FireclientState, HooksId, DocId } from ".";
 export declare type Actions = {
     type: "setDoc";
     payload: {
-        docId: string;
+        docId: DocId;
         data: DocData;
     };
 } | {
     type: "setCollection";
     payload: {
-        collectionId: number;
-        docIds: List<string>;
+        collectionId: CollectionId;
+        docIds: List<DocId>;
+    };
+} | {
+    type: "deleteDoc";
+    payload: {
+        docId: DocId;
+    };
+} | {
+    type: "deleteCollection";
+    payload: {
+        collectionId: CollectionId;
     };
 } | {
     type: "connectDoc";
     payload: {
-        docId: string;
-        uuid: HooksId;
+        docId: DocId;
+        hooksId: HooksId;
     };
 } | {
     type: "connectCollection";
     payload: {
-        collectionId: number;
-        uuid: HooksId;
+        collectionId: CollectionId;
+        hooksId: HooksId;
     };
 } | {
     type: "disconnectDoc";
     payload: {
-        docId: string;
-        uuid: HooksId;
+        docId: DocId;
+        hooksId: HooksId;
     };
 } | {
     type: "disconnectCollection";
     payload: {
-        collectionId: number;
-        uuid: HooksId;
+        collectionId: CollectionId;
+        hooksId: HooksId;
     };
 };
 declare function reducer(state: FireclientState, action: Actions): FireclientState;

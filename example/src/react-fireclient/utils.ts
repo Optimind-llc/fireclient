@@ -2,28 +2,33 @@ import { firestore } from "firebase";
 import { List, Seq } from "immutable";
 import pathlib from "path";
 import { CollectionId, Cursor, DocId, HooksId, Limit, Order, QueryOptions, Where } from ".";
-import { CollectionData, DocData } from "./";
+import { CollectionData, DocData, FireclientState } from "./";
 import { Actions } from "./reducer";
 import { assert } from "./typeCheck";
 
-function sortedFromJS(object: any): any {
+/**
+ * objをSortされたOrderedMapに変換して返す
+ * objが持つkeyとvalueが一致していれば全く同じ内容を返す全単射な関数
+ * @param obj
+ */
+function sortedFromJS(obj: any): any {
   // CursorでOriginにSnapshotを指定することがある
-  if (object instanceof firestore.DocumentSnapshot) {
-    return object.ref.path;
+  if (obj instanceof firestore.DocumentSnapshot) {
+    return obj.ref.path;
   }
   // callbackなど、FunctionをOptionに渡すことがある
-  if (object instanceof Function) {
-    return object.toString();
+  if (obj instanceof Function) {
+    return obj.toString();
   }
-  if (typeof object !== "object" || object === null) {
-    return object;
+  if (typeof obj !== "object" || obj === null) {
+    return obj;
   } else {
-    return Array.isArray(object)
-      ? Seq(object)
+    return Array.isArray(obj)
+      ? Seq(obj)
           .map(sortedFromJS)
           .filter((v: any) => v !== undefined)
           .toList()
-      : Seq(object)
+      : Seq(obj)
           .map(sortedFromJS)
           .filter((v: any) => v !== undefined)
           .toOrderedMap()
@@ -31,37 +36,81 @@ function sortedFromJS(object: any): any {
   }
 }
 
-export function generateHooksId(): HooksId {
-  return Math.random()
+/**
+ * 受け取ったobjのHashCodeを返す
+ * objが持つkeyとvalueが一致していれば全く同じ値を返す全単射な関数
+ * @param obj
+ */
+export const getHashCode = (obj: any): number =>
+  obj === undefined ? sortedFromJS({}).hashCode() : sortedFromJS(obj).hashCode();
+
+/**
+ * CollectionのQueryに対するQueryIdを返す
+ * CollectionPathとoptionsの内容が一致していれば全く同じ値を返す全単射な関数
+ * @param collectionPath Fireclient上のCollectionのPath
+ * @param options
+ */
+export const getQueryId = (collectionPath: string, options: QueryOptions = {}): CollectionId => {
+  const optionsId = getHashCode(options);
+  return collectionPath + `:${optionsId}`;
+};
+
+/**
+ * HooksIdを生成する
+ * ランダムな値を返す
+ */
+export const generateHooksId = (): HooksId =>
+  Math.random()
     .toString(32)
     .substring(2);
-}
 
-export function getHashCode(obj: any): number {
-  if (obj === undefined) {
-    return sortedFromJS({}).hashCode();
-  } else {
-    return sortedFromJS(obj).hashCode();
-  }
-}
+const findLastColonIndex = (s: string): number =>
+  s.split("").reduce((acc, val, i) => (acc = val === ":" ? i : acc), -1);
+/**
+ * CollectionIdからPathの部分のみを抽出する
+ * @param collectionId
+ */
+export const getCollectionPathFromId = (collectionId: CollectionId): string =>
+  collectionId.slice(0, findLastColonIndex(collectionId));
 
-export function getQueryId(path: string, options: QueryOptions): CollectionId {
-  return getHashCode({
-    path: pathlib.resolve(path),
-    options,
-  });
-}
+export const searchCollectionId = (
+  collectionPath: string,
+  state: FireclientState,
+): CollectionId[] =>
+  Array.from(
+    state
+      .get("collection")
+      .filter((id: CollectionId) => id.startsWith(collectionPath))
+      .keys(),
+  );
 
-export function isDocPath(path: string): boolean {
-  const p = pathlib.resolve(path);
-  return p.split("/").length % 2 === 1;
-}
-export function createData(id: string, fields: { [fields: string]: any }): DocData {
-  return {
-    data: fields,
-    id,
-  };
-}
+const withoutDot = (s: string): boolean => s !== ".";
+const withoutEmpty = (s: string): boolean => s.length > 0;
+const computeLevel = (acc: number, s: string): number => (s === ".." ? acc - 1 : acc + 1);
+
+/**
+ * pathがDocのPathであるかどうかを判定する
+ * @param path
+ */
+export const isDocPath = (path: string): boolean => {
+  const depth = pathlib
+    .normalize(path)
+    .split(pathlib.sep)
+    .filter(withoutDot)
+    .filter(withoutEmpty)
+    .reduce(computeLevel, 0);
+  return depth % 2 === 0;
+};
+
+/**
+ * 取得したDocをDocDataに変換する
+ * @param id DocId
+ * @param fields Docの内容
+ */
+export const createData = (id: string, fields: { [fields: string]: any }): DocData => ({
+  data: fields,
+  id,
+});
 /**
  * Converts Firestore document snapshot into `DocData`.
  * @param {firestore.DocumentData} doc
@@ -69,11 +118,11 @@ export function createData(id: string, fields: { [fields: string]: any }): DocDa
  * const [snapshot] = useGetDocSnapshot("/path/to/doc");
  * const docData = createDataFromDoc(snapshot);
  */
-export function createDataFromDoc(doc: firestore.DocumentData): DocData {
+export const createDataFromDoc = (doc: firestore.DocumentData): DocData => {
   const { id } = doc;
   const data = doc.data();
   return createData(id, data !== undefined ? data : null);
-}
+};
 /**
  * Converts Firestore collection snapshot into `CollectionData`.
  * @param {firestore.DocumentData} doc
@@ -81,12 +130,17 @@ export function createDataFromDoc(doc: firestore.DocumentData): DocData {
  * const [snapshot] = useGetCollectionSnapshot("/path/to/collection");
  * const collectionData = createDataFromCollection(snapshot);
  */
-export function createDataFromCollection(collection: firestore.DocumentSnapshot[]): CollectionData {
-  return collection.map(coll => createDataFromDoc(coll));
-}
+export const createDataFromCollection = (
+  collection: firestore.DocumentSnapshot[],
+): CollectionData => collection.map(coll => createDataFromDoc(coll));
 
-// stateにdocのデータを保存
-export function saveDoc(dispatch: React.Dispatch<Actions>, docPath: string, doc: DocData) {
+/**
+ * DocDataをproviderContext内のstateに保存する
+ * @param dispatch
+ * @param docPath
+ * @param doc
+ */
+export const saveDoc = (dispatch: React.Dispatch<Actions>, docPath: string, doc: DocData): void =>
   dispatch({
     type: "setDoc",
     payload: {
@@ -94,24 +148,31 @@ export function saveDoc(dispatch: React.Dispatch<Actions>, docPath: string, doc:
       data: doc,
     },
   });
-}
 
-// state.collectionに対象のdocのIdを保存, state.docに各データを保存
-export function saveCollection(
+/**
+ * CollectionDataをproviderContext内のstateに保存する
+ * @param dispatch
+ * @param collectionPath
+ * @param options Collectionを取得した際のQueryOptions QueryIdの取得に使用する
+ * @param collection
+ */
+export const saveCollection = (
   dispatch: React.Dispatch<Actions>,
-  path: string,
+  collectionPath: string,
   options: QueryOptions,
   collection: CollectionData,
-) {
+): void => {
   collection.forEach(doc => {
     if (doc.id === null) {
       return;
     }
-    saveDoc(dispatch, pathlib.resolve(path, doc.id), doc);
+    saveDoc(dispatch, pathlib.resolve(collectionPath, doc.id), doc);
   });
-  const collectionId = getQueryId(path, options);
+  const collectionId = getQueryId(collectionPath, options);
   const docIds = List(
-    collection.filter(doc => doc.id !== null).map(doc => pathlib.resolve(path, doc.id as string)),
+    collection
+      .filter(doc => doc.id !== null)
+      .map(doc => pathlib.resolve(collectionPath, doc.id as string)),
   );
   dispatch({
     type: "setCollection",
@@ -120,65 +181,127 @@ export function saveCollection(
       docIds,
     },
   });
-}
+};
 
-// state.docにsubscribe元を登録
-export function connectDocToState(dispatch: React.Dispatch<Actions>, docId: DocId, uuid: HooksId) {
+/**
+ * docPathの内容をproviderContext内のstateから削除する
+ * @param dispatch
+ * @param docPath
+ */
+export const deleteDocFromState = (dispatch: React.Dispatch<Actions>, docPath: string): void =>
+  dispatch({
+    type: "deleteDoc",
+    payload: {
+      docId: pathlib.resolve(docPath),
+    },
+  });
+/**
+ * collectionPathの内容をproviderContext内のstateから削除する
+ * @param dispatch
+ * @param collectionPath
+ */
+export const deleteCollectionFromState = (
+  dispatch: React.Dispatch<Actions>,
+  collectionPath: string,
+): void =>
+  dispatch({
+    type: "deleteCollection",
+    payload: {
+      collectionId: getQueryId(collectionPath),
+    },
+  });
+
+/**
+ * providerContext内のstate上で
+ * docIdがhooksIdからsubscribeされていることを記憶する
+ *
+ * state.doc.(docId).connectedFromにhooksIdを追加する
+ * @param dispatch
+ * @param docId
+ * @param hooksId
+ */
+export const connectDocToState = (
+  dispatch: React.Dispatch<Actions>,
+  docId: DocId,
+  hooksId: HooksId,
+): void =>
   dispatch({
     type: "connectDoc",
     payload: {
       docId,
-      uuid,
+      hooksId,
     },
   });
-}
-// state.collectionと各state.docにsubscribe元を登録
-export function connectCollectionToState(
+
+/**
+ * providerContext内のstate上で
+ * 各docIdとcollectionIdがhooksIdからsubscribeされていることを記憶する
+ *
+ * state.doc.(各docId).connectedFromと
+ * state.collection.(collectionId).connectedFromにhooksIdを追加する
+ * @param dispatch
+ * @param collectionId
+ * @param hooksId
+ * @param docIds
+ */
+export const connectCollectionToState = (
   dispatch: React.Dispatch<Actions>,
   collectionId: CollectionId,
-  uuid: HooksId,
+  hooksId: HooksId,
   docIds: List<DocId>,
-) {
+): void => {
   dispatch({
     type: "connectCollection",
     payload: {
       collectionId,
-      uuid,
+      hooksId,
     },
   });
-  docIds.forEach(docId => connectDocToState(dispatch, docId, uuid));
-}
+  docIds.forEach(docId => connectDocToState(dispatch, docId, hooksId));
+};
 
-// state.docからsubscribe元を削除
-export function disconnectDocFromState(
+/**
+ * state.doc.(docId).connectedFromからhooksIdを削除する
+ * @param dispatch
+ * @param docId
+ * @param hooksId
+ */
+export const disconnectDocFromState = (
   dispatch: React.Dispatch<Actions>,
   docId: DocId,
-  uuid: HooksId,
-) {
+  hooksId: HooksId,
+): void =>
   dispatch({
     type: "disconnectDoc",
     payload: {
       docId,
-      uuid,
+      hooksId,
     },
   });
-}
-// state.collectionと各state.docからsubscribe元を削除
-export function disconnectCollectionFromState(
+
+/**
+ * state.doc.(各docId).connectedFromと
+ * state.collection.(collectionId).connectedFromからhooksIdを削除する
+ * @param dispatch
+ * @param collectionId
+ * @param hooksId
+ * @param docIds
+ */
+export const disconnectCollectionFromState = (
   dispatch: React.Dispatch<Actions>,
   collectionId: CollectionId,
-  uuid: HooksId,
+  hooksId: HooksId,
   docIds: List<DocId>,
-) {
+): void => {
   dispatch({
     type: "disconnectCollection",
     payload: {
       collectionId,
-      uuid,
+      hooksId,
     },
   });
-  docIds.forEach(docId => disconnectDocFromState(dispatch, docId, uuid));
-}
+  docIds.forEach(docId => disconnectDocFromState(dispatch, docId, hooksId));
+};
 
 function withWhere(ref: firestore.Query, where: Where | [Where]): firestore.Query {
   if (Array.isArray(where)) {

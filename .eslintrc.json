@@ -20,15 +20,11 @@
   },
   "rules": {
     "prettier/prettier": "error",
-    "max-len": [
-      "error",
-      {
-        "code": 100
-      }
-    ],
     "prefer-promise-reject-errors": ["off"],
     "react/jsx-filename-extension": ["off"],
     "react/prop-types": ["off"],
-    "no-return-assign": ["off"]
+    "react-hooks/exhaustive-deps": ["on"],
+    "no-return-assign": ["off"],
+    "@typescript-eslint/no-explicit-any": ["off"]
   }
 }

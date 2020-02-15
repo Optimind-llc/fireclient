@@ -1,4 +1,3 @@
-import "firebase/firestore";
 import { Map } from "immutable";
 import { ArrayQuery, CollectionData, DocData, GetFql, ObjectQuery } from "..";
 declare type ArrayQueryData = (DocData | CollectionData)[];

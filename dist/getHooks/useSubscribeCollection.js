@@ -7,7 +7,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("firebase/firestore");
 var react_1 = require("react");
 var __1 = require("..");
 var getFunctions_1 = require("../getFunctions");
@@ -45,6 +44,7 @@ function useSubscribeCollectionBase(path, initialValue, subscribeFunction, optio
             setLoading(false);
         }, function () { return setLoading(true); }, options);
         setUnsubscribe({ fn: unsub });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [path, hooksId, utils_1.getHashCode(options)]);
     return [collection, loading, error, unsubscribe.fn];
 }

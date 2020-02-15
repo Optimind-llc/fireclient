@@ -1,4 +1,3 @@
-import "firebase/firestore";
 import { SetFql } from "..";
 export declare function useSetDoc(docPath: string, query: SetFql, options?: {
     merge?: boolean;

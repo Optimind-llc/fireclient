@@ -19,16 +19,16 @@ type Rule = {
   optional?: boolean;
 }[];
 
-const isNull = (obj: any) => obj === undefined || obj === null;
-export const isObject = (obj: any, target: string) => ({
+const isNull = (obj: any): boolean => obj === undefined || obj === null;
+export const isObject = (obj: any, target: string): ValidateResult => ({
   valid: obj !== null && typeof obj === "object" && obj.constructor === Object,
   message: `${target} should be object.`,
 });
-export const isAnyOf = (candidate: any[]) => (obj: any, target: string) => ({
+export const isAnyOf = (candidate: any[]) => (obj: any, target: string): ValidateResult => ({
   valid: candidate.indexOf(obj) >= 0,
   message: `${target} should be any of [${candidate}].`,
 });
-export const isArrayOf = (rule: ValidateFunction) => (obj: any, target: string) => {
+export const isArrayOf = (rule: ValidateFunction) => (obj: any, target: string): ValidateResult => {
   if (!Array.isArray(obj)) {
     return {
       valid: false,
@@ -48,23 +48,23 @@ export const isArrayOf = (rule: ValidateFunction) => (obj: any, target: string) 
         message: "",
       };
 };
-export const isString = (obj: any, target: string) => ({
+export const isString = (obj: any, target: string): ValidateResult => ({
   valid: typeof obj === "string",
   message: `${target} should be string.`,
 });
-export const isNumber = (obj: any, target: string) => ({
+export const isNumber = (obj: any, target: string): ValidateResult => ({
   valid: typeof obj === "number",
   message: `${target} should be number.`,
 });
-export const isBoolean = (obj: any, target: string) => ({
+export const isBoolean = (obj: any, target: string): ValidateResult => ({
   valid: typeof obj === "boolean",
   message: `${target} should be boolean.`,
 });
-export const isNotNull = (obj: any, target: string) => ({
+export const isNotNull = (obj: any, target: string): ValidateResult => ({
   valid: !isNull(obj),
   message: `${target} should not be null or undefined.`,
 });
-export const isFunction = (obj: any, target: string) => ({
+export const isFunction = (obj: any, target: string): ValidateResult => ({
   valid: obj instanceof Function,
   message: `${target} should be function.`,
 });
@@ -72,14 +72,14 @@ export const condition = (
   condition: (obj: any) => boolean,
   fn1: ValidateFunction,
   fn2: ValidateFunction,
-) => (obj: any, target: string) => {
+) => (obj: any, target: string): ValidateResult => {
   return condition(obj) ? fn1(obj, target) : fn2(obj, target);
 };
 
-export const concatRule = (...otherRules: Rule[]) =>
+export const concatRule = (...otherRules: Rule[]): Rule =>
   otherRules.reduce((acc, val) => acc.concat(val), []);
 
-export const matches = (rule: Rule) => (obj: any, target: string) => {
+export const matches = (rule: Rule) => (obj: any, target: string): ValidateResult => {
   if (typeof obj !== "object") {
     return isObject(obj, target);
   }
@@ -105,7 +105,7 @@ export const matches = (rule: Rule) => (obj: any, target: string) => {
     message: "",
   };
 };
-export const matchesArrayOf = (rule: Rule) => (obj: any, target: string) => {
+export const matchesArrayOf = (rule: Rule) => (obj: any, target: string): ValidateResult => {
   if (!Array.isArray(obj)) {
     return {
       valid: false,
@@ -124,7 +124,7 @@ export const matchesArrayOf = (rule: Rule) => (obj: any, target: string) => {
     message: "",
   };
 };
-export const matchesObjectOf = (rule: Rule) => (obj: any, target: string) => {
+export const matchesObjectOf = (rule: Rule) => (obj: any, target: string): ValidateResult => {
   if (Array.isArray(obj)) {
     return {
       valid: false,
@@ -315,25 +315,25 @@ export const paginateOptionRule = concatRule(
   acceptOutdatedRule,
 );
 
-export const assert = (isValid: boolean, errorMessage: string) => {
+export const assert = (isValid: boolean, errorMessage: string): void => {
   if (!isValid) throw Error(errorMessage);
 };
-export const assertObject = (obj: any, target: string) => {
+export const assertObject = (obj: any, target: string): void => {
   assert(obj !== undefined, `${target} is undefined.`);
   assert(obj !== null, `${target} is null.`);
   assert(typeof obj === "object", `${target} should be object.`);
 };
-export const assertArray = (obj: any, target: string) => {
+export const assertArray = (obj: any, target: string): void => {
   assert(obj !== undefined, `${target} is undefined.`);
   assert(obj !== null, `${target} is null.`);
   assert(Array.isArray(obj), `${target} should be array.`);
 };
-export const assertRule = (rule: Rule) => (obj: any, target: string) => {
+export const assertRule = (rule: Rule) => (obj: any, target: string): void => {
   const matchesRule = matches(rule)(obj, target);
   assert(matchesRule.valid, matchesRule.message);
 };
 
-export const assertStaticSetFql = (obj: any, target: string = "SetFql") => {
+export const assertStaticSetFql = (obj: any, target = "SetFql"): void => {
   assertObject(obj, target);
   assertRule([
     {
@@ -351,21 +351,21 @@ export const assertStaticSetFql = (obj: any, target: string = "SetFql") => {
     assertSubCollectionQuery(obj.subCollection, '"subCollection"');
   }
 };
-export const assertSetFql = (obj: any, target: string = "SetFql") => {
+export const assertSetFql = (obj: any, target = "SetFql"): void => {
   if (!(obj instanceof Function)) {
     assertStaticSetFql(obj, target);
   }
 };
-export const assertStaticSetCollectionFql = (obj: any, target: string) => {
+export const assertStaticSetCollectionFql = (obj: any, target: string): void => {
   assertArray(obj, target);
   (obj as any).forEach((ele: any) => assertSetFql(ele));
 };
-export const assertSetCollectionFql = (obj: any, target: string = "SetCollectionFql") => {
+export const assertSetCollectionFql = (obj: any, target = "SetCollectionFql"): void => {
   assert(Array.isArray(obj), `${target} should be array."`);
   obj.forEach((ele: any) => assertSetFql(ele));
 };
 
-const assertSubCollectionQuery = (obj: any, target: string = "SubCollectionQuery") => {
+const assertSubCollectionQuery = (obj: any, target = "SubCollectionQuery"): void => {
   assertObject(obj, target);
   const values = Object.values(obj);
   values.forEach(value => {
@@ -373,7 +373,7 @@ const assertSubCollectionQuery = (obj: any, target: string = "SubCollectionQuery
     (value as any).forEach((ele: any) => assertStaticSetFql(ele, "Element"));
   });
 };
-export const assertSetDocsFql = (obj: any, target: string = "SetFql") => {
+export const assertSetDocsFql = (obj: any, target = "SetFql"): void => {
   assertObject(obj, target);
   const entries = Object.entries(obj);
   entries.forEach(([key, value]) => assertSetFql(value, `"${key}"`));

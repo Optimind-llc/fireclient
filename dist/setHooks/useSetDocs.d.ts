@@ -1,4 +1,3 @@
-import "firebase/firestore";
 import { SetFql } from "..";
 export declare function useSetDocs(queries: {
     [key: string]: SetFql;

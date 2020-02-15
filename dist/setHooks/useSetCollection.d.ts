@@ -1,4 +1,3 @@
-import "firebase/firestore";
 import { SetCollectionFql } from "..";
 export declare function useSetCollection(collectionPath: string, query: SetCollectionFql, options?: {
     merge?: boolean;

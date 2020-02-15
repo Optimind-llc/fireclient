@@ -7,7 +7,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("firebase/firestore");
 var pathlib = __importStar(require("path"));
 var useGetCollection_1 = require("../getHooks/useGetCollection");
 var typeCheck = __importStar(require("../typeCheck"));

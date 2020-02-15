@@ -1,4 +1,3 @@
-import "firebase/firestore";
 import { CollectionData, QueryOptions } from "..";
 declare type PageHandler = {
     fn: () => void;

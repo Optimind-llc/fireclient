@@ -18,7 +18,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("firebase/firestore");
 var react_1 = require("react");
 var __1 = require("..");
 var useGetCollection_1 = require("../getHooks/useGetCollection");
@@ -122,6 +121,7 @@ function usePaginateCollection(path, options) {
     react_1.useEffect(function () {
         setFirst(!queryReversed ? nextFirst : nextLast);
         setLast(!queryReversed ? nextLast : nextFirst);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [nextFirstId, nextLastId]);
     var collectionData = collection !== null ? __1.createDataFromCollection(collection) : [];
     return [

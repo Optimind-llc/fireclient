@@ -7,7 +7,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("firebase/firestore");
 var react_1 = require("react");
 var __1 = require("..");
 var getFunctions_1 = require("../getFunctions");
@@ -43,8 +42,11 @@ function useGetDocBase(path, initialValue, lazy, getFunction, options) {
         }, (_a = options) === null || _a === void 0 ? void 0 : _a.saveToState, (_b = options) === null || _b === void 0 ? void 0 : _b.acceptOutdated);
     };
     // Automatically excecute loadDoc() if lazy
-    if (!lazy)
-        react_1.useEffect(function () { return loadDoc(); }, [path, utils_1.getHashCode(options)]);
+    react_1.useEffect(function () {
+        if (!lazy)
+            loadDoc();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [path, utils_1.getHashCode(options)]);
     return [doc, loading, error, loadDoc];
 }
 function useLazyGetDocSnapshot(path, options) {

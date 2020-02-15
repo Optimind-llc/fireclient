@@ -110,3 +110,4 @@ src/test/serviceAccountKey.json
 
 # example
 example/src/firebaseConfig.json
+.env(develop)

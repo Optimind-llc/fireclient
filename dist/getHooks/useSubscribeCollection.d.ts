@@ -1,7 +1,6 @@
 import { firestore } from "firebase";
-import "firebase/firestore";
 import { CollectionData, HooksId, QueryOptions } from "..";
-declare type SubscribeCollectionFunction<State> = (hooksId: HooksId, path: string, onChange: (doc: State) => void, onError: (err: any) => void, onListen?: () => void, options?: QueryOptions, saveToState?: boolean) => () => void;
+declare type SubscribeCollectionFunction<State> = (hooksId: HooksId, path: string, onChange: (doc: State) => void, onError: (err: Error) => void, onListen?: () => void, options?: QueryOptions, saveToState?: boolean) => () => void;
 export declare function useSubscribeCollectionBase<State, InitialState = State>(path: string, initialValue: State | InitialState, subscribeFunction: SubscribeCollectionFunction<State>, options?: {
     callback?: (data: State) => void;
     saveToState?: boolean;
