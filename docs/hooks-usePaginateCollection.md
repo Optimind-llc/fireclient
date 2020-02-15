@@ -24,7 +24,7 @@ const [collectionData, loading, error, prevHandler, nextHandler] = usePaginateCo
 
   データを取得しているかを表します。
 
-- **error**: `any`
+- **error**: `Error`
 
   データ取得の際にエラーが発生した場合エラー内容が入力されます。初期値には`null`が代入されています。
 
@@ -42,7 +42,7 @@ const [collectionData, loading, error, prevHandler, nextHandler] = usePaginateCo
 
   取得対象のコレクションの Firestore 上のパスです。
 
-- _`optional`_ **options**: `object`
+- <span class="highlight">optional</span> **options**: `object`
 
   データを取得する際のオプションです。
 
@@ -60,11 +60,11 @@ const [collectionData, loading, error, prevHandler, nextHandler] = usePaginateCo
 
   取得するコレクションの開始地点・終了地点を指定します。
 
-- _`optional`_ **where**: [`Where`](options-overview.md#where)
+- <span class="highlight">optional</span> **where**: [`Where`](options-overview.md#where)
 
   条件を付けてコレクションを取得することができます。
 
-- _`optional`_ **acceptOutdated**: `boolean`
+- <span class="highlight">optional</span> **acceptOutdated**: `boolean`
 
   Fireclient ではリッスンしているコレクションを取得する際にキャッシュを利用しますが、その機能を過去に取得したコレクションの再取得にも適応します。
 

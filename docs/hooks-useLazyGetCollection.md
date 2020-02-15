@@ -19,7 +19,7 @@ const [collectionData, loading, error, loadFn] = useLazyGetCollection(path, opti
 
   データを取得しているかを表します。
 
-- **error**: `any`
+- **error**: `Error`
 
   データ取得の際にエラーが発生した場合エラー内容が入力されます。<br>初期値には`null`が代入されています。
 
@@ -33,33 +33,33 @@ const [collectionData, loading, error, loadFn] = useLazyGetCollection(path, opti
 
   取得対象のコレクションの Firestore 上のパスです。
 
-- _`optional`_ **options**: `object`
+- <span class="highlight">optional</span> **options**: `object`
 
   データを取得する際のオプションです。
 
 ### options の内容
 
-- _`optional`_ **callback**: `(DocData) => void`
+- <span class="highlight">optional</span> **callback**: `(DocData) => void`
 
   データを取得する際に実行される関数を指定することができます。
 
-- _`optional`_ **acceptOutdated**: `boolean`
+- <span class="highlight">optional</span> **acceptOutdated**: `boolean`
 
   Fireclient ではリッスンしているコレクションを取得する際にキャッシュを利用しますが、その機能を過去に取得したコレクションの再取得にも適応します。
 
-- _`optional`_ **where**: [`Where`](options-overview.md#where)
+- <span class="highlight">optional</span> **where**: [`Where`](options-overview.md#where)
 
   条件を付けてコレクションを取得することができます。
 
-- _`optional`_ **limit**: [`Limit`](options-overview.md#limit)
+- <span class="highlight">optional</span> **limit**: [`Limit`](options-overview.md#limit)
 
   取得するコレクションの数を制限することができます。
 
-- _`optional`_ **order**: [`Order`](options-overview.md#order)
+- <span class="highlight">optional</span> **order**: [`Order`](options-overview.md#order)
 
   コレクションをソートした状態で取得します。`limit` と組み合わせることで、上位 n 個を取得ということができます。
 
-- _`optional`_ **cursor**: [`Cursor`](options-overview.md#cursor)
+- <span class="highlight">optional</span> **cursor**: [`Cursor`](options-overview.md#cursor)
 
   取得するコレクションの開始地点・終了地点を指定します。
 

@@ -74,31 +74,31 @@ Fireclient で Firestore 上のコレクションを取得した際の型であ�
 
   取得するドキュメント / コレクションの Firestore 上でのパスを指定します。
 
-- *`optional`*　**connects**: `boolean`
+- <span class="highlight">optional</span>　**connects**: `boolean`
 
   ドキュメント / コレクション をリッスンするかどうかを指定することができます。
 
-- *`optional`*　**acceptOutdated**: `boolean`
+- <span class="highlight">optional</span>　**acceptOutdated**: `boolean`
 
   Fireclient ではリッスンしているドキュメントを取得する際にキャッシュを利用しますが、その機能を過去に取得したドキュメントの再取得にも適応するかを指定できます。
 
-- *`optional`*　**callback**: `(`[`DocData`](misc-type.md#docdata)`|`[`CollectionData`](misc-type.md#collectiondata)`) => void`
+- <span class="highlight">optional</span>　**callback**: <code>([StaticSetFql](misc-type.md#staticsetfql) | [DynamicSetFql](misc-type.md#dynamicsetfql)) => void</code>
 
-  データを取得する際に実行される関数を指定することができます。
+データを取得する際に実行される関数を指定することができます。
 
-- *`optional`*　**where**: [`Where`](options-overview.md#where)
+- <span class="highlight">optional</span>　**where**: [`Where`](options-overview.md#where)
 
   条件を付けてコレクションを取得することができます。
 
-- *`optional`*　**limit**: [`Limit`](options-overview.md#limit)
+- <span class="highlight">optional</span>　**limit**: [`Limit`](options-overview.md#limit)
 
   取得するコレクションの数を制限することができます。
 
-- *`optional`*　**order**: [`Order`](options-overview.md#order)
+- <span class="highlight">optional</span>　**order**: [`Order`](options-overview.md#order)
 
   コレクションをソートした状態で取得します。`limit` と組み合わせることで、上位 n 個を取得ということができます。
 
-- *`optional`*　**cursor**: [`Cursor`](options-overview.md#cursor)
+- <span class="highlight">optional</span>　**cursor**: [`Cursor`](options-overview.md#cursor)
 
   取得するコレクションの開始地点・終了地点を指定します。
 
@@ -172,19 +172,19 @@ Firestore 上の複数の ドキュメント / コレクション を取得す�
   Firestore 上の複数の ドキュメント / コレクション を取得するクエリを指定します。<br>
   `useQuery` では `ObjectQuery` 、`useArrayQuery` では `ArrayQuery` を指定します。
 
-- *`optional`*　**connects**: `boolean`
+- <span class="highlight">optional</span>　**connects**: `boolean`
 
   ドキュメント / コレクション をリッスンするかどうかを指定することができます。
 
 これは `queries` 全体に反映されますが、[`Query`](misc-type.md#query) 側にも指定されていた場合 [`Query`](misc-type.md#query) 側の値が優先されます。
 
-- *`optional`*　**acceptOutdated**: `boolean`
+- <span class="highlight">optional</span>　**acceptOutdated**: `boolean`
 
   Fireclient ではリッスンしているコレクションを取得する際にキャッシュを利用しますが、その機能を過去に取得したコレクションの再取得にも適応します。
 
   これは `queries` 全体に反映されますが、クエリ側にも指定されていた場合クエリ側の値が優先されます。
 
-- *`optional`*　**callback**: `() => void`
+- <span class="highlight">optional</span>　**callback**: `() => void`
 
   全てのクエリを取得した際に実行される関数を指定することができます。
 
@@ -208,7 +208,7 @@ Firestore 上の複数の ドキュメント / コレクション を取得す�
 `useSetDoc`, `useUpdateDoc` などで書き込む内容を指定するためのクエリです。<br>
 `StaticSetFql` は指定する時点で内容が決定しており、`DynamicSetFql` は書き込む関数を実行する時点で内容が決定します。
 
-### 型 : [`StaticSetFql`](misc-type.md#staticsetfql)`|`[`DynamicSetFql`](misc-type.md#dynamicsetfql)
+### 型 : <code>[StaticSetFql](misc-type.md#staticsetfql) |[DynamicSetFql](misc-type.md#dynamicsetfql)</code>
 
 # StaticSetFql
 
@@ -216,17 +216,17 @@ Firestore 上の複数の ドキュメント / コレクション を取得す�
 
 ### プロパティ
 
-- _`optional`_ **fields**: `{[field: string]: any}`
+- <span class="highlight">optional</span> **fields**: `{[field: string]: any}`
 
   書き込むドキュメントの内容をオブジェクトで指定します。
 
-- _`optional`_ **subCollection**: `{[key: string]: StaticSetFql[]}`
+- <span class="highlight">optional</span> **subCollection**: `{[key: string]: StaticSetFql[]}`
 
   ドキュメントのサブコレクションを指定します。
   `key` でサブコレクション名を指定し、配列でサブコレクションに含まれるドキュメントを指定します。
   この時、指定するドキュメントに `id` が含まれていない場合はランダムなドキュメント ID が割り振られます。
 
-- _`optional`_ **id**: `string`
+- <span class="highlight">optional</span> **id**: `string`
 
   サブコレクションのドキュメントを指定する際、これを指定することでドキュメント ID を決めることができます。
 

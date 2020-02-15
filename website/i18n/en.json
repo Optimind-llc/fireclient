@@ -14,6 +14,9 @@
       "custom-hooks": {
         "title": "概要"
       },
+      "hooks-useDeleteDoc": {
+        "title": "useDeleteDoc（ドキュメントの削除）"
+      },
       "hooks-useGetCollection": {
         "title": "useGetCollection（コレクションの取得）"
       },

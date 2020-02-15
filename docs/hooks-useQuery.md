@@ -11,7 +11,7 @@ const [queryData, loading, error, fn] = useQuery(fql));
 
 ### Hooks の戻り値
 
-- **queryData**: `(`[`DocData`](misc-type.md#docdata)`|`[`CollectionData`](misc-type.md#collectiondata)`)[]`
+- **queryData**: <code>([StaticSetFql](misc-type.md#staticsetfql) | [DynamicSetFql](misc-type.md#dynamicsetfql))[]</code>
 
   Firestore から取得したドキュメント/コレクションの内容です。
 
@@ -19,7 +19,7 @@ const [queryData, loading, error, fn] = useQuery(fql));
 
   データを取得しているかを表します。
 
-- **error**: `any`
+- **error**: `Error`
 
   データ取得の際にエラーが発生した場合エラー内容が入力されます。
   初期値には`null`が代入されています。

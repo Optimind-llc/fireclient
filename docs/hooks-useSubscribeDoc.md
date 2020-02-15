@@ -22,7 +22,7 @@ const [docData, loading, error, unsubscribeFn] = useSubscribeDoc(path, options);
 
   データを取得しているかを表します。
 
-- **error**: `any`
+- **error**: `Error`
 
   データ取得の際にエラーが発生した場合エラー内容が入力されます。<br>初期値には`null`が代入されています。
 
@@ -36,13 +36,13 @@ const [docData, loading, error, unsubscribeFn] = useSubscribeDoc(path, options);
 
   監視対象のドキュメントの Firestore 上のパスです。
 
-- _`optional`_ **options**: `object`
+- <span class="highlight">optional</span> **options**: `object`
 
   データを取得する際のオプションです。
 
 ### options の内容
 
-- _`optional`_ **callback**: `(DocData) => void`
+- <span class="highlight">optional</span> **callback**: `(DocData) => void`
 
   データを取得する際に実行される関数を指定することができます。
 

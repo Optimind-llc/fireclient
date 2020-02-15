@@ -44,7 +44,7 @@ limit: 100;
 ### プロパティ
 
 - **by**: `string`
-- _`optional`_ **direction**: `"asc" | "desc"`
+- <span class="highlight">optional</span> **direction**: `"asc" | "desc"`
 
 クエリする際のドキュメントの並び順を指定します。
 次の例では、`population` で降順にソートしています。

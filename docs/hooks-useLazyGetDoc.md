@@ -19,7 +19,7 @@ const [docData, loading, error, loadFn] = useLazyGetDoc(path, options);
 
   データを取得しているかを表します。
 
-- **error**: `any`
+- **error**: `Error`
 
   データ取得の際にエラーが発生した場合エラー内容が入力されます。<br>初期値には`null`が代入されています。
 
@@ -33,17 +33,17 @@ const [docData, loading, error, loadFn] = useLazyGetDoc(path, options);
 
   取得対象のドキュメントの Firestore 上のパスです。
 
-- _`optional`_ **options**: `object`
+- <span class="highlight">optional</span> **options**: `object`
 
   データを取得する際のオプションです。
 
 ### options の内容
 
-- _`optional`_ **callback**: `(DocData) => void`
+- <span class="highlight">optional</span> **callback**: `(DocData) => void`
 
   データを取得する際に実行される関数を指定することができます。
 
-- _`optional`_ **acceptOutdated**: `boolean`
+- <span class="highlight">optional</span> **acceptOutdated**: `boolean`
 
   Fireclient ではリッスンしているドキュメントを取得する際にキャッシュを利用しますが、その機能を過去に取得したドキュメントの再取得にも適応します。
 

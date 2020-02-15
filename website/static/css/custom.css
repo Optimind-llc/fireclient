@@ -27,3 +27,14 @@ p {
   margin-top: 25px !important;
   margin-bottom: 25px !important;
 }
+
+.highlight {
+  color: white;
+  background: gray;
+  padding: 6px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -o-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
+}
