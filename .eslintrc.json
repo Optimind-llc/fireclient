@@ -24,6 +24,7 @@
     "prefer-promise-reject-errors": ["off"],
     "react/jsx-filename-extension": ["off"],
     "react/prop-types": ["off"],
+    "react-hooks/exhaustive-deps": ["on"],
     "no-return-assign": ["off"],
     "@typescript-eslint/no-explicit-any": ["off"]
   }

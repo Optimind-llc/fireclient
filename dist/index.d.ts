@@ -252,7 +252,7 @@ export declare const getContext: typeof provider.getContext;
 export declare const getHashCode: (obj: any) => number;
 export declare const createDataFromDoc: (doc: firestore.DocumentData) => DocData;
 export declare const createDataFromCollection: (collection: firestore.DocumentSnapshot<firestore.DocumentData>[]) => CollectionData;
-export declare const getQueryId: (path: string, options?: QueryOptions) => string;
+export declare const getQueryId: (collectionPath: string, options?: QueryOptions) => string;
 export declare const useLazyGetDocSnapshot: typeof _useGetDoc.useLazyGetDocSnapshot;
 export declare const useGetDocSnapshot: typeof _useGetDoc.useGetDocSnapshot;
 export declare const useLazyGetDoc: typeof _useGetDoc.useLazyGetDoc;

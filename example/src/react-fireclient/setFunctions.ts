@@ -9,7 +9,16 @@ type SubCollection = {
   [name: string]: StaticSetCollectionFql;
 };
 
-// 書き込み完了時のCallback
+/**
+ * 書き込み完了時のCallback
+ * @param dispatch
+ * @param onSet Setする際のCallback
+ * @param onError エラーが発生した際のCallback
+ * @param docPath Set対象のDocのFirestore上でのPath
+ * @param fields Setする内容
+ * @param options Setする際のOption
+ * @param subCollection Docに持たせるsubCollectionの内容
+ */
 const setDocCallback = (
   dispatch: React.Dispatch<Actions>,
   onSet: () => void,
@@ -59,6 +68,16 @@ const setDocCallback = (
   }
 };
 
+/**
+ * Docにqueryの内容をsetする
+ * DocPathが確定していれば db.doc(DocPath).set() を実行する
+ * DocPathが確定していなければ db.collection(CollectionPath).add() を実行する
+ * @param path 書込対象のDocのFirestore上でのPath
+ * @param query Setする内容
+ * @param onSet Setする際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Setする際のOption
+ */
 export function setDoc(
   path: string,
   query: StaticSetFql,
@@ -73,9 +92,7 @@ export function setDoc(
   const { firestoreDB, dispatch, onAccess } = getContext();
   const { id, subCollection } = query;
   const { merge, mergeFields } = options;
-
   const fields = query.fields !== undefined ? query.fields : {};
-
   const isDoc = isDocPath(path);
 
   try {
@@ -127,9 +144,16 @@ export function setDoc(
     onError(err);
   }
 }
-// subCollectionを扱わない
+/**
+ * Docをqueryの内容でUpdateする
+ * @param path 書込対象のDocのFirestore上でのPath
+ * @param query Updateする内容
+ * @param onUpdate Updateする際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Updateする際のOption
+ */
 export function updateDoc(
-  docPath: string,
+  path: string,
   query: StaticSetFql,
   onUpdate: () => void,
   onError: (err: Error) => void,
@@ -138,7 +162,14 @@ export function updateDoc(
   },
 ): void {
   const { firestoreDB, dispatch, onAccess } = getContext();
+  const { id } = query;
   const fields = query.fields !== undefined ? query.fields : {};
+  const isDoc = isDocPath(path);
+
+  if (!isDoc && id === undefined) {
+    throw new Error("Given path is collection path and doc id is not specified in query.");
+  }
+  const docPath = isDoc ? path : pathlib.resolve(path, id as string);
 
   try {
     onAccess();
@@ -155,7 +186,14 @@ export function updateDoc(
     onError(err);
   }
 }
-
+/**
+ * Collectionをqueriesの内容でSetする
+ * @param path 書込対象のDocのFirestore上でのPath
+ * @param queries Setする内容
+ * @param onSet Setする際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Setする際のOption
+ */
 export function setCollection(
   collectionPath: string,
   queries: StaticSetCollectionFql,
@@ -184,6 +222,13 @@ export function setCollection(
     });
 }
 
+/**
+ * DocをDeleteする
+ * @param path 書込対象のDocのFirestore上でのPath
+ * @param onDelete Deleteする際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Setする際のOption
+ */
 export function deleteDoc(
   path: string,
   onDelete: () => void,

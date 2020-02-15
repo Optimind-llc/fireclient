@@ -25,9 +25,6 @@ var getFunctions_1 = require("../getFunctions");
 var typeCheck = __importStar(require("../typeCheck"));
 var typeCheck_1 = require("../typeCheck");
 var utils_1 = require("../utils");
-// TODO:
-// https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
-// トランザクションを使用する
 function useArrayQuery(getFql) {
     typeCheck_1.assertRule(typeCheck.arrayGetFqlRule)(getFql, "getFql");
     var queries = getFql.queries, callback = getFql.callback;

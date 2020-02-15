@@ -26,25 +26,25 @@ export declare type Actions = {
     type: "connectDoc";
     payload: {
         docId: DocId;
-        uuid: HooksId;
+        hooksId: HooksId;
     };
 } | {
     type: "connectCollection";
     payload: {
         collectionId: CollectionId;
-        uuid: HooksId;
+        hooksId: HooksId;
     };
 } | {
     type: "disconnectDoc";
     payload: {
         docId: DocId;
-        uuid: HooksId;
+        hooksId: HooksId;
     };
 } | {
     type: "disconnectCollection";
     payload: {
         collectionId: CollectionId;
-        uuid: HooksId;
+        hooksId: HooksId;
     };
 };
 declare function reducer(state: FireclientState, action: Actions): FireclientState;

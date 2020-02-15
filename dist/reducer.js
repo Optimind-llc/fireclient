@@ -30,23 +30,23 @@ function reducer(state, action) {
                 .get("doc")
                 .get(action.payload.docId)
                 .get("connectedFrom") === undefined
-                ? state.setIn(["doc", action.payload.docId, "connectedFrom"], immutable_1.Set.of(action.payload.uuid))
+                ? state.setIn(["doc", action.payload.docId, "connectedFrom"], immutable_1.Set.of(action.payload.hooksId))
                 : state.setIn(["doc", action.payload.docId, "connectedFrom"], state
                     .get("doc")
                     .get(action.payload.docId)
                     .get("connectedFrom")
-                    .add(action.payload.uuid));
+                    .add(action.payload.hooksId));
         case "connectCollection":
             return state
                 .get("collection")
                 .get(action.payload.collectionId)
                 .get("connectedFrom") === undefined
-                ? state.setIn(["collection", action.payload.collectionId, "connectedFrom"], immutable_1.Set.of(action.payload.uuid))
+                ? state.setIn(["collection", action.payload.collectionId, "connectedFrom"], immutable_1.Set.of(action.payload.hooksId))
                 : state.setIn(["collection", action.payload.collectionId, "connectedFrom"], state
                     .get("collection")
                     .get(action.payload.collectionId)
                     .get("connectedFrom")
-                    .add(action.payload.uuid));
+                    .add(action.payload.hooksId));
         case "disconnectDoc":
             return state
                 .get("doc")
@@ -57,7 +57,7 @@ function reducer(state, action) {
                     .get("doc")
                     .get(action.payload.docId)
                     .get("connectedFrom")
-                    .delete(action.payload.uuid));
+                    .delete(action.payload.hooksId));
         case "disconnectCollection":
             return state
                 .get("collection")
@@ -68,7 +68,7 @@ function reducer(state, action) {
                     .get("collection")
                     .get(action.payload.collectionId)
                     .get("connectedFrom")
-                    .delete(action.payload.uuid));
+                    .delete(action.payload.hooksId));
         default:
             throw new Error();
     }

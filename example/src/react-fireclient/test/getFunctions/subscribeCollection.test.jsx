@@ -10,7 +10,7 @@ import { app, db } from "../firestore";
 const useTest = ({ path, onGet, options }) => {
   useSetContext(db);
   const [finished, setFinished] = useState(false);
-  const uuid = generateHooksId();
+  const hooksId = generateHooksId();
   const onError = err => {
     throw new Error(err);
   };
@@ -20,7 +20,7 @@ const useTest = ({ path, onGet, options }) => {
   useEffect(
     () =>
       subscribeCollection(
-        uuid,
+        hooksId,
         path,
         doc => {
           onGet(doc);

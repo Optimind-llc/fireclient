@@ -11,6 +11,15 @@ var immutable_1 = require("immutable");
 var pathlib = __importStar(require("path"));
 var provider_1 = require("./provider");
 var utils_1 = require("./utils");
+/**
+ * DocのSnapshotを取得する
+ * saveToState == true の場合
+ * 取得時にproviderContext内のstateに取得内容を保存する
+ * @param path 取得対象のFirestore上のPath
+ * @param onGet 取得した際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param saveToState 取得した内容をStateに保存するかを決める
+ */
 function getDocSnapshot(path, onGet, onError, saveToState) {
     if (saveToState === void 0) { saveToState = true; }
     var docId = pathlib.resolve(path);
@@ -36,6 +45,16 @@ function getDocSnapshot(path, onGet, onError, saveToState) {
     }
 }
 exports.getDocSnapshot = getDocSnapshot;
+/**
+ * DocをDocDataの形で取得する
+ * saveToState == true の場合
+ * 取得時にproviderContext内のstateに取得内容を保存する
+ * @param path 取得対象のFirestore上のPath
+ * @param onGet 取得した際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param saveToState 取得した内容をStateに保存するかを決める
+ * @param acceptOutdated 取得対象のCacheが残っていた場合それを使用する
+ */
 function getDoc(path, onGet, onError, saveToState, acceptOutdated) {
     if (acceptOutdated === void 0) { acceptOutdated = false; }
     var _a, _b;
@@ -51,7 +70,18 @@ function getDoc(path, onGet, onError, saveToState, acceptOutdated) {
     getDocSnapshot(path, function (doc) { return onGet(utils_1.createDataFromDoc(doc)); }, onError, saveToState);
 }
 exports.getDoc = getDoc;
-function subscribeDocSnapshot(uuid, path, onChange, onError, onListen, saveToState) {
+/**
+ * DocのSnapshotをSubscribeする
+ * saveToState == true の場合
+ * 取得時にproviderContext内のstateに取得内容を保存する
+ * @param hooksId どこからSubscribeされているかを表す
+ * @param path 対象のDocのFireclient上でのPath
+ * @param onChange データを取得した際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param onListen データを取得する直前に実行されるCallback
+ * @param saveToState 取得した内容をStateに保存するかを決める
+ */
+function subscribeDocSnapshot(hooksId, path, onChange, onError, onListen, saveToState) {
     if (onListen === void 0) { onListen = function () {
         /* do nothing */
     }; }
@@ -65,7 +95,7 @@ function subscribeDocSnapshot(uuid, path, onChange, onError, onListen, saveToSta
             onListen();
             if (saveToState) {
                 utils_1.saveDoc(dispatch, docId, utils_1.createDataFromDoc(doc));
-                utils_1.connectDocToState(dispatch, docId, uuid);
+                utils_1.connectDocToState(dispatch, docId, hooksId);
             }
             onChange(doc);
         }, function (err) {
@@ -74,7 +104,7 @@ function subscribeDocSnapshot(uuid, path, onChange, onError, onListen, saveToSta
         });
         return function () {
             unsubscribe_1();
-            utils_1.disconnectDocFromState(dispatch, docId, uuid);
+            utils_1.disconnectDocFromState(dispatch, docId, hooksId);
         };
     }
     catch (err) {
@@ -86,13 +116,34 @@ function subscribeDocSnapshot(uuid, path, onChange, onError, onListen, saveToSta
     }
 }
 exports.subscribeDocSnapshot = subscribeDocSnapshot;
-function subscribeDoc(uuid, path, onChange, onError, onListen, saveToState) {
+/**
+ * DocをDocDataの形でSubscribeする
+ * saveToState == true の場合
+ * 取得時にproviderContext内のstateに取得内容を保存する
+ * @param hooksId どこからSubscribeされているかを表す
+ * @param path 対象のDocのFireclient上でのPath
+ * @param onChange データを取得した際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param onListen データを取得する直前に実行されるCallback
+ * @param saveToState 取得した内容をStateに保存するかを決める
+ */
+function subscribeDoc(hooksId, path, onChange, onError, onListen, saveToState) {
     if (onListen === void 0) { onListen = function () {
         /* do nothing */
     }; }
-    return subscribeDocSnapshot(uuid, path, function (doc) { return onChange(utils_1.createDataFromDoc(doc)); }, onError, onListen, saveToState);
+    return subscribeDocSnapshot(hooksId, path, function (doc) { return onChange(utils_1.createDataFromDoc(doc)); }, onError, onListen, saveToState);
 }
 exports.subscribeDoc = subscribeDoc;
+/**
+ * CollectionのSnapshotを取得する
+ * saveToState == true の場合
+ * 取得時にproviderContext内のstateに取得内容を保存する
+ * @param path 取得対象のFirestore上のPath
+ * @param onGet 取得した際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Collectionを取得する際のOption. Where Limit Order Cursor などを含む
+ * @param saveToState 取得した内容をStateに保存するかを決める
+ */
 function getCollectionSnapshot(path, onGet, onError, options, saveToState) {
     if (options === void 0) { options = {}; }
     if (saveToState === void 0) { saveToState = true; }
@@ -118,6 +169,17 @@ function getCollectionSnapshot(path, onGet, onError, options, saveToState) {
     }
 }
 exports.getCollectionSnapshot = getCollectionSnapshot;
+/**
+ * CollectionをCollectionDataの形で取得する
+ * saveToState == true の場合
+ * 取得時にproviderContext内のstateに取得内容を保存する
+ * @param path 取得対象のFirestore上のPath
+ * @param onGet 取得した際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Collectionを取得する際のOption. Where Limit Order Cursor などを含む
+ * @param saveToState 取得した内容をStateに保存するかを決める
+ * @param acceptOutdated 取得対象のCacheが残っていた場合それを使用する
+ */
 function getCollection(path, onGet, onError, options, saveToState, acceptOutdated) {
     if (options === void 0) { options = {}; }
     if (acceptOutdated === void 0) { acceptOutdated = false; }
@@ -142,7 +204,19 @@ function getCollection(path, onGet, onError, options, saveToState, acceptOutdate
     getCollectionSnapshot(path, function (collection) { return onGet(utils_1.createDataFromCollection(collection)); }, onError, options, saveToState);
 }
 exports.getCollection = getCollection;
-function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, options, saveToState) {
+/**
+ * CollectionのSnapshotをSubscribeする
+ * saveToState == true の場合
+ * 取得時にproviderContext内のstateに取得内容を保存する
+ * @param hooksId どこからSubscribeされているかを表す
+ * @param path 対象のDocのFireclient上でのPath
+ * @param onChange データを取得した際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param onListen データを取得する直前に実行されるCallback
+ * @param options Collectionを取得する際のOption. Where Limit Order Cursor などを含む
+ * @param saveToState 取得した内容をStateに保存するかを決める
+ */
+function subscribeCollectionSnapshot(hooksId, path, onChange, onError, onListen, options, saveToState) {
     if (onListen === void 0) { onListen = function () {
         /* do nothing */
     }; }
@@ -160,11 +234,11 @@ function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, op
             // 対象から外れたdocをunsubscribeする
             var nextDocIds = immutable_1.List(collection.docs.map(function (doc) { return pathlib.resolve(path, doc.id); }));
             var decreased = docIds.filter(function (id) { return nextDocIds.indexOf(id) === -1; });
-            decreased.forEach(function (docId) { return utils_1.disconnectDocFromState(dispatch, docId, uuid); });
+            decreased.forEach(function (docId) { return utils_1.disconnectDocFromState(dispatch, docId, hooksId); });
             docIds = nextDocIds;
             if (saveToState) {
                 utils_1.saveCollection(dispatch, path, options, utils_1.createDataFromCollection(collection.docs));
-                utils_1.connectCollectionToState(dispatch, collectionId, uuid, docIds);
+                utils_1.connectCollectionToState(dispatch, collectionId, hooksId, docIds);
             }
             onChange(collection.docs);
         }, function (err) {
@@ -173,7 +247,7 @@ function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, op
         });
         return function () {
             unsubscribe_2();
-            utils_1.disconnectCollectionFromState(dispatch, collectionId, uuid, docIds);
+            utils_1.disconnectCollectionFromState(dispatch, collectionId, hooksId, docIds);
         };
     }
     catch (err) {
@@ -185,11 +259,23 @@ function subscribeCollectionSnapshot(uuid, path, onChange, onError, onListen, op
     }
 }
 exports.subscribeCollectionSnapshot = subscribeCollectionSnapshot;
-function subscribeCollection(uuid, path, onChange, onError, onListen, options, saveToState) {
+/**
+ * CollectionをCollectionDataの形でSubscribeする
+ * saveToState == true の場合
+ * 取得時にproviderContext内のstateに取得内容を保存する
+ * @param hooksId どこからSubscribeされているかを表す
+ * @param path 対象のDocのFireclient上でのPath
+ * @param onChange データを取得した際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param onListen データを取得する直前に実行されるCallback
+ * @param options Collectionを取得する際のOption. Where Limit Order Cursor などを含む
+ * @param saveToState 取得した内容をStateに保存するかを決める
+ */
+function subscribeCollection(hooksId, path, onChange, onError, onListen, options, saveToState) {
     if (onListen === void 0) { onListen = function () {
         /* do nothing */
     }; }
     if (options === void 0) { options = {}; }
-    return subscribeCollectionSnapshot(uuid, path, function (collection) { return onChange(utils_1.createDataFromCollection(collection)); }, onError, onListen, options, saveToState);
+    return subscribeCollectionSnapshot(hooksId, path, function (collection) { return onChange(utils_1.createDataFromCollection(collection)); }, onError, onListen, options, saveToState);
 }
 exports.subscribeCollection = subscribeCollection;

@@ -7,47 +7,71 @@ var firebase_1 = require("firebase");
 var immutable_1 = require("immutable");
 var path_1 = __importDefault(require("path"));
 var typeCheck_1 = require("./typeCheck");
-function sortedFromJS(object) {
+/**
+ * objをSortされたOrderedMapに変換して返す
+ * objが持つkeyとvalueが一致していれば全く同じ内容を返す全単射な関数
+ * @param obj
+ */
+function sortedFromJS(obj) {
     // CursorでOriginにSnapshotを指定することがある
-    if (object instanceof firebase_1.firestore.DocumentSnapshot) {
-        return object.ref.path;
+    if (obj instanceof firebase_1.firestore.DocumentSnapshot) {
+        return obj.ref.path;
     }
     // callbackなど、FunctionをOptionに渡すことがある
-    if (object instanceof Function) {
-        return object.toString();
+    if (obj instanceof Function) {
+        return obj.toString();
     }
-    if (typeof object !== "object" || object === null) {
-        return object;
+    if (typeof obj !== "object" || obj === null) {
+        return obj;
     }
     else {
-        return Array.isArray(object)
-            ? immutable_1.Seq(object)
+        return Array.isArray(obj)
+            ? immutable_1.Seq(obj)
                 .map(sortedFromJS)
                 .filter(function (v) { return v !== undefined; })
                 .toList()
-            : immutable_1.Seq(object)
+            : immutable_1.Seq(obj)
                 .map(sortedFromJS)
                 .filter(function (v) { return v !== undefined; })
                 .toOrderedMap()
                 .sortBy(function (v, k) { return k; });
     }
 }
+/**
+ * 受け取ったobjのHashCodeを返す
+ * objが持つkeyとvalueが一致していれば全く同じ値を返す全単射な関数
+ * @param obj
+ */
+exports.getHashCode = function (obj) {
+    return obj === undefined ? sortedFromJS({}).hashCode() : sortedFromJS(obj).hashCode();
+};
+/**
+ * CollectionのQueryに対するQueryIdを返す
+ * CollectionPathとoptionsの内容が一致していれば全く同じ値を返す全単射な関数
+ * @param collectionPath Fireclient上のCollectionのPath
+ * @param options
+ */
+exports.getQueryId = function (collectionPath, options) {
+    if (options === void 0) { options = {}; }
+    var optionsId = exports.getHashCode(options);
+    return collectionPath + (":" + optionsId);
+};
+/**
+ * HooksIdを生成する
+ * ランダムな値を返す
+ */
 exports.generateHooksId = function () {
     return Math.random()
         .toString(32)
         .substring(2);
 };
-exports.getHashCode = function (obj) {
-    return obj === undefined ? sortedFromJS({}).hashCode() : sortedFromJS(obj).hashCode();
-};
-exports.getQueryId = function (path, options) {
-    if (options === void 0) { options = {}; }
-    var optionsId = exports.getHashCode(options);
-    return path + (":" + optionsId);
-};
 var findLastColonIndex = function (s) {
     return s.split("").reduce(function (acc, val, i) { return (acc = val === ":" ? i : acc); }, -1);
 };
+/**
+ * CollectionIdからPathの部分のみを抽出する
+ * @param collectionId
+ */
 exports.getCollectionPathFromId = function (collectionId) {
     return collectionId.slice(0, findLastColonIndex(collectionId));
 };
@@ -60,6 +84,10 @@ exports.searchCollectionId = function (collectionPath, state) {
 var withoutDot = function (s) { return s !== "."; };
 var withoutEmpty = function (s) { return s.length > 0; };
 var computeLevel = function (acc, s) { return (s === ".." ? acc - 1 : acc + 1); };
+/**
+ * pathがDocのPathであるかどうかを判定する
+ * @param path
+ */
 exports.isDocPath = function (path) {
     var depth = path_1.default
         .normalize(path)
@@ -69,6 +97,11 @@ exports.isDocPath = function (path) {
         .reduce(computeLevel, 0);
     return depth % 2 === 0;
 };
+/**
+ * 取得したDocをDocDataに変換する
+ * @param id DocId
+ * @param fields Docの内容
+ */
 exports.createData = function (id, fields) { return ({
     data: fields,
     id: id,
@@ -93,7 +126,12 @@ exports.createDataFromDoc = function (doc) {
  * const collectionData = createDataFromCollection(snapshot);
  */
 exports.createDataFromCollection = function (collection) { return collection.map(function (coll) { return exports.createDataFromDoc(coll); }); };
-// stateにdocのデータを保存
+/**
+ * DocDataをproviderContext内のstateに保存する
+ * @param dispatch
+ * @param docPath
+ * @param doc
+ */
 exports.saveDoc = function (dispatch, docPath, doc) {
     return dispatch({
         type: "setDoc",
@@ -103,7 +141,13 @@ exports.saveDoc = function (dispatch, docPath, doc) {
         },
     });
 };
-// state.collectionに対象のdocのIdを保存, state.docに各データを保存
+/**
+ * CollectionDataをproviderContext内のstateに保存する
+ * @param dispatch
+ * @param collectionPath
+ * @param options Collectionを取得した際のQueryOptions QueryIdの取得に使用する
+ * @param collection
+ */
 exports.saveCollection = function (dispatch, collectionPath, options, collection) {
     collection.forEach(function (doc) {
         if (doc.id === null) {
@@ -123,6 +167,11 @@ exports.saveCollection = function (dispatch, collectionPath, options, collection
         },
     });
 };
+/**
+ * docPathの内容をproviderContext内のstateから削除する
+ * @param dispatch
+ * @param docPath
+ */
 exports.deleteDocFromState = function (dispatch, docPath) {
     return dispatch({
         type: "deleteDoc",
@@ -131,6 +180,11 @@ exports.deleteDocFromState = function (dispatch, docPath) {
         },
     });
 };
+/**
+ * collectionPathの内容をproviderContext内のstateから削除する
+ * @param dispatch
+ * @param collectionPath
+ */
 exports.deleteCollectionFromState = function (dispatch, collectionPath) {
     return dispatch({
         type: "deleteCollection",
@@ -139,47 +193,77 @@ exports.deleteCollectionFromState = function (dispatch, collectionPath) {
         },
     });
 };
-// state.docにsubscribe元を登録
-exports.connectDocToState = function (dispatch, docId, uuid) {
+/**
+ * providerContext内のstate上で
+ * docIdがhooksIdからsubscribeされていることを記憶する
+ *
+ * state.doc.(docId).connectedFromにhooksIdを追加する
+ * @param dispatch
+ * @param docId
+ * @param hooksId
+ */
+exports.connectDocToState = function (dispatch, docId, hooksId) {
     return dispatch({
         type: "connectDoc",
         payload: {
             docId: docId,
-            uuid: uuid,
+            hooksId: hooksId,
         },
     });
 };
-// state.collectionと各state.docにsubscribe元を登録
-exports.connectCollectionToState = function (dispatch, collectionId, uuid, docIds) {
+/**
+ * providerContext内のstate上で
+ * 各docIdとcollectionIdがhooksIdからsubscribeされていることを記憶する
+ *
+ * state.doc.(各docId).connectedFromと
+ * state.collection.(collectionId).connectedFromにhooksIdを追加する
+ * @param dispatch
+ * @param collectionId
+ * @param hooksId
+ * @param docIds
+ */
+exports.connectCollectionToState = function (dispatch, collectionId, hooksId, docIds) {
     dispatch({
         type: "connectCollection",
         payload: {
             collectionId: collectionId,
-            uuid: uuid,
+            hooksId: hooksId,
         },
     });
-    docIds.forEach(function (docId) { return exports.connectDocToState(dispatch, docId, uuid); });
+    docIds.forEach(function (docId) { return exports.connectDocToState(dispatch, docId, hooksId); });
 };
-// state.docからsubscribe元を削除
-exports.disconnectDocFromState = function (dispatch, docId, uuid) {
+/**
+ * state.doc.(docId).connectedFromからhooksIdを削除する
+ * @param dispatch
+ * @param docId
+ * @param hooksId
+ */
+exports.disconnectDocFromState = function (dispatch, docId, hooksId) {
     return dispatch({
         type: "disconnectDoc",
         payload: {
             docId: docId,
-            uuid: uuid,
+            hooksId: hooksId,
         },
     });
 };
-// state.collectionと各state.docからsubscribe元を削除
-exports.disconnectCollectionFromState = function (dispatch, collectionId, uuid, docIds) {
+/**
+ * state.doc.(各docId).connectedFromと
+ * state.collection.(collectionId).connectedFromからhooksIdを削除する
+ * @param dispatch
+ * @param collectionId
+ * @param hooksId
+ * @param docIds
+ */
+exports.disconnectCollectionFromState = function (dispatch, collectionId, hooksId, docIds) {
     dispatch({
         type: "disconnectCollection",
         payload: {
             collectionId: collectionId,
-            uuid: uuid,
+            hooksId: hooksId,
         },
     });
-    docIds.forEach(function (docId) { return exports.disconnectDocFromState(dispatch, docId, uuid); });
+    docIds.forEach(function (docId) { return exports.disconnectDocFromState(dispatch, docId, hooksId); });
 };
 function withWhere(ref, where) {
     if (Array.isArray(where)) {

@@ -10,7 +10,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var pathlib = __importStar(require("path"));
 var provider_1 = require("./provider");
 var utils_1 = require("./utils");
-// 書き込み完了時のCallback
+/**
+ * 書き込み完了時のCallback
+ * @param dispatch
+ * @param onSet Setする際のCallback
+ * @param onError エラーが発生した際のCallback
+ * @param docPath Set対象のDocのFirestore上でのPath
+ * @param fields Setする内容
+ * @param options Setする際のOption
+ * @param subCollection Docに持たせるsubCollectionの内容
+ */
 var setDocCallback = function (dispatch, onSet, onError, docPath, fields, options, subCollection) {
     var _a;
     var saveToState = ((_a = options) === null || _a === void 0 ? void 0 : _a.saveToState) !== false; // default true
@@ -40,6 +49,16 @@ var setDocCallback = function (dispatch, onSet, onError, docPath, fields, option
         });
     }
 };
+/**
+ * Docにqueryの内容をsetする
+ * DocPathが確定していれば db.doc(DocPath).set() を実行する
+ * DocPathが確定していなければ db.collection(CollectionPath).add() を実行する
+ * @param path 書込対象のDocのFirestore上でのPath
+ * @param query Setする内容
+ * @param onSet Setする際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Setする際のOption
+ */
 function setDoc(path, query, onSet, onError, options) {
     if (options === void 0) { options = {}; }
     var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch, onAccess = _a.onAccess;
@@ -92,10 +111,23 @@ function setDoc(path, query, onSet, onError, options) {
     }
 }
 exports.setDoc = setDoc;
-// subCollectionを扱わない
-function updateDoc(docPath, query, onUpdate, onError, options) {
+/**
+ * Docをqueryの内容でUpdateする
+ * @param path 書込対象のDocのFirestore上でのPath
+ * @param query Updateする内容
+ * @param onUpdate Updateする際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Updateする際のOption
+ */
+function updateDoc(path, query, onUpdate, onError, options) {
     var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch, onAccess = _a.onAccess;
+    var id = query.id;
     var fields = query.fields !== undefined ? query.fields : {};
+    var isDoc = utils_1.isDocPath(path);
+    if (!isDoc && id === undefined) {
+        throw new Error("Given path is collection path and doc id is not specified in query.");
+    }
+    var docPath = isDoc ? path : pathlib.resolve(path, id);
     try {
         onAccess();
         var ref = firestoreDB.doc(docPath);
@@ -113,6 +145,14 @@ function updateDoc(docPath, query, onUpdate, onError, options) {
     }
 }
 exports.updateDoc = updateDoc;
+/**
+ * Collectionをqueriesの内容でSetする
+ * @param path 書込対象のDocのFirestore上でのPath
+ * @param queries Setする内容
+ * @param onSet Setする際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Setする際のOption
+ */
 function setCollection(collectionPath, queries, onSet, onError, options) {
     Promise.all(queries.map(function (query) {
         return new Promise(function (resolve, reject) {
@@ -128,6 +168,13 @@ function setCollection(collectionPath, queries, onSet, onError, options) {
     });
 }
 exports.setCollection = setCollection;
+/**
+ * DocをDeleteする
+ * @param path 書込対象のDocのFirestore上でのPath
+ * @param onDelete Deleteする際のCallback
+ * @param onError Errorが発生した際のCallback
+ * @param options Setする際のOption
+ */
 function deleteDoc(path, onDelete, onError, options) {
     if (options === void 0) { options = {}; }
     var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch, onAccess = _a.onAccess;

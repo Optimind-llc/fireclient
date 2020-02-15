@@ -17,9 +17,6 @@ import { generateHooksId, getHashCode, isDocPath } from "../utils";
 
 type ArrayQueryData = (DocData | CollectionData)[];
 
-// TODO:
-// https://firebase.google.com/docs/firestore/manage-data/transactions?hl=ja
-// トランザクションを使用する
 export function useArrayQuery(
   getFql: GetFql<ArrayQuery>,
 ): [ArrayQueryData, boolean, any, { unsubscribe: () => void; reload: () => void }] {
