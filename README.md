@@ -1,6 +1,8 @@
 # [Fireclient](https://optimind-llc.github.io/fireclient/)
 
-![](https://img.shields.io/npm/v/react-fireclient) ![](https://img.shields.io/npm/l/react-fireclient) ![](https://img.shields.io/badge/-React-555.svg?logo=react&style=flat)
+![](https://img.shields.io/travis/Optimind-llc/fireclient)
+![](https://img.shields.io/npm/v/react-fireclient) ![](https://img.shields.io/npm/l/react-fireclient) 
+![](https://img.shields.io/badge/-React-555.svg?logo=react&style=flat)
 
 - **Declative**: By using Fireclient Query Language(FQL), you can write Firestore queries declatively.
 - **Scalable**: Fireclient is designed to be used on big React applications. It'll speed up your development and keep your source code tidy event if it's scaled.
