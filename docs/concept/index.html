@@ -65,16 +65,25 @@
 </span></div></div></div></div>
 <p>このように Fireclient を用いるとドキュメントを取得する際のロジックを宣言的に記述することが可能になり、view からロジックを切り離すことが可能になります。</p>
 <h2><a class="anchor" aria-hidden="true" id="2-ステートの再利用性"></a><a href="#2-ステートの再利用性" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. ステートの再利用性</h2>
+<p>Fireclient では無駄なデータの取得を極力減らすように設計されています。</p>
+<p>例えば、あるコンポーネントでリッスン（サブスクライブ）しているデータを、別のコンポーネントで取得しようとしたとします。この場合、リッスンされているデータは最新のものであることが分かっているにも関わらず、再度同じデータをサーバーから取得するのは無駄であると言えます。
+このような場合、Fireclient ではリッスンされているデータをそのまま、データを取得しようとした別のコンポーネントに渡すことでサーバーとの無駄な通信をなくしています。</p>
+<blockquote>
+<p>note
+厳密にはこの機能は Firebase.js 側にも存在しますが、リッスンされているコレクションに含まれるドキュメントの取得など、対応されていない部分があります。</p>
+</blockquote>
+<p>また、取得するデータの更新頻度が高くないと分かっている場合、<code>useGetDoc</code> や <code>useGetCollection</code> などではオプションで <code>{ acceptOutdated: true }</code> を指定することで、保存されたキャッシュを利用してネットワークアクセスを減らすことができます。</p>
 <h2><a class="anchor" aria-hidden="true" id="3-安全かつシンプルなデータ操作"></a><a href="#3-安全かつシンプルなデータ操作" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. 安全かつシンプルなデータ操作</h2>
 <p>Fireclient が提供する安全かつシンプルなデータ操作について、React Redux と比較しながら見ていきましょう。
 React Redux は非常に安全な状態管理用のライブラリです。Redux Saga や Redux Thunk などのミドルウェアを用いることで非同期処理も行うことができます。安全である一方で記述量が多くなりがちで、Firestore SDK 自体が提供しているデータへのシンプルなアクセスが失われていると感じていました。
 そこで Fireclient は Firestore 由来の state を安全に管理しつつ、View からは直感的かつ最小限のコード量でデータを取得する目的で開発されました。</p>
-<p>Firestore から city というドキュメントを取得する処理を例にとって見てみましょう。
-React Redux を使用した場合</p>
+<!-- Firestore から city というドキュメントを取得する処理を例にとって見てみましょう。
+React Redux を使用した場合
 <pre><code class="hljs css language-js"><span class="hljs-comment">// index.js</span>
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">View</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">const</span> { city } =
   <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>{city.name}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
 }
-</code></pre>
+<span class="hljs-string">``</span><span class="hljs-string">` --&gt;
+</span></code></pre>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/fireclient/docs/overview"><span class="arrow-prev">← </span><span>概要</span></a><a class="docs-next button" href="/fireclient/docs/quick-start"><span>始め方</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#1-宣言的なクエリ記法">1. 宣言的なクエリ記法</a></li><li><a href="#2-ステートの再利用性">2. ステートの再利用性</a></li><li><a href="#3-安全かつシンプルなデータ操作">3. 安全かつシンプルなデータ操作</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/fireclient/docs/en/overview.html">Introduction</a><a href="/fireclient/docs/en/hooks-useGetDoc.html">API Reference</a></div><div><h5>More</h5><a href="https://github.com/optimind-llc/fire-client">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2020 Optimind</section></footer></div></body></html>
