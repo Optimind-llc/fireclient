@@ -101,6 +101,7 @@ const firebaseConfig = {
   storageBucket: "xxxxxxxxxxxxxxxxxxxxxxx.appspot.com",
   messagingSenderId: "xxxxxxxxxxxx",
   appId: "x:xxxxxxxxxxxx:web:xxxxxxxxxxxxxxxxxxxxxx",
+  measurementId: "x-xxxxxxxxxx",
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
