@@ -49,7 +49,7 @@ const [collectionData, loading, error, loadFn] = useGetCollection(path, options)
 
   Fireclient ではリッスンしているコレクションを取得する際にキャッシュを利用しますが、その機能を過去に取得したコレクションの再取得にも適応します。
 
-- <span class="highlight">optional</span> **where**: [`Where`](options-overview.md#where)
+- <span class="highlight">optional</span> **where**: <code>[Where](options-overview.md#where) | [Where](options-overview.md#where)[]</code>
 
   条件を付けてコレクションを取得することができます。
 
@@ -57,9 +57,9 @@ const [collectionData, loading, error, loadFn] = useGetCollection(path, options)
 
   取得するコレクションの数を制限することができます。
 
-- <span class="highlight">optional</span> **order**: [`Order`](options-overview.md#order)
+- <span class="highlight">optional</span> **order**: <code>[Order](options-overview.md#order) | [Order](options-overview.md#order)[]</code>
 
-  コレクションをソートした状態で取得します。`limit` と組み合わせることで、上位 n 個を取得ということができます。
+コレクションをソートした状態で取得します。`limit` と組み合わせることで、上位 n 個を取得ということができます。
 
 - <span class="highlight">optional</span> **cursor**: [`Cursor`](options-overview.md#cursor)
 
@@ -127,3 +127,96 @@ const [citiesData, loading, error, reloadFn] = useGetCollection("/cities");
 ```js
 reloadFn();
 ```
+
+## 条件付き取得
+
+`useGetCollection`には`where`や`order`などの条件を付けることができます。
+
+```js
+const options = {
+  where: {
+    field: "population",
+    operator: ">",
+    value: 19000000,
+  },
+};
+const [cities, loading, error] = useGetCollection("/cities", options);
+```
+
+取得が完了すると、`cities`には次のようなオブジェクトが入っています。
+
+```js
+[
+  {
+    data: {
+      country: "Mexico",
+      name: "Mexico City",
+      population: 19028000,
+    },
+    id: "MexicoCity",
+  },
+  {
+    data: {
+      country: "United States",
+      name: "New York",
+      population: 19354922,
+    },
+    id: "NewYork",
+  },
+  {
+    data: {
+      country: "Japan",
+      name: "Tokyo",
+      population: 35676000,
+    },
+    id: "Tokyo",
+  },
+];
+```
+
+## 複合の条件付き取得
+
+条件は複数付けることもできます。
+
+```js
+const options = {
+  where: [
+    {
+      field: "population",
+      operator: ">",
+      value: 19000000,
+    },
+    {
+      field: "population",
+      operator: "<",
+      value: 20000000,
+    },
+  ],
+};
+const [cities, loading, error] = useGetCollection("/cities", options);
+```
+
+取得が完了すると、`cities`には次のようなオブジェクトが入っています。
+
+```js
+[
+  {
+    data: {
+      country: "Mexico",
+      name: "Mexico City",
+      population: 19028000,
+    },
+    id: "MexicoCity",
+  },
+  {
+    data: {
+      country: "United States",
+      name: "New York",
+      population: 19354922,
+    },
+    id: "NewYork",
+  },
+];
+```
+
+その他のオプションについては[こちら](options-overview.md)にて紹介しています。
