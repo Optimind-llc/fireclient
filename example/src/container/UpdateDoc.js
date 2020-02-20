@@ -1,13 +1,13 @@
 import React from "react";
-import { useUpdateDoc } from "../react-fireclient";
+import { useUpdateDoc } from "react-fireclient";
 
 function View(props) {
   const { docPath, query } = props;
-  const [setFn, writing, called, error] = useUpdateDoc(docPath, {
+  const [updateFn, writing, called, error] = useUpdateDoc(docPath, {
     fields: query,
   });
   const code = `
-  const [setFn, writing, called, error] = useUpdateDoc(docPath, {
+  const [updateFn, writing, called, error] = useUpdateDoc(docPath, {
     fields: ${JSON.stringify(query, null, 4)},
   });
   `;
@@ -22,7 +22,9 @@ function View(props) {
       <pre>{JSON.stringify(called)}</pre>
       <h3>error</h3>
       <pre>{JSON.stringify(error)}</pre>
-      <button onClick={setFn}>setFn</button>
+      <button onClick={updateFn}>
+        <code>updateFn()</code>
+      </button>
     </>
   );
 }

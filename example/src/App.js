@@ -8,9 +8,6 @@ import SubscribeDoc from "./container/SubscribeDoc";
 import LazyGetDoc from "./container/LazyGetDoc";
 import SetDoc from "./container/SetDoc";
 import UpdateDoc from "./container/UpdateDoc";
-import GetSubCollection from "./container/GetSubCollection";
-
-import Playground from "./container/Playground";
 
 const PageContainer = styled.div`
   padding: 20px;
@@ -18,15 +15,20 @@ const PageContainer = styled.div`
 const StyledInput = styled.input`
   padding: 5px;
 `;
-const StyledTextArea = styled.textarea`
-  padding: 5px;
-  width: 300px;
-  height: 80px;
-  resize: none;
-`;
 const StyledButton = styled.button`
   margin: 10px;
 `;
+
+const Emoji = props => (
+  <span
+    className="emoji"
+    role="img"
+    aria-label={props.label ? props.label : ""}
+    aria-hidden={props.label ? "false" : "true"}
+  >
+    {props.symbol}
+  </span>
+);
 
 const firebaseConfigCode = `
 const firebaseConfig = {
@@ -83,23 +85,22 @@ const pagesTemplate = (docPath, collectionPath, query) => [
         <h2>Doc path and query is required.</h2>
       ),
   },
-  {
-    title: "Playground",
-    component: <Playground />,
-  },
+  // {
+  //   title: "Playground",
+  //   component: <Playground />,
+  // },
 ];
 
 const App = () => {
   const [docPathCache, setDocPathCache] = useState("");
   const [collectionPathCache, setCollectionPathCache] = useState("");
-  const [queryCache, setQueryCache] = useState("");
   const [docPath, setDocPath] = useState("");
   const [collectionPath, setCollectionPath] = useState("");
   const pages = pagesTemplate(docPath, collectionPath, {});
   return (
     <>
       <BrowserRouter>
-        <h1>0. Change firebaseConfig in index.js into your Firebase config</h1>
+        <h1>0. Change config in firebaseConfig.js into your Firebase config</h1>
         <pre>{firebaseConfigCode}</pre>
         <h1>1. Enter your firestore Doc or Collection Path.</h1>
         <h2>Doc Path</h2>
@@ -120,7 +121,9 @@ const App = () => {
         <StyledButton onClick={() => setCollectionPath(collectionPathCache)}>Apply</StyledButton>
         <pre>Collection Path : {collectionPath}</pre>
 
-        <h1>2. Select Hooks and check results 🥳</h1>
+        <h1>
+          2. Select Hooks and check results <Emoji symbol="🥳" />
+        </h1>
 
         {pages.map(page => (
           <Link to={`/${page.title}`}>

@@ -1,5 +1,5 @@
 import React from "react";
-import { useGetCollection } from "../react-fireclient";
+import { useGetCollection } from "react-fireclient";
 
 function View(props) {
   const { collectionPath } = props;
@@ -18,7 +18,9 @@ function View(props) {
       <pre>{JSON.stringify(loading)}</pre>
       <h3>error</h3>
       <pre>{JSON.stringify(error)}</pre>
-      <button onClick={reloadFn}>reloadFn</button>
+      <button onClick={reloadFn}>
+        <code>reloadFn()</code>
+      </button>
     </>
   );
 }

@@ -13,15 +13,4 @@ const config = {
 
 console.log(config);
 
-// const config = {
-//   apiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-//   authDomain: "xxxxxxxxxxxxxxxxxxxxxxx.firebaseapp.com",
-//   databaseURL: "https://xxxxxxxxxxxxxxxxxxxxxxx.firebaseio.com",
-//   projectId: "xxxxxxxxxxxxxxxxxxxxxxx",
-//   storageBucket: "xxxxxxxxxxxxxxxxxxxxxxx.appspot.com",
-//   messagingSenderId: "xxxxxxxxxxxx",
-//   appId: "x:xxxxxxxxxxxx:web:xxxxxxxxxxxxxxxxxxxxxx",
-//   measurementId: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-// };
-
 export default config;

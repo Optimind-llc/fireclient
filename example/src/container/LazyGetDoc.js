@@ -1,5 +1,5 @@
 import React from "react";
-import { useLazyGetDoc } from "../react-fireclient";
+import { useLazyGetDoc } from "react-fireclient";
 
 function View(props) {
   const { docPath } = props;
@@ -18,7 +18,9 @@ function View(props) {
       <pre>{JSON.stringify(loading)}</pre>
       <h3>error</h3>
       <pre>{JSON.stringify(error)}</pre>
-      <button onClick={loadFn}>loadFn</button>
+      <button onClick={loadFn}>
+        <code>loadFn()</code>
+      </button>
     </>
   );
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import firebase from "firebase";
-import { FireclientProvider } from "./react-fireclient";
+import { FireclientProvider } from "react-fireclient";
 import "./index.css";
 import App from "./App";
 import firebaseConfig from "./firebaseConfig";
