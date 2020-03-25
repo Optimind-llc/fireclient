@@ -10,10 +10,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var ismounted_1 = __importDefault(require("ismounted"));
 var react_1 = require("react");
 var __1 = require("..");
 var getFunctions_1 = require("../getFunctions");
+var isMounted_1 = __importDefault(require("../isMounted"));
 var typeCheck = __importStar(require("../typeCheck"));
 var typeCheck_1 = require("../typeCheck");
 var utils_1 = require("../utils");
@@ -27,7 +27,7 @@ function useSubscribeDocBase(path, initialValue, subscribeFunction, options) {
             fn: typeCheck_1.matches(typeCheck.concatRule(typeCheck.callbackRule, typeCheck.saveToStateRule)),
         },
     ])({ path: path, options: options }, "Argument");
-    var isMounted = ismounted_1.default();
+    var isMounted = isMounted_1.default();
     var hooksId = react_1.useState(utils_1.generateHooksId())[0];
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), doc = _b[0], setDoc = _b[1];

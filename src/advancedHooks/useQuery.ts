@@ -1,4 +1,3 @@
-import useIsMounted from "ismounted";
 import { Map } from "immutable";
 import { useEffect, useState } from "react";
 import {
@@ -12,6 +11,7 @@ import {
   Query,
 } from "..";
 import { getCollection, getDoc, subscribeCollection, subscribeDoc } from "../getFunctions";
+import useIsMounted from "../isMounted";
 import * as typeCheck from "../typeCheck";
 import { assertRule } from "../typeCheck";
 import { generateHooksId, getHashCode, isDocPath } from "../utils";

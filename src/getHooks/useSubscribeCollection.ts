@@ -1,8 +1,8 @@
-import useIsMounted from "ismounted";
 import { firestore } from "firebase";
 import { useEffect, useState } from "react";
 import { CollectionData, HooksId, initialCollectionData, QueryOptions } from "..";
 import { subscribeCollection, subscribeCollectionSnapshot } from "../getFunctions";
+import useIsMounted from "../isMounted";
 import * as typeCheck from "../typeCheck";
 import { assertRule, matches } from "../typeCheck";
 import { generateHooksId, getHashCode } from "../utils";

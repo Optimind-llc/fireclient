@@ -1,6 +1,6 @@
-import useIsMounted from "ismounted";
 import { useState } from "react";
 import { SetCollectionFql, StaticSetCollectionFql } from "..";
+import useIsMounted from "../isMounted";
 import { setCollection } from "../setFunctions";
 import * as typeCheck from "../typeCheck";
 import { assertStaticSetFql, matches } from "../typeCheck";

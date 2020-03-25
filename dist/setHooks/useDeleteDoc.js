@@ -10,8 +10,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var ismounted_1 = __importDefault(require("ismounted"));
 var react_1 = require("react");
+var isMounted_1 = __importDefault(require("../isMounted"));
 var setFunctions_1 = require("../setFunctions");
 var typeCheck = __importStar(require("../typeCheck"));
 var typeCheck_1 = require("../typeCheck");
@@ -25,7 +25,7 @@ function useDeleteDoc(docPath, options) {
             fn: typeCheck_1.matches(typeCheck.concatRule(typeCheck.callbackRule, typeCheck.saveToStateRule)),
         },
     ])({ docPath: docPath, options: options }, "Argument");
-    var isMounted = ismounted_1.default();
+    var isMounted = isMounted_1.default();
     var _a = react_1.useState(false), deleting = _a[0], setDeleting = _a[1];
     var _b = react_1.useState(false), called = _b[0], setCalled = _b[1];
     var _c = react_1.useState(null), error = _c[0], setError = _c[1];
@@ -60,7 +60,7 @@ function useDeleteDocs(docPaths, query, options) {
             fn: typeCheck_1.matches(typeCheck.concatRule(typeCheck.callbackRule, typeCheck.saveToStateRule)),
         },
     ])({ docPaths: docPaths, options: options }, "Argument");
-    var isMounted = ismounted_1.default();
+    var isMounted = isMounted_1.default();
     var _a = react_1.useState(false), deleting = _a[0], setDeleting = _a[1];
     var _b = react_1.useState(false), called = _b[0], setCalled = _b[1];
     var _c = react_1.useState(null), error = _c[0], setError = _c[1];

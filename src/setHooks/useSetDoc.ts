@@ -1,6 +1,6 @@
-import useIsMounted from "ismounted";
 import { useState } from "react";
 import { SetFql, StaticSetFql } from "..";
+import useIsMounted from "../isMounted";
 import { setDoc, updateDoc } from "../setFunctions";
 import * as typeCheck from "../typeCheck";
 import { assertRule, assertStaticSetFql, matches } from "../typeCheck";

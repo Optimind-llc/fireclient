@@ -48,7 +48,7 @@ exports.getContext = getContext;
  * @param state {FireclientState} - This can be obtained via `context`.
  * @example
  * import { useContext } from "React";
- * import { contertStateToJson, Context } from "../react-fireclient";;
+ * import { contertStateToJson, Context } from "react-fireclient";;
  * function Component() {
  *    const { state } = useContext(Context);
  *    const json = convertStateToJson(state);
