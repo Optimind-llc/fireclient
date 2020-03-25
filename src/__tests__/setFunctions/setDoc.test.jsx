@@ -62,16 +62,16 @@ describe("setDoc", () => {
   const path = "/setDocTest/doc1";
   const fql = {
     fields: {
-      field1: Math.random(),
-      field2: Math.random(),
-      field3: Math.random(),
-      field4: Math.random(),
+      field1: 1234,
+      field2: 2345,
+      field3: 3456,
+      field4: 4567,
     },
   };
   const updateFql = {
     fields: {
-      field2: Math.random(),
-      field3: Math.random(),
+      field2: 5678,
+      field3: 6789,
     },
   };
   afterAll(async () => await app.delete());
