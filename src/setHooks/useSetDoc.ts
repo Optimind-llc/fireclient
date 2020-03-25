@@ -63,7 +63,7 @@ function useSetDocBase(
       () => {
         setError(null);
         setWriting(false);
-        if (options?.callback !== undefined) options.callback();
+        if (options?.callback) options.callback();
       },
       err => {
         setError(err);

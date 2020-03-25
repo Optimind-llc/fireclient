@@ -60,7 +60,7 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
         setCollection(snapshot);
         setError(null);
         setLoading(false);
-        if (options?.callback !== undefined) options.callback(snapshot);
+        if (options?.callback) options.callback(snapshot);
       },
       err => {
         setError(err);

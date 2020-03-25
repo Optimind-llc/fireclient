@@ -69,8 +69,8 @@ export function useArrayQuery(
 
             const onChange = (data: DocData | CollectionData): void => {
               resolve({ data: data, key: i });
-              if (callback !== undefined) callback(data);
-              if (queryCallback !== undefined) queryCallback(data);
+              if (callback) callback(data);
+              if (queryCallback) queryCallback(data);
             };
             const onError = reject;
             const onListen = (): void => {

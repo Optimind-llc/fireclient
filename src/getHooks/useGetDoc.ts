@@ -53,7 +53,7 @@ function useGetDocBase<State, InitialState = State>(
         setDoc(data);
         setError(null);
         setLoading(false);
-        if (options?.callback !== undefined) options.callback(data);
+        if (options?.callback) options.callback(data);
       },
       err => {
         setError(err);

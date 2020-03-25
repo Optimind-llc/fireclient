@@ -92,7 +92,7 @@ export function setDoc(
   const { firestoreDB, dispatch, onAccess } = getContext();
   const { id, subCollection } = query;
   const { merge, mergeFields } = options;
-  const fields = query.fields !== undefined ? query.fields : {};
+  const fields = query.fields ? query.fields : {};
   const isDoc = isDocPath(path);
 
   try {
@@ -107,7 +107,7 @@ export function setDoc(
           console.error(err);
           onError(err);
         });
-    } else if (id !== undefined) {
+    } else if (id) {
       // collection path と id が渡された時
       const docPath = pathlib.resolve(path, id);
       const ref = firestoreDB.doc(docPath);
@@ -163,7 +163,7 @@ export function updateDoc(
 ): void {
   const { firestoreDB, dispatch, onAccess } = getContext();
   const { id } = query;
-  const fields = query.fields !== undefined ? query.fields : {};
+  const fields = query.fields ? query.fields : {};
   const isDoc = isDocPath(path);
 
   if (!isDoc && id === undefined) {
@@ -210,7 +210,7 @@ export function setCollection(
       query =>
         new Promise((resolve, reject) => {
           const { id } = query;
-          const path = id !== undefined ? pathlib.resolve(collectionPath, id) : collectionPath;
+          const path = id ? pathlib.resolve(collectionPath, id) : collectionPath;
           setDoc(path, query, resolve, reject, options);
         }),
     ),

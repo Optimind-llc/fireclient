@@ -33,7 +33,7 @@ export function useDeleteDoc(
       () => {
         setError(null);
         setDeleting(false);
-        if (options?.callback !== undefined) options.callback();
+        if (options?.callback) options.callback();
       },
       err => {
         setError(err);
@@ -79,7 +79,7 @@ export function useDeleteDocs(
       .then(() => {
         setError(null);
         setDeleting(false);
-        if (options?.callback !== undefined) options.callback();
+        if (options?.callback) options.callback();
       })
       .catch(err => {
         setError(err);
