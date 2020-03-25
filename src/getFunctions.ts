@@ -75,7 +75,7 @@ export function getDoc(
 
   // state内でsubscribeされているかチェック
   const cache = state.get("doc").get(docId);
-  if (cache !== undefined && (acceptOutdated || cache?.get("connectedFrom")?.size > 0)) {
+  if (cache && (acceptOutdated || cache.get("connectedFrom")?.size > 0)) {
     const docCache = cache.get("data");
     onGet(docCache);
     return;
@@ -231,7 +231,7 @@ export function getCollection(
 
   // state内でsubscribeされているかチェック
   const cache = state.get("collection").get(collectionId);
-  if (cache !== undefined && (acceptOutdated || cache?.get("connectedFrom")?.size > 0)) {
+  if (cache && (acceptOutdated || cache.get("connectedFrom")?.size > 0)) {
     const docIds = cache.get("docIds").map(id => pathlib.resolve(path, id));
     const collectionCache: CollectionData = docIds
       .map(docId =>

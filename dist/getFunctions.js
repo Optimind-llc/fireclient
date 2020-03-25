@@ -57,12 +57,12 @@ exports.getDocSnapshot = getDocSnapshot;
  */
 function getDoc(path, onGet, onError, saveToState, acceptOutdated) {
     if (acceptOutdated === void 0) { acceptOutdated = false; }
-    var _a, _b;
+    var _a;
     var docId = pathlib.resolve(path);
     var state = provider_1.getContext().state;
     // state内でsubscribeされているかチェック
     var cache = state.get("doc").get(docId);
-    if (cache !== undefined && (acceptOutdated || ((_b = (_a = cache) === null || _a === void 0 ? void 0 : _a.get("connectedFrom")) === null || _b === void 0 ? void 0 : _b.size) > 0)) {
+    if (cache && (acceptOutdated || ((_a = cache.get("connectedFrom")) === null || _a === void 0 ? void 0 : _a.size) > 0)) {
         var docCache = cache.get("data");
         onGet(docCache);
         return;
@@ -183,12 +183,12 @@ exports.getCollectionSnapshot = getCollectionSnapshot;
 function getCollection(path, onGet, onError, options, saveToState, acceptOutdated) {
     if (options === void 0) { options = {}; }
     if (acceptOutdated === void 0) { acceptOutdated = false; }
-    var _a, _b;
+    var _a;
     var collectionId = utils_1.getQueryId(path, options);
     var state = provider_1.getContext().state;
     // state内でsubscribeされているかチェック
     var cache = state.get("collection").get(collectionId);
-    if (cache !== undefined && (acceptOutdated || ((_b = (_a = cache) === null || _a === void 0 ? void 0 : _a.get("connectedFrom")) === null || _b === void 0 ? void 0 : _b.size) > 0)) {
+    if (cache && (acceptOutdated || ((_a = cache.get("connectedFrom")) === null || _a === void 0 ? void 0 : _a.size) > 0)) {
         var docIds = cache.get("docIds").map(function (id) { return pathlib.resolve(path, id); });
         var collectionCache = docIds
             .map(function (docId) {

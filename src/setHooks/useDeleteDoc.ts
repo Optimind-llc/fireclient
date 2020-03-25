@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { SetFql } from "..";
+import useIsMounted from "../isMounted";
 import { deleteDoc } from "../setFunctions";
 import * as typeCheck from "../typeCheck";
 import { assertRule, matches } from "../typeCheck";
@@ -21,6 +22,7 @@ export function useDeleteDoc(
     },
   ])({ docPath, options }, "Argument");
 
+  const isMounted = useIsMounted();
   const [deleting, setDeleting] = useState(false);
   const [called, setCalled] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -31,13 +33,17 @@ export function useDeleteDoc(
     deleteDoc(
       docPath,
       () => {
-        setError(null);
-        setDeleting(false);
-        if (options?.callback !== undefined) options.callback();
+        if (isMounted.current) {
+          setError(null);
+          setDeleting(false);
+        }
+        if (options?.callback) options.callback();
       },
       err => {
-        setError(err);
-        setDeleting(false);
+        if (isMounted.current) {
+          setError(err);
+          setDeleting(false);
+        }
       },
       options,
     );
@@ -63,6 +69,7 @@ export function useDeleteDocs(
     },
   ])({ docPaths, options }, "Argument");
 
+  const isMounted = useIsMounted();
   const [deleting, setDeleting] = useState(false);
   const [called, setCalled] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -77,13 +84,17 @@ export function useDeleteDocs(
       ),
     )
       .then(() => {
-        setError(null);
-        setDeleting(false);
-        if (options?.callback !== undefined) options.callback();
+        if (isMounted.current) {
+          setError(null);
+          setDeleting(false);
+        }
+        if (options?.callback) options.callback();
       })
       .catch(err => {
-        setError(err);
-        setDeleting(false);
+        if (isMounted.current) {
+          setError(err);
+          setDeleting(false);
+        }
       });
   };
   return [deleteFn, deleting, called, error];

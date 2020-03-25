@@ -60,6 +60,8 @@ const useCheckResult = ({ path, onGet }) => {
 
 describe("setDoc", () => {
   const path = "/setDocTest/doc1";
+  // テストが回るたびに内容が書き換わるように
+  // 値をランダムにする
   const fql = {
     fields: {
       field1: Math.random(),

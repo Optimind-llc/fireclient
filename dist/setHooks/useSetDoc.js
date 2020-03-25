@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -8,6 +11,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = require("react");
+var isMounted_1 = __importDefault(require("../isMounted"));
 var setFunctions_1 = require("../setFunctions");
 var typeCheck = __importStar(require("../typeCheck"));
 var typeCheck_1 = require("../typeCheck");
@@ -22,6 +26,7 @@ function useSetDocBase(path, query, setFunction, options) {
             fn: typeCheck_1.matches(typeCheck.concatRule(typeCheck.mergeRule, typeCheck.callbackRule, typeCheck.saveToStateRule)),
         },
     ])({ path: path, options: options }, "Argument");
+    var isMounted = isMounted_1.default();
     var _a = react_1.useState(false), writing = _a[0], setWriting = _a[1];
     var _b = react_1.useState(false), called = _b[0], setCalled = _b[1];
     var _c = react_1.useState(null), error = _c[0], setError = _c[1];
@@ -38,13 +43,17 @@ function useSetDocBase(path, query, setFunction, options) {
         setCalled(true);
         setFunction(path, queryObject, function () {
             var _a;
-            setError(null);
-            setWriting(false);
-            if (((_a = options) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
+            if (isMounted.current) {
+                setError(null);
+                setWriting(false);
+            }
+            if ((_a = options) === null || _a === void 0 ? void 0 : _a.callback)
                 options.callback();
         }, function (err) {
-            setError(err);
-            setWriting(false);
+            if (isMounted.current) {
+                setError(err);
+                setWriting(false);
+            }
         }, options);
     };
     return [writeFn, writing, called, error];

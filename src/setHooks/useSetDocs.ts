@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { SetFql, StaticSetFql } from "..";
+import useIsMounted from "../isMounted";
 import { setDoc, updateDoc } from "../setFunctions";
 import * as typeCheck from "../typeCheck";
 import { assertRule, assertStaticSetFql, matches } from "../typeCheck";
@@ -43,6 +44,7 @@ function useSetDocsBase(
   ])({ options }, "Argument");
   typeCheck.assertSetDocsFql(queries);
 
+  const isMounted = useIsMounted();
   const [writing, setWriting] = useState(false);
   const [called, setCalled] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -52,7 +54,6 @@ function useSetDocsBase(
   const writeFn = (...args: any[]) => {
     setWriting(true);
     setCalled(true);
-
     Promise.all(
       queryEntries.map(
         ([path, query]) =>
@@ -65,13 +66,17 @@ function useSetDocsBase(
       ),
     )
       .then(() => {
-        setError(null);
-        setWriting(false);
-        if (options?.callback !== undefined) options.callback();
+        if (isMounted.current) {
+          setError(null);
+          setWriting(false);
+        }
+        if (options?.callback) options.callback();
       })
       .catch(err => {
-        setError(err);
-        setWriting(false);
+        if (isMounted.current) {
+          setError(err);
+          setWriting(false);
+        }
       });
   };
   return [writeFn, writing, called, error];

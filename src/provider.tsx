@@ -29,7 +29,7 @@ export function useSetContext(firestoreDB?: firestore.Firestore, onAccess?: () =
   providerContext.state = state;
   providerContext.dispatch = dispatch;
   providerContext.firestoreDB = firestoreDB as firestore.Firestore;
-  if (onAccess !== undefined) {
+  if (onAccess) {
     providerContext.onAccess = onAccess;
   }
 }

@@ -10,6 +10,9 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -22,6 +25,7 @@ var immutable_1 = require("immutable");
 var react_1 = require("react");
 var __1 = require("..");
 var getFunctions_1 = require("../getFunctions");
+var isMounted_1 = __importDefault(require("../isMounted"));
 var typeCheck = __importStar(require("../typeCheck"));
 var typeCheck_1 = require("../typeCheck");
 var utils_1 = require("../utils");
@@ -33,7 +37,7 @@ function useArrayQuery(getFql) {
     var initialQueryData = queries.map(function (query) {
         return utils_1.isDocPath(query.location) ? __1.initialDocData : __1.initialCollectionData;
     });
-    // Subscribeする場合があるので、HooksのIdを持っておく
+    var isMounted = isMounted_1.default();
     var hooksId = react_1.useState(utils_1.generateHooksId())[0];
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialQueryData), queryData = _b[0], setQueryData = _b[1];
@@ -61,9 +65,9 @@ function useArrayQuery(getFql) {
                 var isDocQuery = utils_1.isDocPath(location);
                 var onChange = function (data) {
                     resolve({ data: data, key: i });
-                    if (callback !== undefined)
+                    if (callback)
                         callback(data);
-                    if (queryCallback !== undefined)
+                    if (queryCallback)
                         queryCallback(data);
                 };
                 var onError = reject;
@@ -98,17 +102,20 @@ function useArrayQuery(getFql) {
             });
         }))
             .then(function (res) {
-            setQueryData(res.sort(function (a, b) { return a.key - b.key; }).map(function (r) { return r.data; }));
-            setUnsubscribe({
-                unsubscribe: function () { return unsubFns.forEach(function (fn) { return fn(); }); },
-                reload: function () { return reloadFns.forEach(function (fn) { return fn(); }); },
-            });
-            setLoading(false);
+            if (isMounted.current) {
+                setQueryData(res.sort(function (a, b) { return a.key - b.key; }).map(function (r) { return r.data; }));
+                setUnsubscribe({
+                    unsubscribe: function () { return unsubFns.forEach(function (fn) { return fn(); }); },
+                    reload: function () { return reloadFns.forEach(function (fn) { return fn(); }); },
+                });
+                setLoading(false);
+            }
         })
             .catch(function (err) {
-            // throw Error(err);
-            setLoading(false);
-            setError(err);
+            if (isMounted.current) {
+                setLoading(false);
+                setError(err);
+            }
         });
     };
     react_1.useEffect(loadQuery, [utils_1.getHashCode(getFql)]);

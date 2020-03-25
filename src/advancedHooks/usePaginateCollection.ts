@@ -36,12 +36,9 @@ function useGetMinMax(
 
   const [min, , , reloadMin] = useGetCollectionSnapshot(path, minDocOption);
   const [max, , , reloadMax] = useGetCollectionSnapshot(path, maxDocOption);
-  return [
-    min !== null && min[0] !== undefined ? min[0] : null,
-    max !== null && max[0] !== undefined ? max[0] : null,
-    reloadMin,
-    reloadMax,
-  ];
+  const optionalMin = min && min[0] ? min[0] : null;
+  const optionalMax = max && max[0] ? max[0] : null;
+  return [optionalMin, optionalMax, reloadMin, reloadMax];
 }
 
 function reverseDirection(reverse: boolean, direction: OrderDirection = "asc"): OrderDirection {
@@ -104,7 +101,7 @@ export function usePaginateCollection(
             direction: "startAfter" as CursorDirection,
           },
           callback: () => {
-            if (options.callback !== undefined) options.callback();
+            if (options.callback) options.callback();
             setDataReversed(queryReversed);
           },
         };

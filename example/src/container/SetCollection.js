@@ -1,5 +1,5 @@
 import React from "react";
-import { useSetCollection } from "../react-fireclient";
+import { useSetCollection } from "react-fireclient";
 
 function View(props) {
   const { collectionPath } = props;
@@ -29,7 +29,6 @@ function View(props) {
     <>
       <h2>Code</h2>
       <pre>{code}</pre>
-      <button onClick={setFn}>setFn</button>
       <h2>Response</h2>
       <h3>writing</h3>
       <pre>{JSON.stringify(writing)}</pre>
@@ -37,6 +36,9 @@ function View(props) {
       <pre>{JSON.stringify(called)}</pre>
       <h3>error</h3>
       <pre>{JSON.stringify(error)}</pre>
+      <button onClick={setFn}>
+        <code>setFn()</code>
+      </button>
     </>
   );
 }

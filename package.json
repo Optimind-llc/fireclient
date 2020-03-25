@@ -1,13 +1,13 @@
 {
   "name": "react-fireclient",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "main": "dist/index.js",
   "license": "MIT",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc --jsx react && cp -r src/* example/src/react-fireclient",
+    "build": "tsc --jsx react",
     "test": "jest src/test/* --coverage"
   },
   "peerDependencies": {
@@ -17,6 +17,7 @@
   "dependencies": {
     "firebase": "^7.2.3",
     "immutable": "^4.0.0-rc.12",
+    "ismounted": "^0.1.6",
     "path": "^0.12.7"
   },
   "devDependencies": {
@@ -32,7 +33,7 @@
     "@types/react": ">=16.8.0",
     "@typescript-eslint/eslint-plugin": "^2.19.2",
     "@typescript-eslint/parser": "^2.19.2",
-    "babel-jest": "^25.1.0",
+    "babel-jest": "^24.9.0",
     "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",

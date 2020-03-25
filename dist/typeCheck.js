@@ -76,7 +76,7 @@ exports.matches = function (rule) { return function (obj, target) {
     for (var i = 0; i < rule.length; i++) {
         var _a = rule[i], fn = _a.fn, key = _a.key, optional = _a.optional;
         var value = obj[key];
-        if (value !== undefined) {
+        if (value) {
             var matchesRule = fn(value, "\"" + key + "\"");
             if (!matchesRule.valid) {
                 return matchesRule;
@@ -310,7 +310,7 @@ exports.assertStaticSetFql = function (obj, target) {
             fn: exports.isObject,
         },
     ])(obj, "Set doc query");
-    if (obj.subCollection !== undefined) {
+    if (obj.subCollection) {
         assertSubCollectionQuery(obj.subCollection, '"subCollection"');
     }
 };

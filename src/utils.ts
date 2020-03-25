@@ -26,11 +26,11 @@ function sortedFromJS(obj: any): any {
     return Array.isArray(obj)
       ? Seq(obj)
           .map(sortedFromJS)
-          .filter((v: any) => v !== undefined)
+          .filter((v: any) => !!v)
           .toList()
       : Seq(obj)
           .map(sortedFromJS)
-          .filter((v: any) => v !== undefined)
+          .filter((v: any) => !!v)
           .toOrderedMap()
           .sortBy((v: any, k: any) => k);
   }
@@ -121,7 +121,7 @@ export const createData = (id: string, fields: { [fields: string]: any }): DocDa
 export const createDataFromDoc = (doc: firestore.DocumentData): DocData => {
   const { id } = doc;
   const data = doc.data();
-  return createData(id, data !== undefined ? data : null);
+  return createData(id, data ? data : null);
 };
 /**
  * Converts Firestore collection snapshot into `CollectionData`.
@@ -343,7 +343,7 @@ function withCursor(ref: firestore.Query, cursor: Cursor): firestore.Query {
   }
 
   const { direction, origin, multipleFields } = cursor;
-  const _multipleFields = multipleFields !== undefined ? multipleFields : false;
+  const _multipleFields = multipleFields ? multipleFields : false;
   assert(
     !_multipleFields || Array.isArray(origin),
     '"origin" should be array if "multipleFields" is true.',

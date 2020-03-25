@@ -86,7 +86,7 @@ export const matches = (rule: Rule) => (obj: any, target: string): ValidateResul
   for (let i = 0; i < rule.length; i++) {
     const { fn, key, optional } = rule[i];
     const value = obj[key];
-    if (value !== undefined) {
+    if (value) {
       const matchesRule = fn(value, `"${key}"`);
 
       if (!matchesRule.valid) {
@@ -347,7 +347,7 @@ export const assertStaticSetFql = (obj: any, target = "SetFql"): void => {
       fn: isObject,
     },
   ])(obj, "Set doc query");
-  if (obj.subCollection !== undefined) {
+  if (obj.subCollection) {
     assertSubCollectionQuery(obj.subCollection, '"subCollection"');
   }
 };

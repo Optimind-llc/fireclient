@@ -28,11 +28,11 @@ function sortedFromJS(obj) {
         return Array.isArray(obj)
             ? immutable_1.Seq(obj)
                 .map(sortedFromJS)
-                .filter(function (v) { return v !== undefined; })
+                .filter(function (v) { return !!v; })
                 .toList()
             : immutable_1.Seq(obj)
                 .map(sortedFromJS)
-                .filter(function (v) { return v !== undefined; })
+                .filter(function (v) { return !!v; })
                 .toOrderedMap()
                 .sortBy(function (v, k) { return k; });
     }
@@ -116,7 +116,7 @@ exports.createData = function (id, fields) { return ({
 exports.createDataFromDoc = function (doc) {
     var id = doc.id;
     var data = doc.data();
-    return exports.createData(id, data !== undefined ? data : null);
+    return exports.createData(id, data ? data : null);
 };
 /**
  * Converts Firestore collection snapshot into `CollectionData`.
@@ -295,7 +295,7 @@ function withCursor(ref, cursor) {
         return ref;
     }
     var direction = cursor.direction, origin = cursor.origin, multipleFields = cursor.multipleFields;
-    var _multipleFields = multipleFields !== undefined ? multipleFields : false;
+    var _multipleFields = multipleFields ? multipleFields : false;
     typeCheck_1.assert(!_multipleFields || Array.isArray(origin), '"origin" should be array if "multipleFields" is true.');
     if (!_multipleFields) {
         switch (direction) {

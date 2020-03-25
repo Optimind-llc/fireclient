@@ -30,7 +30,7 @@ function useSetContext(firestoreDB, onAccess) {
     exports.providerContext.state = state;
     exports.providerContext.dispatch = dispatch;
     exports.providerContext.firestoreDB = firestoreDB;
-    if (onAccess !== undefined) {
+    if (onAccess) {
         exports.providerContext.onAccess = onAccess;
     }
 }

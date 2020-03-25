@@ -2,6 +2,7 @@ import { firestore } from "firebase";
 import { useEffect, useState } from "react";
 import { DocData, HooksId, initialDocData } from "..";
 import { subscribeDoc, subscribeDocSnapshot } from "../getFunctions";
+import useIsMounted from "../isMounted";
 import * as typeCheck from "../typeCheck";
 import { assertRule, matches } from "../typeCheck";
 import { generateHooksId, getHashCode } from "../utils";
@@ -34,6 +35,7 @@ export function useSubscribeDocBase<State, InitialState = State>(
     },
   ])({ path, options }, "Argument");
 
+  const isMounted = useIsMounted();
   const [hooksId] = useState(generateHooksId());
   const [error, setError] = useState<Error | null>(null);
   const [doc, setDoc] = useState<State | InitialState>(initialValue);
@@ -51,16 +53,22 @@ export function useSubscribeDocBase<State, InitialState = State>(
       hooksId,
       path,
       data => {
-        setDoc(data);
-        setError(null);
-        setLoading(false);
-        if (options?.callback !== undefined) options.callback(data);
+        if (isMounted.current) {
+          setDoc(data);
+          setError(null);
+          setLoading(false);
+        }
+        if (options?.callback) options.callback(data);
       },
       err => {
-        setError(err);
-        setLoading(false);
+        if (isMounted.current) {
+          setError(err);
+          setLoading(false);
+        }
       },
-      () => setLoading(true),
+      () => {
+        if (isMounted.current) setLoading(true);
+      },
     );
     setUnsubscribe({ fn: unsub });
     // eslint-disable-next-line react-hooks/exhaustive-deps

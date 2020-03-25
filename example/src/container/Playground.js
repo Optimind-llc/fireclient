@@ -1,39 +1,31 @@
 import React from "react";
-import { useSetCollection, useQuery } from "../react-fireclient";
+import { usePaginateCollection } from "react-fireclient";
 
 function View(props) {
-  const fql = {
-    // saveToState: false,
-    queries: {
-      number: {
-        location: "/test/number",
-      },
-      string: {
-        location: "/test/string",
-      },
-      cities: {
-        location: "/cities",
-        where: {
-          field: "population",
-          operator: ">=",
-          value: 19354922,
-        },
-        order: {
-          by: "name",
-        },
-      },
+  const options = {
+    order: {
+      by: "population",
     },
+    limit: 3,
   };
-  const [d, loading, error] = useQuery(fql);
-  console.log("error type", typeof error);
+  const [cities, loading, , prevHandler, nextHandler] = usePaginateCollection("/cities", options);
   return (
     <>
-      {/* <button onClick={handleClick}>asdf</button>
-      {!called && <div>(It seems no action was called.)</div>}
-      {writing && <div>Setting...</div>}
-      {error !== null && <div>Error</div>}
-      {!writing && called && error === null && <div>Completed</div>} */}
-      <pre>{JSON.stringify(d, null, 4)}</pre>
+      <button onClick={prevHandler.fn} disabled={!prevHandler.enabled}>
+        Prev
+      </button>
+      <button onClick={nextHandler.fn} disabled={!nextHandler.enabled}>
+        Next
+      </button>
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        cities.map(city => (
+          <div>
+            name: {city.data.name}, country: {city.data.country}, population: {city.data.population}
+          </div>
+        ))
+      )}
     </>
   );
 }
