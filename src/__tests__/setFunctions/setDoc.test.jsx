@@ -60,18 +60,20 @@ const useCheckResult = ({ path, onGet }) => {
 
 describe("setDoc", () => {
   const path = "/setDocTest/doc1";
+  // テストが回るたびに内容が書き換わるように
+  // 値をランダムにする
   const fql = {
     fields: {
-      field1: 1234,
-      field2: 2345,
-      field3: 3456,
-      field4: 4567,
+      field1: Math.random(),
+      field2: Math.random(),
+      field3: Math.random(),
+      field4: Math.random(),
     },
   };
   const updateFql = {
     fields: {
-      field2: 5678,
-      field3: 6789,
+      field2: Math.random(),
+      field3: Math.random(),
     },
   };
   afterAll(async () => await app.delete());
