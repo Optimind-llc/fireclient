@@ -17,6 +17,7 @@
   "dependencies": {
     "firebase": "^7.2.3",
     "immutable": "^4.0.0-rc.12",
+    "ismounted": "^0.1.6",
     "path": "^0.12.7"
   },
   "devDependencies": {

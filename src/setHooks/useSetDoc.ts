@@ -1,3 +1,4 @@
+import useIsMounted from "ismounted";
 import { useState } from "react";
 import { SetFql, StaticSetFql } from "..";
 import { setDoc, updateDoc } from "../setFunctions";
@@ -45,6 +46,7 @@ function useSetDocBase(
     },
   ])({ path, options }, "Argument");
 
+  const isMounted = useIsMounted();
   const [writing, setWriting] = useState(false);
   const [called, setCalled] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -61,13 +63,17 @@ function useSetDocBase(
       path,
       queryObject,
       () => {
-        setError(null);
-        setWriting(false);
+        if (isMounted.current) {
+          setError(null);
+          setWriting(false);
+        }
         if (options?.callback) options.callback();
       },
       err => {
-        setError(err);
-        setWriting(false);
+        if (isMounted.current) {
+          setError(err);
+          setWriting(false);
+        }
       },
       options,
     );

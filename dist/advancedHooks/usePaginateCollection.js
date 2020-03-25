@@ -30,12 +30,9 @@ function useGetMinMax(path, options) {
     var maxDocOption = __assign(__assign({}, options), { limit: 1, order: __assign(__assign({}, order), { direction: (isDesc ? "asc" : "desc") }) });
     var _a = useGetCollection_1.useGetCollectionSnapshot(path, minDocOption), min = _a[0], reloadMin = _a[3];
     var _b = useGetCollection_1.useGetCollectionSnapshot(path, maxDocOption), max = _b[0], reloadMax = _b[3];
-    return [
-        min !== null && min[0] !== undefined ? min[0] : null,
-        max !== null && max[0] !== undefined ? max[0] : null,
-        reloadMin,
-        reloadMax,
-    ];
+    var optionalMin = min && min[0] ? min[0] : null;
+    var optionalMax = max && max[0] ? max[0] : null;
+    return [optionalMin, optionalMax, reloadMin, reloadMax];
 }
 function reverseDirection(reverse, direction) {
     if (direction === void 0) { direction = "asc"; }
@@ -81,7 +78,7 @@ function usePaginateCollection(path, options) {
                 origin: origin,
                 direction: "startAfter",
             }, callback: function () {
-                if (options.callback !== undefined)
+                if (options.callback)
                     options.callback();
                 setDataReversed(queryReversed);
             } });

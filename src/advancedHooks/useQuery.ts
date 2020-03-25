@@ -1,3 +1,4 @@
+import useIsMounted from "ismounted";
 import { Map } from "immutable";
 import { useEffect, useState } from "react";
 import {
@@ -28,9 +29,8 @@ export function useArrayQuery(
     isDocPath(query.location) ? initialDocData : initialCollectionData,
   );
 
-  // Subscribeする場合があるので、HooksのIdを持っておく
+  const isMounted = useIsMounted();
   const [hooksId] = useState(generateHooksId());
-
   const [error, setError] = useState<Error | null>(null);
   const [queryData, setQueryData] = useState<ArrayQueryData>(initialQueryData);
   const [loading, setLoading] = useState(true);
@@ -108,17 +108,20 @@ export function useArrayQuery(
       ),
     )
       .then(res => {
-        setQueryData(res.sort((a, b) => a.key - b.key).map(r => r.data));
-        setUnsubscribe({
-          unsubscribe: () => unsubFns.forEach(fn => fn()),
-          reload: () => reloadFns.forEach(fn => fn()),
-        });
-        setLoading(false);
+        if (isMounted.current) {
+          setQueryData(res.sort((a, b) => a.key - b.key).map(r => r.data));
+          setUnsubscribe({
+            unsubscribe: () => unsubFns.forEach(fn => fn()),
+            reload: () => reloadFns.forEach(fn => fn()),
+          });
+          setLoading(false);
+        }
       })
       .catch(err => {
-        // throw Error(err);
-        setLoading(false);
-        setError(err);
+        if (isMounted.current) {
+          setLoading(false);
+          setError(err);
+        }
       });
   };
   useEffect(loadQuery, [getHashCode(getFql)]);

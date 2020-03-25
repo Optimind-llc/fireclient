@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -7,6 +10,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var ismounted_1 = __importDefault(require("ismounted"));
 var react_1 = require("react");
 var __1 = require("..");
 var getFunctions_1 = require("../getFunctions");
@@ -22,6 +26,7 @@ function useSubscribeCollectionBase(path, initialValue, subscribeFunction, optio
             fn: typeCheck_1.matches(typeCheck.concatRule(typeCheck.queryOptionRule, typeCheck.callbackRule, typeCheck.saveToStateRule)),
         },
     ])({ path: path, options: options }, "Argument");
+    var isMounted = ismounted_1.default();
     var hooksId = react_1.useState(utils_1.generateHooksId())[0];
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), collection = _b[0], setCollection = _b[1];
@@ -34,15 +39,22 @@ function useSubscribeCollectionBase(path, initialValue, subscribeFunction, optio
     react_1.useEffect(function () {
         var unsub = subscribeFunction(hooksId, path, function (snapshot) {
             var _a;
-            setCollection(snapshot);
-            setError(null);
-            setLoading(false);
-            if (((_a = options) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
+            if (isMounted.current) {
+                setCollection(snapshot);
+                setError(null);
+                setLoading(false);
+            }
+            if ((_a = options) === null || _a === void 0 ? void 0 : _a.callback)
                 options.callback(snapshot);
         }, function (err) {
-            setError(err);
-            setLoading(false);
-        }, function () { return setLoading(true); }, options);
+            if (isMounted.current) {
+                setError(err);
+                setLoading(false);
+            }
+        }, function () {
+            if (isMounted.current)
+                setLoading(true);
+        }, options);
         setUnsubscribe({ fn: unsub });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [path, hooksId, utils_1.getHashCode(options)]);

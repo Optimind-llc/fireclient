@@ -1,3 +1,4 @@
+import useIsMounted from "ismounted";
 import { firestore } from "firebase";
 import { useEffect, useState } from "react";
 import { CollectionData, HooksId, initialCollectionData, QueryOptions } from "..";
@@ -40,6 +41,7 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
     },
   ])({ path, options }, "Argument");
 
+  const isMounted = useIsMounted();
   const [hooksId] = useState(generateHooksId());
   const [error, setError] = useState<Error | null>(null);
   const [collection, setCollection] = useState<State | InitialState>(initialValue);
@@ -57,16 +59,22 @@ export function useSubscribeCollectionBase<State, InitialState = State>(
       hooksId,
       path,
       snapshot => {
-        setCollection(snapshot);
-        setError(null);
-        setLoading(false);
+        if (isMounted.current) {
+          setCollection(snapshot);
+          setError(null);
+          setLoading(false);
+        }
         if (options?.callback) options.callback(snapshot);
       },
       err => {
-        setError(err);
-        setLoading(false);
+        if (isMounted.current) {
+          setError(err);
+          setLoading(false);
+        }
       },
-      () => setLoading(true),
+      () => {
+        if (isMounted.current) setLoading(true);
+      },
       options,
     );
     setUnsubscribe({ fn: unsub });

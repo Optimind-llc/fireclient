@@ -1,3 +1,4 @@
+import useIsMounted from "ismounted";
 import { firestore } from "firebase";
 import { useEffect, useState } from "react";
 import { DocData, initialDocData } from "..";
@@ -41,6 +42,7 @@ function useGetDocBase<State, InitialState = State>(
     },
   ])({ path, options }, "Argument");
 
+  const isMounted = useIsMounted();
   const [error, setError] = useState<Error | null>(null);
   const [doc, setDoc] = useState<State | InitialState>(initialValue);
   const [loading, setLoading] = useState(!lazy);
@@ -50,14 +52,18 @@ function useGetDocBase<State, InitialState = State>(
     getFunction(
       path,
       data => {
-        setDoc(data);
-        setError(null);
-        setLoading(false);
+        if (isMounted.current) {
+          setDoc(data);
+          setError(null);
+          setLoading(false);
+        }
         if (options?.callback) options.callback(data);
       },
       err => {
-        setError(err);
-        setLoading(false);
+        if (isMounted.current) {
+          setError(err);
+          setLoading(false);
+        }
       },
       options?.saveToState,
       options?.acceptOutdated,

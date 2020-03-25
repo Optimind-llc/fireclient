@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -7,6 +10,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var ismounted_1 = __importDefault(require("ismounted"));
 var react_1 = require("react");
 var __1 = require("..");
 var getFunctions_1 = require("../getFunctions");
@@ -23,6 +27,7 @@ function useGetCollectionBase(path, initialValue, lazy, getFunction, options) {
             fn: typeCheck_1.matches(typeCheck.concatRule(typeCheck.queryOptionRule, typeCheck.callbackRule, typeCheck.acceptOutdatedRule, typeCheck.saveToStateRule)),
         },
     ])({ path: path, options: options }, "Argument");
+    var isMounted = ismounted_1.default();
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), collection = _b[0], setCollection = _b[1];
     var _c = react_1.useState(!lazy), loading = _c[0], setLoading = _c[1];
@@ -31,14 +36,18 @@ function useGetCollectionBase(path, initialValue, lazy, getFunction, options) {
         setLoading(true);
         getFunction(path, function (data) {
             var _a;
-            setCollection(data);
-            setError(null);
-            setLoading(false);
-            if (((_a = options) === null || _a === void 0 ? void 0 : _a.callback) !== undefined)
+            if (isMounted.current) {
+                setCollection(data);
+                setError(null);
+                setLoading(false);
+            }
+            if ((_a = options) === null || _a === void 0 ? void 0 : _a.callback)
                 options.callback(data);
         }, function (err) {
-            setError(err);
-            setLoading(false);
+            if (isMounted.current) {
+                setError(err);
+                setLoading(false);
+            }
         }, options, (_a = options) === null || _a === void 0 ? void 0 : _a.saveToState, (_b = options) === null || _b === void 0 ? void 0 : _b.acceptOutdated);
     };
     // Automatically excecute loadCollection() if lazy\

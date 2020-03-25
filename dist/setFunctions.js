@@ -64,7 +64,7 @@ function setDoc(path, query, onSet, onError, options) {
     var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch, onAccess = _a.onAccess;
     var id = query.id, subCollection = query.subCollection;
     var merge = options.merge, mergeFields = options.mergeFields;
-    var fields = query.fields !== undefined ? query.fields : {};
+    var fields = query.fields ? query.fields : {};
     var isDoc = utils_1.isDocPath(path);
     try {
         onAccess();
@@ -79,7 +79,7 @@ function setDoc(path, query, onSet, onError, options) {
                 onError(err);
             });
         }
-        else if (id !== undefined) {
+        else if (id) {
             // collection path と id が渡された時
             var docPath = pathlib.resolve(path, id);
             var ref = firestoreDB.doc(docPath);
@@ -122,7 +122,7 @@ exports.setDoc = setDoc;
 function updateDoc(path, query, onUpdate, onError, options) {
     var _a = provider_1.getContext(), firestoreDB = _a.firestoreDB, dispatch = _a.dispatch, onAccess = _a.onAccess;
     var id = query.id;
-    var fields = query.fields !== undefined ? query.fields : {};
+    var fields = query.fields ? query.fields : {};
     var isDoc = utils_1.isDocPath(path);
     if (!isDoc && id === undefined) {
         throw new Error("Given path is collection path and doc id is not specified in query.");
@@ -157,7 +157,7 @@ function setCollection(collectionPath, queries, onSet, onError, options) {
     Promise.all(queries.map(function (query) {
         return new Promise(function (resolve, reject) {
             var id = query.id;
-            var path = id !== undefined ? pathlib.resolve(collectionPath, id) : collectionPath;
+            var path = id ? pathlib.resolve(collectionPath, id) : collectionPath;
             setDoc(path, query, resolve, reject, options);
         });
     }))
