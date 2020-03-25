@@ -49,6 +49,10 @@ const [docData, loading, error, reloadFn] = useGetDoc(path, options);
 
   Fireclient ではリッスンしているドキュメントを取得する際にキャッシュを利用しますが、その機能を過去に取得したドキュメントの再取得にも適応するかを指定できます。
 
+- <span class="highlight">optional</span> **saveToState**: `boolean`
+
+  データを取得する際に、取得したデータをキャッシュに保存するかどうかを指定することができます。
+
 > 注意：Firestore 上のパスは `/Collection/Doc/Collection/Doc/...` となっていることに注意してください。
 > もしコレクションを取得する場合は、代わりに [`useGetCollection`](hooks-useGetCollection.md) を使用してください。
 

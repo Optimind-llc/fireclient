@@ -46,6 +46,10 @@ const [collectionData, loading, error, unsubscribeFn] = useSubscribeCollection(p
 
   データを取得する際に実行される関数を指定することができます。
 
+- <span class="highlight">optional</span> **saveToState**: `boolean`
+
+  データを取得する際に、取得したデータをキャッシュに保存するかどうかを指定することができます。
+
 - <span class="highlight">optional</span> **where**: [`Where`](options-overview.md#where)
 
   条件を付けてコレクションを取得することができます。

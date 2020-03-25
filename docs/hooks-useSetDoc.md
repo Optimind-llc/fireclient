@@ -57,6 +57,10 @@ const [setFn, writing, called, error] = useSetDoc(path, fql, options);
 
   データを書き込む際に実行される関数を指定することができます。
 
+- <span class="highlight">optional</span> **saveToState**: `boolean`
+
+  データを取得する際に、取得したデータをキャッシュに保存するかどうかを指定することができます。
+
 # Example
 
 ### ドキュメントのパスを渡す場合

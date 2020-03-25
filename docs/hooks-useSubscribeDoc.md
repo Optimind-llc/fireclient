@@ -46,6 +46,10 @@ const [docData, loading, error, unsubscribeFn] = useSubscribeDoc(path, options);
 
   データを取得する際に実行される関数を指定することができます。
 
+- <span class="highlight">optional</span> **saveToState**: `boolean`
+
+  データを取得する際に、取得したデータをキャッシュに保存するかどうかを指定することができます。
+
 > 注意：Firestore 上のパスは `/Collection/Doc/Collection/Doc/...` となっていることに注意してください。
 > もしコレクションを取得する場合は、代わりに [`useSubscribeCollection`](hooks-useSubscribeCollection.md) を使用してください。
 

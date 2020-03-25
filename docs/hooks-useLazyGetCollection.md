@@ -47,6 +47,10 @@ const [collectionData, loading, error, loadFn] = useLazyGetCollection(path, opti
 
   Fireclient ではリッスンしているコレクションを取得する際にキャッシュを利用しますが、その機能を過去に取得したコレクションの再取得にも適応します。
 
+- <span class="highlight">optional</span> **saveToState**: `boolean`
+
+  データを取得する際に、取得したデータをキャッシュに保存するかどうかを指定することができます。
+
 - <span class="highlight">optional</span> **where**: [`Where`](options-overview.md#where)
 
   条件を付けてコレクションを取得することができます。
