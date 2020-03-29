@@ -31,7 +31,8 @@ function useGetCollectionBase(path, initialValue, lazy, getFunction, options) {
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), collection = _b[0], setCollection = _b[1];
     var _c = react_1.useState(!lazy), loading = _c[0], setLoading = _c[1];
-    var loadCollection = function () {
+    var optionsHash = utils_1.getHashCode(options);
+    var loadCollection = react_1.useCallback(function () {
         var _a, _b;
         setLoading(true);
         getFunction(path, function (data) {
@@ -49,13 +50,13 @@ function useGetCollectionBase(path, initialValue, lazy, getFunction, options) {
                 setLoading(false);
             }
         }, options, (_a = options) === null || _a === void 0 ? void 0 : _a.saveToState, (_b = options) === null || _b === void 0 ? void 0 : _b.acceptOutdated);
-    };
-    // Automatically excecute loadCollection() if lazy\
+    }, [path, optionsHash, isMounted.current]);
+    // Automatically excecute loadCollection() if lazy
     react_1.useEffect(function () {
         if (!lazy)
             loadCollection();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [path, utils_1.getHashCode(options)]);
+    }, [path, optionsHash]);
     return [collection, loading, error, loadCollection];
 }
 exports.useGetCollectionBase = useGetCollectionBase;

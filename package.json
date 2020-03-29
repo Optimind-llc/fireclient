@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "tsc --jsx react",
-    "test": "jest src/test/* --coverage"
+    "test": "jest --coverage"
   },
   "peerDependencies": {
     "react": ">=16.8.0",

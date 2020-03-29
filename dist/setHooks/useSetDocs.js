@@ -15,6 +15,7 @@ var isMounted_1 = __importDefault(require("../isMounted"));
 var setFunctions_1 = require("../setFunctions");
 var typeCheck = __importStar(require("../typeCheck"));
 var typeCheck_1 = require("../typeCheck");
+var utils_1 = require("../utils");
 function useSetDocsBase(queries, setFunction, options) {
     // Argument typeCheck
     typeCheck_1.assertRule([
@@ -30,7 +31,7 @@ function useSetDocsBase(queries, setFunction, options) {
     var _b = react_1.useState(false), called = _b[0], setCalled = _b[1];
     var _c = react_1.useState(null), error = _c[0], setError = _c[1];
     var queryEntries = Object.entries(queries);
-    var writeFn = function () {
+    var writeFn = react_1.useCallback(function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
@@ -61,7 +62,7 @@ function useSetDocsBase(queries, setFunction, options) {
                 setWriting(false);
             }
         });
-    };
+    }, [utils_1.getHashCode({ queries: queries, options: options })]);
     return [writeFn, writing, called, error];
 }
 function useSetDocs(queries, options) {

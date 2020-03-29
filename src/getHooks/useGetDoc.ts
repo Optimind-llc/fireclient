@@ -1,5 +1,5 @@
 import { firestore } from "firebase";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { DocData, initialDocData } from "..";
 import { getDoc, getDocSnapshot } from "../getFunctions";
 import useIsMounted from "../isMounted";
@@ -47,7 +47,9 @@ function useGetDocBase<State, InitialState = State>(
   const [doc, setDoc] = useState<State | InitialState>(initialValue);
   const [loading, setLoading] = useState(!lazy);
 
-  const loadDoc = () => {
+  const optionsHash = getHashCode(options);
+
+  const loadDoc = useCallback(() => {
     setLoading(true);
     getFunction(
       path,
@@ -68,12 +70,12 @@ function useGetDocBase<State, InitialState = State>(
       options?.saveToState,
       options?.acceptOutdated,
     );
-  };
+  }, [path, optionsHash, isMounted.current]);
   // Automatically excecute loadDoc() if lazy
   useEffect(() => {
     if (!lazy) loadDoc();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [path, getHashCode(options)]);
+  }, [path, optionsHash]);
 
   return [doc, loading, error, loadDoc];
 }

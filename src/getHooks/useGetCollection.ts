@@ -1,5 +1,5 @@
 import { firestore } from "firebase";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { CollectionData, initialCollectionData, QueryOptions } from "..";
 import { getCollection, getCollectionSnapshot } from "../getFunctions";
 import useIsMounted from "../isMounted";
@@ -48,7 +48,10 @@ export function useGetCollectionBase<State, InitialState = State>(
   const [error, setError] = useState<Error | null>(null);
   const [collection, setCollection] = useState<State | InitialState>(initialValue);
   const [loading, setLoading] = useState(!lazy);
-  const loadCollection = () => {
+
+  const optionsHash = getHashCode(options);
+
+  const loadCollection = useCallback(() => {
     setLoading(true);
     getFunction(
       path,
@@ -70,12 +73,12 @@ export function useGetCollectionBase<State, InitialState = State>(
       options?.saveToState,
       options?.acceptOutdated,
     );
-  };
-  // Automatically excecute loadCollection() if lazy\
+  }, [path, optionsHash, isMounted.current]);
+  // Automatically excecute loadCollection() if lazy
   useEffect(() => {
     if (!lazy) loadCollection();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [path, getHashCode(options)]);
+  }, [path, optionsHash]);
 
   return [collection, loading, error, loadCollection];
 }
