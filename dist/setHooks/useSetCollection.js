@@ -15,6 +15,7 @@ var isMounted_1 = __importDefault(require("../isMounted"));
 var setFunctions_1 = require("../setFunctions");
 var typeCheck = __importStar(require("../typeCheck"));
 var typeCheck_1 = require("../typeCheck");
+var utils_1 = require("../utils");
 function useSetCollectionBase(path, queries, setFunction, options) {
     // Argument typeCheck
     typeCheck.assertSetCollectionFql(queries);
@@ -32,7 +33,7 @@ function useSetCollectionBase(path, queries, setFunction, options) {
     var _c = react_1.useState(null), error = _c[0], setError = _c[1];
     // ObjectでQueryを指定していた場合Functionに変換する
     var queryGenerators = queries.map(function (query) { return (query instanceof Function ? query : function () { return query; }); });
-    var writeFn = function () {
+    var writeFn = react_1.useCallback(function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
@@ -55,7 +56,7 @@ function useSetCollectionBase(path, queries, setFunction, options) {
                 setWriting(false);
             }
         }, options);
-    };
+    }, [path, utils_1.getHashCode({ options: options, queryGenerators: queryGenerators }), isMounted.current]);
     return [writeFn, writing, called, error];
 }
 function useSetCollection(collectionPath, query, options) {

@@ -31,7 +31,8 @@ function useGetDocBase(path, initialValue, lazy, getFunction, options) {
     var _a = react_1.useState(null), error = _a[0], setError = _a[1];
     var _b = react_1.useState(initialValue), doc = _b[0], setDoc = _b[1];
     var _c = react_1.useState(!lazy), loading = _c[0], setLoading = _c[1];
-    var loadDoc = function () {
+    var optionsHash = utils_1.getHashCode(options);
+    var loadDoc = react_1.useCallback(function () {
         var _a, _b;
         setLoading(true);
         getFunction(path, function (data) {
@@ -49,13 +50,13 @@ function useGetDocBase(path, initialValue, lazy, getFunction, options) {
                 setLoading(false);
             }
         }, (_a = options) === null || _a === void 0 ? void 0 : _a.saveToState, (_b = options) === null || _b === void 0 ? void 0 : _b.acceptOutdated);
-    };
+    }, [path, optionsHash, isMounted.current]);
     // Automatically excecute loadDoc() if lazy
     react_1.useEffect(function () {
         if (!lazy)
             loadDoc();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [path, utils_1.getHashCode(options)]);
+    }, [path, optionsHash]);
     return [doc, loading, error, loadDoc];
 }
 function useLazyGetDocSnapshot(path, options) {
