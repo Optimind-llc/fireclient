@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { SetFql } from "..";
 import useIsMounted from "../isMounted";
 import { deleteDoc } from "../setFunctions";
 import * as typeCheck from "../typeCheck";
 import { assertRule, matches } from "../typeCheck";
+import { getHashCode } from "../utils";
 
 export function useDeleteDoc(
   docPath: string,
@@ -27,7 +28,7 @@ export function useDeleteDoc(
   const [called, setCalled] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const deleteFn = (): void => {
+  const deleteFn = useCallback((): void => {
     setDeleting(true);
     setCalled(true);
     deleteDoc(
@@ -47,7 +48,7 @@ export function useDeleteDoc(
       },
       options,
     );
-  };
+  }, [docPath, getHashCode(options), isMounted.current]);
   return [deleteFn, deleting, called, error];
 }
 
@@ -74,7 +75,7 @@ export function useDeleteDocs(
   const [called, setCalled] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const deleteFn = (): void => {
+  const deleteFn = useCallback((): void => {
     setDeleting(true);
     setCalled(true);
 
@@ -96,6 +97,6 @@ export function useDeleteDocs(
           setDeleting(false);
         }
       });
-  };
+  }, [...docPaths, getHashCode(options), isMounted.current]);
   return [deleteFn, deleting, called, error];
 }

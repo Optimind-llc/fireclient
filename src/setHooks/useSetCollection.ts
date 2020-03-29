@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { SetCollectionFql, StaticSetCollectionFql } from "..";
 import useIsMounted from "../isMounted";
 import { setCollection } from "../setFunctions";
 import * as typeCheck from "../typeCheck";
 import { assertStaticSetFql, matches } from "../typeCheck";
+import { getHashCode } from "../utils";
 
 type SetFunction<Fql> = (
   path: string,
@@ -54,30 +55,33 @@ function useSetCollectionBase(
   // ObjectでQueryを指定していた場合Functionに変換する
   const queryGenerators = queries.map(query => (query instanceof Function ? query : () => query));
 
-  const writeFn = (...args: any[]) => {
-    const queryObject = queryGenerators.map(queryGenerator => queryGenerator(...args));
-    assertStaticSetFql(queryObject);
-    setWriting(true);
-    setCalled(true);
-    setFunction(
-      path,
-      queryObject,
-      () => {
-        if (isMounted.current) {
-          setError(null);
-          setWriting(false);
-        }
-        if (options?.callback) options.callback();
-      },
-      err => {
-        if (isMounted.current) {
-          setError(err);
-          setWriting(false);
-        }
-      },
-      options,
-    );
-  };
+  const writeFn = useCallback(
+    (...args: any[]) => {
+      const queryObject = queryGenerators.map(queryGenerator => queryGenerator(...args));
+      assertStaticSetFql(queryObject);
+      setWriting(true);
+      setCalled(true);
+      setFunction(
+        path,
+        queryObject,
+        () => {
+          if (isMounted.current) {
+            setError(null);
+            setWriting(false);
+          }
+          if (options?.callback) options.callback();
+        },
+        err => {
+          if (isMounted.current) {
+            setError(err);
+            setWriting(false);
+          }
+        },
+        options,
+      );
+    },
+    [path, getHashCode({ options, queryGenerators }), isMounted.current],
+  );
   return [writeFn, writing, called, error];
 }
 

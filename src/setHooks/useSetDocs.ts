@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { SetFql, StaticSetFql } from "..";
 import useIsMounted from "../isMounted";
 import { setDoc, updateDoc } from "../setFunctions";
 import * as typeCheck from "../typeCheck";
 import { assertRule, assertStaticSetFql, matches } from "../typeCheck";
+import { getHashCode } from "../utils";
 
 type SetFunction<Fql> = (
   path: string,
@@ -51,34 +52,37 @@ function useSetDocsBase(
 
   const queryEntries = Object.entries(queries);
 
-  const writeFn = (...args: any[]) => {
-    setWriting(true);
-    setCalled(true);
-    Promise.all(
-      queryEntries.map(
-        ([path, query]) =>
-          new Promise((resolve, reject) => {
-            const queryGenerator = query instanceof Function ? query : () => query;
-            const queryObject = queryGenerator(...args);
-            assertStaticSetFql(queryObject);
-            setFunction(path, queryObject, resolve, reject, options);
-          }),
-      ),
-    )
-      .then(() => {
-        if (isMounted.current) {
-          setError(null);
-          setWriting(false);
-        }
-        if (options?.callback) options.callback();
-      })
-      .catch(err => {
-        if (isMounted.current) {
-          setError(err);
-          setWriting(false);
-        }
-      });
-  };
+  const writeFn = useCallback(
+    (...args: any[]) => {
+      setWriting(true);
+      setCalled(true);
+      Promise.all(
+        queryEntries.map(
+          ([path, query]) =>
+            new Promise((resolve, reject) => {
+              const queryGenerator = query instanceof Function ? query : () => query;
+              const queryObject = queryGenerator(...args);
+              assertStaticSetFql(queryObject);
+              setFunction(path, queryObject, resolve, reject, options);
+            }),
+        ),
+      )
+        .then(() => {
+          if (isMounted.current) {
+            setError(null);
+            setWriting(false);
+          }
+          if (options?.callback) options.callback();
+        })
+        .catch(err => {
+          if (isMounted.current) {
+            setError(err);
+            setWriting(false);
+          }
+        });
+    },
+    [getHashCode({ queries, options })],
+  );
   return [writeFn, writing, called, error];
 }
 
