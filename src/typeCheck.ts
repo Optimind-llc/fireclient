@@ -93,7 +93,7 @@ export const matches = (rule: Rule) => (obj: any, target: string): ValidateResul
         return matchesRule;
       }
       // optional can be undefined
-    } else if (!(optional === true)) {
+    } else if (!optional) {
       return {
         valid: false,
         message: `"${key}" should not be null or undefined.`,

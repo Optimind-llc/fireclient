@@ -42,7 +42,7 @@ function sortedFromJS(obj: any): any {
  * @param obj
  */
 export const getHashCode = (obj: any): number =>
-  obj === undefined ? sortedFromJS({}).hashCode() : sortedFromJS(obj).hashCode();
+  obj ? sortedFromJS(obj).hashCode() : sortedFromJS({}).hashCode();
 
 /**
  * CollectionのQueryに対するQueryIdを返す
@@ -308,7 +308,7 @@ function withWhere(ref: firestore.Query, where: Where | [Where]): firestore.Quer
     return (where as [Where]).reduce((acc, cond) => withWhere(acc, cond), ref);
   }
 
-  if (where === undefined) {
+  if (!where) {
     return ref;
   }
 
@@ -318,7 +318,7 @@ function withWhere(ref: firestore.Query, where: Where | [Where]): firestore.Quer
 }
 
 function withLimit(ref: firestore.Query, limit: Limit): firestore.Query {
-  return limit === undefined ? ref : ref.limit(limit);
+  return limit ? ref.limit(limit) : ref;
 }
 
 function withOrder(ref: firestore.Query, order: Order | [Order]): firestore.Query {
@@ -328,17 +328,17 @@ function withOrder(ref: firestore.Query, order: Order | [Order]): firestore.Quer
     }, ref);
   }
 
-  if (order === undefined) {
+  if (!order) {
     return ref;
   }
 
   const { by, direction } = order as Order;
 
-  return direction === undefined ? ref.orderBy(by) : ref.orderBy(by, direction);
+  return direction ? ref.orderBy(by, direction) : ref.orderBy(by);
 }
 
 function withCursor(ref: firestore.Query, cursor: Cursor): firestore.Query {
-  if (cursor === undefined) {
+  if (!cursor) {
     return ref;
   }
 

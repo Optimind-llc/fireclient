@@ -29,7 +29,7 @@ var setDocCallback = function (dispatch, onSet, onError, docPath, fields, option
         var data = utils_1.createData(docId, fields);
         utils_1.saveDoc(dispatch, docPath, data);
     }
-    if (subCollection === undefined) {
+    if (!subCollection) {
         // subCollectionがなければ終了
         onSet();
     }
@@ -124,7 +124,7 @@ function updateDoc(path, query, onUpdate, onError, options) {
     var id = query.id;
     var fields = query.fields ? query.fields : {};
     var isDoc = utils_1.isDocPath(path);
-    if (!isDoc && id === undefined) {
+    if (!isDoc && !id) {
         throw new Error("Given path is collection path and doc id is not specified in query.");
     }
     var docPath = isDoc ? path : pathlib.resolve(path, id);

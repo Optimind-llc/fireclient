@@ -32,8 +32,8 @@ var utils_1 = require("../utils");
 function useArrayQuery(getFql) {
     typeCheck_1.assertRule(typeCheck.arrayGetFqlRule)(getFql, "getFql");
     var queries = getFql.queries, callback = getFql.callback;
-    var connects = getFql.connects === true; // getFql.connects can be undefined
-    var acceptOutdated = getFql.acceptOutdated === true; // getFql.acceptOutdated can be undefined
+    var connects = !!getFql.connects; // getFql.connects can be undefined
+    var acceptOutdated = !!getFql.acceptOutdated; // getFql.acceptOutdated can be undefined
     var initialQueryData = queries.map(function (query) {
         return utils_1.isDocPath(query.location) ? __1.initialDocData : __1.initialCollectionData;
     });
@@ -59,8 +59,10 @@ function useArrayQuery(getFql) {
         Promise.all(queries.map(function (query, i) {
             return new Promise(function (resolve, reject) {
                 var location = query.location, limit = query.limit, where = query.where, order = query.order, cursor = query.cursor;
-                var queryConnects = query.connects === undefined ? connects : query.connects;
-                var queryAcceptOutdated = query.acceptOutdated === undefined ? acceptOutdated : query.acceptOutdated;
+                var queryConnects = query.connects ? query.connects : connects;
+                var queryAcceptOutdated = query.acceptOutdated
+                    ? query.acceptOutdated
+                    : acceptOutdated;
                 var queryCallback = query.callback;
                 var isDocQuery = utils_1.isDocPath(location);
                 var onChange = function (data) {

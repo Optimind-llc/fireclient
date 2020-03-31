@@ -83,7 +83,7 @@ exports.matches = function (rule) { return function (obj, target) {
             }
             // optional can be undefined
         }
-        else if (!(optional === true)) {
+        else if (!optional) {
             return {
                 valid: false,
                 message: "\"" + key + "\" should not be null or undefined.",

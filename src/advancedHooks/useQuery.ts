@@ -23,8 +23,8 @@ export function useArrayQuery(
 ): [ArrayQueryData, boolean, any, { unsubscribe: () => void; reload: () => void }] {
   assertRule(typeCheck.arrayGetFqlRule)(getFql, "getFql");
   const { queries, callback } = getFql;
-  const connects = getFql.connects === true; // getFql.connects can be undefined
-  const acceptOutdated = getFql.acceptOutdated === true; // getFql.acceptOutdated can be undefined
+  const connects = !!getFql.connects; // getFql.connects can be undefined
+  const acceptOutdated = !!getFql.acceptOutdated; // getFql.acceptOutdated can be undefined
   const initialQueryData: ArrayQueryData = queries.map(query =>
     isDocPath(query.location) ? initialDocData : initialCollectionData,
   );
@@ -61,9 +61,10 @@ export function useArrayQuery(
             key: number;
           }>((resolve, reject) => {
             const { location, limit, where, order, cursor } = query;
-            const queryConnects = query.connects === undefined ? connects : query.connects;
-            const queryAcceptOutdated =
-              query.acceptOutdated === undefined ? acceptOutdated : query.acceptOutdated;
+            const queryConnects = query.connects ? query.connects : connects;
+            const queryAcceptOutdated = query.acceptOutdated
+              ? query.acceptOutdated
+              : acceptOutdated;
             const queryCallback = query.callback;
             const isDocQuery = isDocPath(location);
 

@@ -43,7 +43,7 @@ function sortedFromJS(obj) {
  * @param obj
  */
 exports.getHashCode = function (obj) {
-    return obj === undefined ? sortedFromJS({}).hashCode() : sortedFromJS(obj).hashCode();
+    return obj ? sortedFromJS(obj).hashCode() : sortedFromJS({}).hashCode();
 };
 /**
  * CollectionのQueryに対するQueryIdを返す
@@ -269,14 +269,14 @@ function withWhere(ref, where) {
     if (Array.isArray(where)) {
         return where.reduce(function (acc, cond) { return withWhere(acc, cond); }, ref);
     }
-    if (where === undefined) {
+    if (!where) {
         return ref;
     }
     var _a = where, field = _a.field, operator = _a.operator, value = _a.value;
     return ref.where(field, operator, value);
 }
 function withLimit(ref, limit) {
-    return limit === undefined ? ref : ref.limit(limit);
+    return limit ? ref.limit(limit) : ref;
 }
 function withOrder(ref, order) {
     if (Array.isArray(order)) {
@@ -284,14 +284,14 @@ function withOrder(ref, order) {
             return withOrder(acc, ord);
         }, ref);
     }
-    if (order === undefined) {
+    if (!order) {
         return ref;
     }
     var _a = order, by = _a.by, direction = _a.direction;
-    return direction === undefined ? ref.orderBy(by) : ref.orderBy(by, direction);
+    return direction ? ref.orderBy(by, direction) : ref.orderBy(by);
 }
 function withCursor(ref, cursor) {
-    if (cursor === undefined) {
+    if (!cursor) {
         return ref;
     }
     var direction = cursor.direction, origin = cursor.origin, multipleFields = cursor.multipleFields;

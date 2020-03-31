@@ -29,46 +29,46 @@ function reducer(state, action) {
             return state
                 .get("doc")
                 .get(action.payload.docId)
-                .get("connectedFrom") === undefined
-                ? state.setIn(["doc", action.payload.docId, "connectedFrom"], immutable_1.Set.of(action.payload.hooksId))
-                : state.setIn(["doc", action.payload.docId, "connectedFrom"], state
+                .get("connectedFrom")
+                ? state.setIn(["doc", action.payload.docId, "connectedFrom"], state
                     .get("doc")
                     .get(action.payload.docId)
                     .get("connectedFrom")
-                    .add(action.payload.hooksId));
+                    .add(action.payload.hooksId))
+                : state.setIn(["doc", action.payload.docId, "connectedFrom"], immutable_1.Set.of(action.payload.hooksId));
         case "connectCollection":
             return state
                 .get("collection")
                 .get(action.payload.collectionId)
-                .get("connectedFrom") === undefined
-                ? state.setIn(["collection", action.payload.collectionId, "connectedFrom"], immutable_1.Set.of(action.payload.hooksId))
-                : state.setIn(["collection", action.payload.collectionId, "connectedFrom"], state
+                .get("connectedFrom")
+                ? state.setIn(["collection", action.payload.collectionId, "connectedFrom"], state
                     .get("collection")
                     .get(action.payload.collectionId)
                     .get("connectedFrom")
-                    .add(action.payload.hooksId));
+                    .add(action.payload.hooksId))
+                : state.setIn(["collection", action.payload.collectionId, "connectedFrom"], immutable_1.Set.of(action.payload.hooksId));
         case "disconnectDoc":
             return state
                 .get("doc")
                 .get(action.payload.docId)
-                .get("connectedFrom") === undefined
-                ? state
-                : state.setIn(["doc", action.payload.docId, "connectedFrom"], state
+                .get("connectedFrom")
+                ? state.setIn(["doc", action.payload.docId, "connectedFrom"], state
                     .get("doc")
                     .get(action.payload.docId)
                     .get("connectedFrom")
-                    .delete(action.payload.hooksId));
+                    .delete(action.payload.hooksId))
+                : state;
         case "disconnectCollection":
             return state
                 .get("collection")
                 .get(action.payload.collectionId)
-                .get("connectedFrom") === undefined
-                ? state
-                : state.setIn(["collection", action.payload.collectionId, "connectedFrom"], state
+                .get("connectedFrom")
+                ? state.setIn(["collection", action.payload.collectionId, "connectedFrom"], state
                     .get("collection")
                     .get(action.payload.collectionId)
                     .get("connectedFrom")
-                    .delete(action.payload.hooksId));
+                    .delete(action.payload.hooksId))
+                : state;
         default:
             throw new Error();
     }

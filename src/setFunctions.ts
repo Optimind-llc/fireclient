@@ -40,7 +40,7 @@ const setDocCallback = (
     saveDoc(dispatch, docPath, data);
   }
 
-  if (subCollection === undefined) {
+  if (!subCollection) {
     // subCollectionがなければ終了
     onSet();
   } else {
@@ -166,7 +166,7 @@ export function updateDoc(
   const fields = query.fields ? query.fields : {};
   const isDoc = isDocPath(path);
 
-  if (!isDoc && id === undefined) {
+  if (!isDoc && !id) {
     throw new Error("Given path is collection path and doc id is not specified in query.");
   }
   const docPath = isDoc ? path : pathlib.resolve(path, id as string);
