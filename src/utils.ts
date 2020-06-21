@@ -59,10 +59,7 @@ export const getQueryId = (collectionPath: string, options: QueryOptions = {}): 
  * HooksIdを生成する
  * ランダムな値を返す
  */
-export const generateHooksId = (): HooksId =>
-  Math.random()
-    .toString(32)
-    .substring(2);
+export const generateHooksId = (): HooksId => Math.random().toString(32).substring(2);
 
 const findLastColonIndex = (s: string): number =>
   s.split("").reduce((acc, val, i) => (acc = val === ":" ? i : acc), -1);
@@ -132,7 +129,7 @@ export const createDataFromDoc = (doc: firestore.DocumentData): DocData => {
  */
 export const createDataFromCollection = (
   collection: firestore.DocumentSnapshot[],
-): CollectionData => collection.map(coll => createDataFromDoc(coll));
+): CollectionData => collection.map((coll) => createDataFromDoc(coll));
 
 /**
  * DocDataをproviderContext内のstateに保存する
@@ -162,7 +159,7 @@ export const saveCollection = (
   options: QueryOptions,
   collection: CollectionData,
 ): void => {
-  collection.forEach(doc => {
+  collection.forEach((doc) => {
     if (doc.id === null) {
       return;
     }
@@ -171,8 +168,8 @@ export const saveCollection = (
   const collectionId = getQueryId(collectionPath, options);
   const docIds = List(
     collection
-      .filter(doc => doc.id !== null)
-      .map(doc => pathlib.resolve(collectionPath, doc.id as string)),
+      .filter((doc) => doc.id !== null)
+      .map((doc) => pathlib.resolve(collectionPath, doc.id as string)),
   );
   dispatch({
     type: "setCollection",
@@ -257,7 +254,7 @@ export const connectCollectionToState = (
       hooksId,
     },
   });
-  docIds.forEach(docId => connectDocToState(dispatch, docId, hooksId));
+  docIds.forEach((docId) => connectDocToState(dispatch, docId, hooksId));
 };
 
 /**
@@ -300,7 +297,7 @@ export const disconnectCollectionFromState = (
       hooksId,
     },
   });
-  docIds.forEach(docId => disconnectDocFromState(dispatch, docId, hooksId));
+  docIds.forEach((docId) => disconnectDocFromState(dispatch, docId, hooksId));
 };
 
 function withWhere(ref: firestore.Query, where: Where | [Where]): firestore.Query {

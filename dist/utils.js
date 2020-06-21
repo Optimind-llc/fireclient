@@ -60,11 +60,7 @@ exports.getQueryId = function (collectionPath, options) {
  * HooksIdを生成する
  * ランダムな値を返す
  */
-exports.generateHooksId = function () {
-    return Math.random()
-        .toString(32)
-        .substring(2);
-};
+exports.generateHooksId = function () { return Math.random().toString(32).substring(2); };
 var findLastColonIndex = function (s) {
     return s.split("").reduce(function (acc, val, i) { return (acc = val === ":" ? i : acc); }, -1);
 };
