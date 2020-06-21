@@ -59,7 +59,7 @@ export type FireclientState = ImmutableMap<{
 export type Where = {
   field: string;
   operator: firestore.WhereFilterOp;
-  value: string;
+  value: any;
 };
 /**
  * @example
