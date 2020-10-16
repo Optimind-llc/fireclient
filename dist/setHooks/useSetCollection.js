@@ -1,15 +1,28 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.useSetCollection = void 0;
 var react_1 = require("react");
 var isMounted_1 = __importDefault(require("../isMounted"));
 var setFunctions_1 = require("../setFunctions");
@@ -43,12 +56,11 @@ function useSetCollectionBase(path, queries, setFunction, options) {
         setWriting(true);
         setCalled(true);
         setFunction(path, queryObject, function () {
-            var _a;
             if (isMounted.current) {
                 setError(null);
                 setWriting(false);
             }
-            if ((_a = options) === null || _a === void 0 ? void 0 : _a.callback)
+            if (options === null || options === void 0 ? void 0 : options.callback)
                 options.callback();
         }, function (err) {
             if (isMounted.current) {

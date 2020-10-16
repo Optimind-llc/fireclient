@@ -1,15 +1,28 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.useGetDoc = exports.useLazyGetDoc = exports.useGetDocSnapshot = exports.useLazyGetDocSnapshot = void 0;
 var react_1 = require("react");
 var __1 = require("..");
 var getFunctions_1 = require("../getFunctions");
@@ -33,23 +46,21 @@ function useGetDocBase(path, initialValue, lazy, getFunction, options) {
     var _c = react_1.useState(!lazy), loading = _c[0], setLoading = _c[1];
     var optionsHash = utils_1.getHashCode(options);
     var loadDoc = react_1.useCallback(function () {
-        var _a, _b;
         setLoading(true);
         getFunction(path, function (data) {
-            var _a;
             if (isMounted.current) {
                 setDoc(data);
                 setError(null);
                 setLoading(false);
             }
-            if ((_a = options) === null || _a === void 0 ? void 0 : _a.callback)
+            if (options === null || options === void 0 ? void 0 : options.callback)
                 options.callback(data);
         }, function (err) {
             if (isMounted.current) {
                 setError(err);
                 setLoading(false);
             }
-        }, (_a = options) === null || _a === void 0 ? void 0 : _a.saveToState, (_b = options) === null || _b === void 0 ? void 0 : _b.acceptOutdated);
+        }, options === null || options === void 0 ? void 0 : options.saveToState, options === null || options === void 0 ? void 0 : options.acceptOutdated);
     }, [path, optionsHash, isMounted.current]);
     // Automatically excecute loadDoc() if lazy
     react_1.useEffect(function () {

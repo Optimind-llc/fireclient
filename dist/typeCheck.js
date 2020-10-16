@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.assertSetDocsFql = exports.assertSetCollectionFql = exports.assertStaticSetCollectionFql = exports.assertSetFql = exports.assertStaticSetFql = exports.assertRule = exports.assertArray = exports.assertObject = exports.assert = exports.paginateOptionRule = exports.subCollectionOptionRule = exports.getFqlRule = exports.arrayGetFqlRule = exports.queryRule = exports.queryOptionRule = exports.cursorRule = exports.orderRule = exports.whereRule = exports.mergeRule = exports.saveToStateRule = exports.callbackRule = exports.acceptOutdatedRule = exports.matchesObjectOf = exports.matchesArrayOf = exports.matches = exports.concatRule = exports.condition = exports.isFunction = exports.isNotNull = exports.isBoolean = exports.isNumber = exports.isString = exports.isArrayOf = exports.isAnyOf = exports.isObject = void 0;
 var firestoreWhereFilterOp = [
     "<",
     "<=",

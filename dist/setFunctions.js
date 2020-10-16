@@ -1,12 +1,25 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.deleteDoc = exports.setCollection = exports.updateDoc = exports.setDoc = void 0;
 var pathlib = __importStar(require("path"));
 var provider_1 = require("./provider");
 var utils_1 = require("./utils");
@@ -20,9 +33,8 @@ var utils_1 = require("./utils");
  * @param options Setする際のOption
  * @param subCollection Docに持たせるsubCollectionの内容
  */
-var setDocCallback = function (dispatch, onSet, onError, docPath, fields, options, subCollection) {
-    var _a;
-    var saveToState = ((_a = options) === null || _a === void 0 ? void 0 : _a.saveToState) !== false; // default true
+var setDocCallback = function (dispatch, onSet, onError, docPath, fields, options, subCollection, docRef) {
+    var saveToState = (options === null || options === void 0 ? void 0 : options.saveToState) !== false; // default true
     // 書き込んだ内容をStateに保存する
     if (saveToState) {
         var docId = pathlib.basename(docPath);
@@ -31,7 +43,7 @@ var setDocCallback = function (dispatch, onSet, onError, docPath, fields, option
     }
     if (!subCollection) {
         // subCollectionがなければ終了
-        onSet();
+        onSet(docRef);
     }
     else {
         // subCollectionがあればそれぞれを書き込み
@@ -42,7 +54,8 @@ var setDocCallback = function (dispatch, onSet, onError, docPath, fields, option
                 setCollection(pathlib.resolve(docPath, subCollectionId), collectionQuery, resolve, reject, options);
             });
         }))
-            .then(onSet)
+            // subCollection においては .add() のときの docRef は渡さない
+            .then(function () { return onSet(); })
             .catch(function (err) {
             console.error(err);
             onError(err);

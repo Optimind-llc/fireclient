@@ -1,3 +1,4 @@
+import { firestore } from "firebase";
 import { StaticSetCollectionFql, StaticSetFql } from ".";
 /**
  * Docにqueryの内容をsetする
@@ -9,7 +10,7 @@ import { StaticSetCollectionFql, StaticSetFql } from ".";
  * @param onError Errorが発生した際のCallback
  * @param options Setする際のOption
  */
-export declare function setDoc(path: string, query: StaticSetFql, onSet: () => void, onError: (err: Error) => void, options?: {
+export declare function setDoc(path: string, query: StaticSetFql, onSet: (docRef?: firestore.DocumentReference) => void, onError: (err: Error) => void, options?: {
     merge?: boolean;
     mergeFields?: string[];
     saveToState?: boolean;

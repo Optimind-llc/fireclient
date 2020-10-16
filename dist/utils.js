@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.withOption = exports.disconnectCollectionFromState = exports.disconnectDocFromState = exports.connectCollectionToState = exports.connectDocToState = exports.deleteCollectionFromState = exports.deleteDocFromState = exports.saveCollection = exports.saveDoc = exports.createDataFromCollection = exports.createDataFromDoc = exports.createData = exports.isDocPath = exports.searchCollectionId = exports.getCollectionPathFromId = exports.generateHooksId = exports.getQueryId = exports.getHashCode = void 0;
 var firebase_1 = require("firebase");
 var immutable_1 = require("immutable");
 var path_1 = __importDefault(require("path"));
