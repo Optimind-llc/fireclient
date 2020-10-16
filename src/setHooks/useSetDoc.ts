@@ -1,3 +1,4 @@
+import { firestore } from "firebase";
 import { useState, useCallback } from "react";
 import { SetFql, StaticSetFql } from "..";
 import useIsMounted from "../isMounted";
@@ -9,7 +10,7 @@ import { getHashCode } from "../utils";
 type SetFunction<Fql> = (
   path: string,
   query: Fql,
-  onWrite: () => void,
+  onWrite: (docRef?: firestore.DocumentReference) => void,
   onError: (err: Error) => void,
   options?: {
     merge?: boolean;
@@ -26,7 +27,7 @@ function useSetDocBase(
   options?: {
     merge?: boolean;
     mergeFields?: string[];
-    callback?: () => void;
+    callback?: (docRef?: firestore.DocumentReference) => void;
     saveToState?: boolean;
   },
 ): [(...args: any) => void, boolean, boolean, any] {
@@ -64,12 +65,12 @@ function useSetDocBase(
       setFunction(
         path,
         queryObject,
-        () => {
+        (docRef) => {
           if (isMounted.current) {
             setError(null);
             setWriting(false);
           }
-          if (options?.callback) options.callback();
+          if (options?.callback) options.callback(docRef);
         },
         err => {
           if (isMounted.current) {

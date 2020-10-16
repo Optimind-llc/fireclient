@@ -1,3 +1,4 @@
+import { firestore } from "firebase";
 import * as pathlib from "path";
 import { StaticSetCollectionFql, StaticSetFql } from ".";
 import { getContext } from "./provider";
@@ -21,7 +22,7 @@ type SubCollection = {
  */
 const setDocCallback = (
   dispatch: React.Dispatch<Actions>,
-  onSet: () => void,
+  onSet: (docRef?: firestore.DocumentReference) => void,
   onError: (err: Error) => void,
   docPath: string,
   fields: Fields,
@@ -31,6 +32,7 @@ const setDocCallback = (
     saveToState?: boolean;
   },
   subCollection?: SubCollection,
+  docRef?: firestore.DocumentReference,
 ): void => {
   const saveToState = options?.saveToState !== false; // default true
   // 書き込んだ内容をStateに保存する
@@ -42,7 +44,7 @@ const setDocCallback = (
 
   if (!subCollection) {
     // subCollectionがなければ終了
-    onSet();
+    onSet(docRef);
   } else {
     // subCollectionがあればそれぞれを書き込み
     const subCollectionQueries = Object.entries(subCollection);
@@ -60,7 +62,8 @@ const setDocCallback = (
           }),
       ),
     )
-      .then(onSet)
+      // subCollection においては .add() のときの docRef は渡さない
+      .then(() => onSet())
       .catch(err => {
         console.error(err);
         onError(err);
@@ -81,7 +84,7 @@ const setDocCallback = (
 export function setDoc(
   path: string,
   query: StaticSetFql,
-  onSet: () => void,
+  onSet: (docRef?: firestore.DocumentReference) => void,
   onError: (err: Error) => void,
   options: {
     merge?: boolean;
