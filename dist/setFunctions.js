@@ -110,7 +110,7 @@ function setDoc(path, query, onSet, onError, options) {
             ref
                 .add(fields)
                 .then(function (doc) {
-                return setDocCallback(dispatch, onSet, onError, pathlib.resolve(path, doc.id), fields, options, subCollection);
+                return setDocCallback(dispatch, onSet, onError, pathlib.resolve(path, doc.id), fields, options, subCollection, doc);
             })
                 .catch(function (err) {
                 console.error(err);
