@@ -135,6 +135,7 @@ export function setDoc(
             fields,
             options,
             subCollection,
+            doc
           ),
         )
         .catch(err => {

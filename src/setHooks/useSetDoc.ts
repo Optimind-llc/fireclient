@@ -92,7 +92,7 @@ export function useSetDoc(
   options?: {
     merge?: boolean;
     mergeFields?: string[];
-    callback?: () => void;
+    callback?: (docRef?: firestore.DocumentReference) => void;
     saveToState?: boolean;
   },
 ): [(...args: any) => void, boolean, boolean, any] {
