@@ -62,8 +62,7 @@ const setDocCallback = (
           }),
       ),
     )
-      // subCollection においては .add() のときの docRef は渡さない
-      .then(() => onSet())
+      .then(() => onSet(docRef))
       .catch(err => {
         console.error(err);
         onError(err);

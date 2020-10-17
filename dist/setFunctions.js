@@ -54,8 +54,7 @@ var setDocCallback = function (dispatch, onSet, onError, docPath, fields, option
                 setCollection(pathlib.resolve(docPath, subCollectionId), collectionQuery, resolve, reject, options);
             });
         }))
-            // subCollection においては .add() のときの docRef は渡さない
-            .then(function () { return onSet(); })
+            .then(function () { return onSet(docRef); })
             .catch(function (err) {
             console.error(err);
             onError(err);
